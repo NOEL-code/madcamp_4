@@ -1,5 +1,7 @@
 import styled from "styled-components";
 import CouponHeader from "./components/CouponHeader";
+import ProductCard from "./components/ProductCard";
+import Ranking from "./components/RankingList";
 
 const categories = [
   "의류",
@@ -29,7 +31,7 @@ const products = [
   },
 ];
 
-const App = () => {
+const HomePage = () => {
   return (
     <>
       <Container>
@@ -43,7 +45,7 @@ const App = () => {
             {categories.map((category, index) => (
               <CategoryContainer key={index}>
                 <Category>
-                  <img src="./assets/images/react.svg" />
+                  <img src="./assets/images/react.svg" alt={category} />
                 </Category>
                 <CategoryText>{category}</CategoryText>
               </CategoryContainer>
@@ -63,32 +65,17 @@ const App = () => {
           </FilterContainer>
           <Products>
             {products.map((product) => (
-              <Product key={product.id}>
-                <image
-                  src="./assets/images/react.svg"
-                  alt={product.name}
-                ></image>
-                <ProductInfo>
-                  <ProductInfoTextContainer>
-                    <ProductInfoCategory className="category">
-                      {product.category}
-                    </ProductInfoCategory>
-                    <ProductInfoName>{product.name}</ProductInfoName>
-                  </ProductInfoTextContainer>
-                  <Likes>❤️ {product.likes}</Likes>
-                </ProductInfo>
-                <PriceText>{product.price}</PriceText>
-                <InfoText>실시간 최고 응찰가</InfoText>
-              </Product>
+              <ProductCard key={product.id} product={product} />
             ))}
           </Products>
+          <Ranking />
         </main>
       </Container>
     </>
   );
 };
 
-export default App;
+export default HomePage;
 
 const Container = styled.div`
   max-width: 100%;
@@ -181,46 +168,4 @@ const Products = styled.div`
   gap: 10px;
   padding: 0 10px;
   margin-top: 20px;
-`;
-
-const Product = styled.div`
-  border: 1px solid #ccc;
-  border-radius: 10px;
-  padding: 10px;
-  box-sizing: border-box;
-`;
-
-const ProductInfo = styled.div`
-  text-align: center;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between; /* 하트를 오른쪽으로 정렬 */
-`;
-
-const ProductInfoCategory = styled.span`
-  font-size: 12px;
-`;
-
-const ProductInfoTextContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
-
-const ProductInfoName = styled.h1`
-  font-size: 10px;
-  text-align: left;
-`;
-
-const Likes = styled.span`
-  text-align: right;
-  color: red;
-  font-size: 10px;
-`;
-
-const PriceText = styled.p`
-  font-size: 12px;
-`;
-
-const InfoText = styled.p`
-  font-size: 6px;
 `;
