@@ -6,13 +6,18 @@ var logger = require("morgan");
 var mongoose = require("mongoose");
 require("dotenv").config();
 
-var usersRouter = require("./src/routes/users");
-
+var usersRouter = require("./src/routes/usersRouter");
+var productRouter = require("./src/routes/productRouter");
 var app = express();
 
 const corsMiddleware = require("./src/middlewares/cors");
 const connectDB = require("./src/utils/mongodb");
 
+const port = process.env.PORT || 3000;
+
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
+});
 //utils 에 있는 db. mongoose db 를 연결하는 메소드
 connectDB();
 
@@ -29,7 +34,8 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
-app.use("/users", usersRouter);
+app.use("/api/users", usersRouter);
+app.use("/api/products", productRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

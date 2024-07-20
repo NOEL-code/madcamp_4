@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Product Upload</title>
+  </head>
+  <body>
+    <h1>Product Upload</h1>
+    <form id="productForm" enctype="multipart/form-data">
+      <div>
+        <label for="productName">Product Name:</label>
+        <input type="text" id="productName" name="productName" required />
+      </div>
+      <div>
+        <label for="description">Description:</label>
+        <textarea id="description" name="description" required></textarea>
+      </div>
+      <div>
+        <label for="price">Price:</label>
+        <input type="number" id="price" name="price" required />
+      </div>
+      <div>
+        <label for="dueDate">Due Date:</label>
+        <input type="date" id="dueDate" name="dueDate" required />
+      </div>
+      <div>
+        <label for="productPhotos">Product Photos:</label>
+        <input type="file" id="productPhotos" name="productPhotos" multiple />
+      </div>
+      <button type="submit">Upload Product</button>
+    </form>
+
+    <script>
+      document
+        .getElementById("productForm")
+        .addEventListener("submit", async (event) => {
+          event.preventDefault();
+
+          const formData = new FormData(event.target);
+
+          try {
+            const response = await fetch("http://localhost:3000/api/products", {
+              method: "POST",
+              body: formData,
+            });
+
+            const responseText = await response.text();
+            try {
+              const data = JSON.parse(responseText);
+              if (response.ok) {
+                alert("Product uploaded successfully!");
+                console.log(data);
+              } else {
+                alert("Error uploading product: " + data.message);
+              }
+            } catch (err) {
+              console.error("Error parsing JSON:", err);
+              alert("Error uploading product: Unexpected end of JSON input");
+            }
+          } catch (err) {
+            alert("Error uploading product: " + err.message);
+          }
+        });
+    </script>
+  </body>
+</html>

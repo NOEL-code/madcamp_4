@@ -1,21 +1,24 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const accountSchema = new Schema({
+const alarmSchema = new Schema({
   userId: {
     type: Schema.Types.ObjectId,
     ref: "User",
     required: true,
   },
-  accountNumber: {
+  type: {
     type: String,
     required: true,
-    unique: true,
   },
-  balance: {
-    type: Number,
+  title: {
+    type: String,
     required: true,
     default: 0,
+  },
+  content: {
+    type: String,
+    required: true,
   },
   createdAt: {
     type: Date,
@@ -23,6 +26,6 @@ const accountSchema = new Schema({
   },
 });
 
-const Account = mongoose.model("Account", accountSchema);
+const Alarm = mongoose.model("Account", alarmSchema);
 
-module.exports = Account;
+module.exports = Alarm;
