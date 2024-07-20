@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { Schema } = mongoose; // mongoose에서 Schema를 가져옵니다.
 
 const favoriteItemSchema = new Schema({
   productId: {
@@ -12,7 +13,7 @@ const favoriteItemSchema = new Schema({
   },
 });
 
-const UserSchema = mongoose.Schema({
+const UserSchema = new Schema({
   userEmail: String,
   userPassword: String,
   name: String,

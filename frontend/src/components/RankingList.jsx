@@ -31,6 +31,20 @@ const products = [
     price: "20,00000원",
     likes: 12,
   },
+  {
+    id: 5,
+    category: "카테고리",
+    name: "제품명",
+    price: "20,00000원",
+    likes: 12,
+  },
+  {
+    id: 6,
+    category: "카테고리",
+    name: "제품명",
+    price: "20,00000원",
+    likes: 12,
+  },
 ];
 
 const RankingList = () => {
