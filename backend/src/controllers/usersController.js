@@ -1,9 +1,16 @@
+// controllers/userController.js
+
 const {
   registerUser,
   loginUser,
-  refreshAccessToken,
+  refreshToken,
+  logoutUser,
+  getAccountBalanceByUserId,
+  likeProduct,
+  cancelLikeProduct,
 } = require("../services/usersService");
 
+// 회원가입
 exports.registerUser = async (req, res) => {
   console.log("registerUser called with body:", req.body);
   const { userEmail, userPassword, name, phoneNumber } = req.body;
@@ -56,6 +63,7 @@ exports.loginUser = async (req, res) => {
   }
 };
 
+// 로그아웃
 exports.logoutUser = async (req, res) => {
   console.log("logoutUser called with user id:", req.user.id);
   try {
@@ -68,6 +76,7 @@ exports.logoutUser = async (req, res) => {
   }
 };
 
+// 리프레시 토큰으로 엑세스 토큰 반환
 exports.refreshToken = async (req, res) => {
   console.log("refreshToken called with body:", req.body);
   const { refreshToken } = req.body;
@@ -78,11 +87,41 @@ exports.refreshToken = async (req, res) => {
   }
 
   try {
-    const { accessToken } = await refreshAccessToken(refreshToken);
+    const { accessToken } = await refreshToken(refreshToken);
     console.log("refreshToken successful, new accessToken:", accessToken);
     res.status(200).json({ accessToken });
   } catch (err) {
     console.error("refreshToken error:", err.message);
     res.status(403).json({ message: err.message });
+  }
+};
+
+// 계좌 잔고 조회
+exports.getAccountBalanceByUserId = async (req, res) => {
+  try {
+    const balance = await getAccountBalanceByUserId(req.params.userId);
+    res.status(200).json({ balance });
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+// 좋아요 누르기
+exports.likeProduct = async (req, res) => {
+  try {
+    const user = await likeProduct(req.user.id, req.params.productId);
+    res.status(200).json(user);
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+// 좋아요 취소하기
+exports.cancelLikeProduct = async (req, res) => {
+  try {
+    const user = await cancelLikeProduct(req.user.id, req.params.productId);
+    res.status(200).json(user);
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
   }
 };

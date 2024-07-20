@@ -1,9 +1,9 @@
+// services/userService.js
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { User } = require("../models/User");
 const { makeAccessToken, makeRefreshToken } = require("../utils/makeToken");
-const TokenModel = require("../models/Token");
-const mongoose = require("mongoose");
+const TokenModel = require("./tokenService");
 
 exports.registerUser = async ({
   userEmail,
@@ -74,7 +74,8 @@ exports.loginUser = async ({ userEmail, userPassword }) => {
     id: user._id,
     phoneNumber: user.phoneNumber,
     name: user.name,
-    userEmail: user.userEmail,
+    balance: user.account.balance,
+    favorites: user.favorites,
   };
 
   const payload = {
@@ -148,4 +149,34 @@ exports.logoutUser = async (userId) => {
   console.log("logoutUser service called with userId:", userId);
   await TokenModel.deleteToken(userId);
   console.log("logoutUser service successful");
+};
+
+exports.getAccountBalanceByUserId = async (userId) => {
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new Error("User not found");
+  }
+  return user.account.balance;
+};
+
+exports.likeProduct = async (userId, productId) => {
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new Error("User not found");
+  }
+  user.favorites.push({ productId });
+  await user.save();
+  return user;
+};
+
+exports.cancelLikeProduct = async (userId, productId) => {
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new Error("User not found");
+  }
+  user.favorites = user.favorites.filter(
+    (favorite) => favorite.productId.toString() !== productId
+  );
+  await user.save();
+  return user;
 };
