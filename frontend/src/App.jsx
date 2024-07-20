@@ -1,35 +1,27 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import NavigationBar from './components/NavigationBar';
+import ShopPage from './pages/shop/ShopPage';
+import AddPage from './pages/add/AddPage';
+import MyPage from './pages/my/MyPage';
+import HomePage from './pages/home/HomePage';
+import AlarmPage from './pages/home/AlarmPage';
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <div className="App">
+      <BrowserRouter>
+        <Routes>
+          <Route element={<NavigationBar />}>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/alarm" element={<AlarmPage />} />
+            <Route path="/shop" element={<ShopPage />} />
+            <Route path="/add" element={<AddPage />} />
+            <Route path="/my" element={<MyPage />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </div>
+  );
 }
 
-export default App
+export default App;
