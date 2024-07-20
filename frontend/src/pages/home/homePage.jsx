@@ -68,7 +68,6 @@ const HomePage = () => {
               <ProductCard key={product.id} product={product} />
             ))}
           </Products>
-          <Ranking />
         </main>
       </Container>
     </>
