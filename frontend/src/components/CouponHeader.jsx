@@ -1,13 +1,13 @@
-import styled from "styled-components";
+import styled from 'styled-components';
 
 const CouponHeader = () => {
   return (
     <Header>
-      <HeaderContent>
-        <span>앱 설치하고 15% 할인쿠폰 받기</span>
-        <Spacer />
-        <InstallButton>앱 설치</InstallButton>
-      </HeaderContent>
+      <Container>
+        <LogoImageContainer />
+        <Text>앱 설치하고 15% 할인쿠폰 받기</Text>
+      </Container>
+      <InstallButton>앱 설치</InstallButton>
     </Header>
   );
 };
@@ -15,33 +15,41 @@ const CouponHeader = () => {
 export default CouponHeader;
 
 const Header = styled.header`
-  background-color: #000;
-  color: #fff;
-  padding: 15px;
+  height: 54px;
+  background-color: black;
+  color: white;
+  padding: 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
 `;
 
-const HeaderContent = styled.div`
-  text-align: center;
-  margin-left: 10px;
+const Container = styled.div`
   display: flex;
-  justify-content: space-between;
+  flex-direction: row;
   align-items: center;
-  width: 100%;
 `;
 
-const Spacer = styled.div`
-  flex-grow: 1;
+const LogoImageContainer = styled.div`
+  width: 30px;
+  height: 30px;
+  background-color: #ccc;
+  border-radius: 5px;
+  border: 1px solid white;
+  margin-right: 10px;
+`;
+
+const Text = styled.h1`
+  font-family: 'Freesentation-6SemiBold', sans-serif;
+  font-size: 16px;
 `;
 
 const InstallButton = styled.button`
-  background-color: #fff;
-  color: #000;
-  border: none;
+  font-family: 'Freesentation-6SemiBold', sans-serif;
+  background-color: white;
+  color: black;
   padding: 5px 10px;
-  cursor: pointer;
   font-size: 12px;
   border-radius: 15px;
+  border: none;
 `;

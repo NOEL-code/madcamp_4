@@ -1,74 +1,110 @@
+import { useState } from 'react';
 import styled from 'styled-components';
-import CouponHeader from './components/CouponHeader';
-import ProductCard from './components/ProductCard';
+import CouponHeader from '../../components/CouponHeader';
+import ProductCard from '../../components/ProductCard';
+import { useNavigate } from 'react-router-dom';
+
+import { IoIosArrowDown } from 'react-icons/io';
+import { IoIosArrowUp } from 'react-icons/io';
+import { BiSortAlt2 } from 'react-icons/bi';
+import { FaCheck } from 'react-icons/fa6';
+
+import clothImage from '../../assets/images/cloth.png';
+import bagImage from '../../assets/images/bag.png';
+import watchImage from '../../assets/images/watch.png';
+import jewelryImage from '../../assets/images/jewelry.png';
+import techImage from '../../assets/images/tech.png';
+import livingImage from '../../assets/images/living.png';
+import artImage from '../../assets/images/art.png';
+import foodImage from '../../assets/images/food.png';
 
 const categories = [
-  '의류',
-  '가방',
-  '시계',
-  '주얼리',
-  '테크',
-  '가구/리빙',
-  '미술품',
-  '푸드',
-];
-
-const products = [
-  {
-    id: 1,
-    category: '카테고리',
-    name: '제품명',
-    price: '20,00000원',
-    likes: 12,
-  },
-  {
-    id: 2,
-    category: '카테고리',
-    name: '제품명',
-    price: '20,00000원',
-    likes: 12,
-  },
+  { name: '의류', image: clothImage },
+  { name: '가방', image: bagImage },
+  { name: '시계', image: watchImage },
+  { name: '주얼리', image: jewelryImage },
+  { name: '테크', image: techImage },
+  { name: '가구/리빙', image: livingImage },
+  { name: '미술품', image: artImage },
+  { name: '푸드', image: foodImage },
 ];
 
 const ShopPage = () => {
+  const [selectedOption, setSelectedOption] = useState('카테고리');
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const handleOptionClick = (option) => {
+    setSelectedOption(option);
+    setIsDropdownOpen(false);
+  };
+
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
+
+  const handleProductCardClick = () => {
+    navigate('/detail');
+  };
+
   return (
     <>
       <Container>
         <CouponHeader />
         <main>
-          <Title>AUCTION</Title>
-          <SearchContainer>
-            <SearchInput type="text" placeholder="검색" />
-          </SearchContainer>
+          <LogoContainer>
+            <Logo>AUCTION</Logo>
+          </LogoContainer>
+          <SearchInput type="text" placeholder="검색" />
           <Categories>
             {categories.map((category, index) => (
               <CategoryContainer key={index}>
                 <Category>
-                  <img src="./assets/images/react.svg" />
+                  <CategoryImage
+                    src={category.image}
+                    category={category.name}
+                  />
                 </Category>
-                <CategoryText>{category}</CategoryText>
+                <CategoryText>{category.name}</CategoryText>
               </CategoryContainer>
             ))}
           </Categories>
           <Divider />
           <FilterContainer>
-            <FilterSelect>
-              <option>카테고리</option>
-              {categories.map((category, index) => (
-                <option key={index} value={category}>
-                  {category}
-                </option>
-              ))}
-            </FilterSelect>
-            <Sort>인기순</Sort>
+            <CategoryOptionContainer onClick={toggleDropdown}>
+              <CategoryOption>{selectedOption}</CategoryOption>
+              {isDropdownOpen ? <ArrowUpIcon /> : <ArrowDownIcon />}
+              {isDropdownOpen && (
+                <DropdownMenu>
+                  {categories.map((category, index) => (
+                    <div key={index}>
+                      <DropdownItem
+                        onClick={() => handleOptionClick(category.name)}
+                      >
+                        {category.name}
+                        {selectedOption === category && <CheckIcon />}
+                      </DropdownItem>
+                      {index < categories.length - 1 && <DropdownDivider />}
+                    </div>
+                  ))}
+                </DropdownMenu>
+              )}
+            </CategoryOptionContainer>
+            <SortContainer>
+              <SortOption>인기순</SortOption>
+              <SortIcon />
+            </SortContainer>
           </FilterContainer>
           <Products>
-            {products.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
+            <ProductCard onClick={handleProductCardClick} />
+            <ProductCard onClick={handleProductCardClick} />
+            <ProductCard onClick={handleProductCardClick} />
+            <ProductCard onClick={handleProductCardClick} />
           </Products>
         </main>
       </Container>
+      <Divider />
+      <Footer>Copyright @madcamp</Footer>
     </>
   );
 };
@@ -77,28 +113,126 @@ export default ShopPage;
 const Container = styled.div`
   max-width: 100%;
   margin: 0;
-  display: grid;
-  grid-template-rows: auto 1fr auto;
-  height: 100vh;
-  font-family: Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
 `;
 
-const Title = styled.h1`
+const LogoContainer = styled.div`
+  position: relative;
+  width: 100%;
+  height: 50px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+`;
+
+const Logo = styled.h1`
   color: #a0153e;
-  text-align: start;
-  margin-left: 24px;
+  font-family: 'Freesentation-9Black', sans-serif;
+  font-size: 24px;
 `;
 
-const SearchContainer = styled.div`
-  margin-left: 25px;
+const CategoryImage = styled.img`
+  width: ${(props) => {
+    switch (props.category) {
+      case '의류':
+        return '100%';
+      case '가방':
+        return '90%';
+      case '테크':
+        return '80%';
+      case '가구/리빙':
+        return '55%';
+      case '미술품':
+        return '60%';
+      case '푸드':
+        return '85%';
+      case '시계':
+        return '80%';
+      default:
+        return '80%';
+    }
+  }};
+  height: ${(props) => {
+    switch (props.category) {
+      case '의류':
+        return '100%';
+      case '가방':
+        return '90%';
+      case '테크':
+        return '80%';
+      case '가구/리빙':
+        return '70%';
+      case '미술품':
+        return '80%';
+      case '푸드':
+        return '85%';
+      case '시계':
+        return '80%';
+      default:
+        return '80%';
+    }
+  }};
+  object-fit: cover;
+  margin-bottom: ${(props) => {
+    switch (props.category) {
+      case '의류':
+        return '0';
+      case '가방':
+        return '23px';
+      case '테크':
+        return '0';
+      case '가구/리빙':
+        return '0';
+      case '미술품':
+        return '0';
+      case '푸드':
+        return '0';
+      case '시계':
+        return '0';
+      default:
+        return '0';
+    }
+  }};
+  padding: ${(props) => {
+    switch (props.category) {
+      case '의류':
+        return '5px';
+      case '가방':
+        return '3px';
+      case '테크':
+        return '2px';
+      case '가구/리빙':
+        return '1px';
+      case '미술품':
+        return '4px';
+      case '푸드':
+        return '6px';
+      case '시계':
+        return '2px';
+      default:
+        return '0';
+    }
+  }};
 `;
 
 const SearchInput = styled.input`
-  width: 85%;
-  padding: 10px;
-  border: 1px solid #ccc;
-  background-color: #d9d9d9;
-  border-radius: 5px;
+  font-family: 'Freesentation-6SemiBold', sans-serif;
+  width: 90%;
+  margin: 0 20px;
+  padding: 10px 15px;
+  border: none;
+  font-size: 14px;
+  background-color: #eeeeee;
+  border-radius: 10px;
+  outline: none;
+
+  &:focus {
+    border: none; /* Add black border on focus */
+  }
 `;
 
 const Categories = styled.div`
@@ -106,7 +240,7 @@ const Categories = styled.div`
   grid-template-columns: 1fr 1fr 1fr 1fr;
   gap: 10px;
   justify-items: center;
-  margin: 10px;
+  margin: 15px 20px 10px 20px;
 `;
 
 const CategoryContainer = styled.div`
@@ -118,24 +252,58 @@ const CategoryContainer = styled.div`
 const Category = styled.div`
   width: 60px;
   height: 60px;
-  border: 1px solid #ccc;
   border-radius: 50%;
   display: flex;
   justify-content: center;
   align-items: center;
   font-size: 12px;
   margin: 5px;
+  background-color: #dddddd;
 `;
 
 const CategoryText = styled.div`
-  margin-top: 5px;
+  font-family: 'Freesentation-6SemiBold', sans-serif;
+  margin-top: 2px;
   font-size: 12px;
 `;
 
-const Divider = styled.hr`
-  border: none;
-  border-top: 1px solid #ccc;
-  margin: 20px 0;
+const DropdownMenu = styled.div`
+  position: absolute;
+  top: 30px;
+  left: 0;
+  width: 73px;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  z-index: 1000;
+`;
+
+const DropdownItem = styled.div`
+  font-family: 'Freesentation-6SemiBold', sans-serif;
+  padding: 5px 7px;
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+const DropdownDivider = styled.div`
+  height: 0.5px;
+  background-color: #ccc;
+`;
+
+const CheckIcon = styled(FaCheck)`
+  font-size: 12px;
+  color: #373a40;
+  margin-left: 5px;
+`;
+
+const Divider = styled.div`
+  width: 100%;
+  height: 1px;
+  background-color: #ccc;
+  margin-top: 20px;
 `;
 
 const FilterContainer = styled.div`
@@ -146,23 +314,65 @@ const FilterContainer = styled.div`
   margin-top: 10px;
 `;
 
-const FilterSelect = styled.select`
-  padding: 5px;
-  border-radius: 10px;
+const CategoryOptionContainer = styled.div`
   border: 1px solid #ccc;
-  background-color: #f8f8f8;
+  border-radius: 15px;
+  padding: 5px 10px;
+  display: flex;
+  flex-direction: row;
+  position: relative;
 `;
 
-const Sort = styled.span`
-  cursor: pointer;
-  font-weight: 500;
+const CategoryOption = styled.h1`
+  font-family: 'Freesentation-6SemiBold', sans-serif;
   font-size: 12px;
+  margin-right: 5px;
+`;
+
+const ArrowDownIcon = styled(IoIosArrowDown)`
+  font-size: 12px;
+  margin-top: 1px;
+  color: #373a40;
+`;
+
+const ArrowUpIcon = styled(IoIosArrowUp)`
+  font-size: 12px;
+  margin-top: 1px;
+  color: #373a40;
+`;
+
+const SortContainer = styled.div`
+  font-family: 'Freesentation-6SemiBold', sans-serif;
+  font-size: 12px;
+  display: flex;
+  flex-direction: row;
+`;
+
+const SortOption = styled.h1`
+  font-family: 'Freesentation-8ExtraBold', sans-serif;
+  font-size: 12px;
+  margin-right: 3px;
+`;
+
+const SortIcon = styled(BiSortAlt2)`
+  font-size: 14px;
+  color: #373a40;
 `;
 
 const Products = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
   gap: 10px;
-  padding: 0 10px;
-  margin-top: 20px;
+  padding: 0 20px;
+  margin-top: 10px;
+  margin-bottom: 80px;
+`;
+
+const Footer = styled.h1`
+  font-family: 'Freesentation-3Light', sans-serif;
+  font-size: 10px;
+  color: #ccc;
+  width: 100%;
+  margin: 60px 0;
+  text-align: center;
 `;

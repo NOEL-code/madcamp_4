@@ -1,11 +1,15 @@
-import { useState } from 'react';
+import { Suspense } from 'react';
 import styled from 'styled-components';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-
 import { PiBell } from 'react-icons/pi';
 import { FaRankingStar } from 'react-icons/fa6';
+import { Canvas } from '@react-three/fiber';
+import { OrbitControls } from '@react-three/drei';
 
+import CouponHeader from '../../components/CouponHeader';
 import RankingCard from '../../components/RankingCard';
+import Gavel from '../../assets/models/Gavel';
 
 const HomePage = () => {
   const [selectedOption, setSelectedOption] = useState('최다 관심순');
@@ -19,14 +23,34 @@ const HomePage = () => {
     navigate('/alarm');
   };
 
+  const handleRankingCardClick = () => {
+    navigate('/detail');
+  };
+
   return (
     <Box>
-      <TopContainer />
+      <CouponHeader />
       <LogoContainer>
         <Logo>AUCTION</Logo>
         <BellIcon onClick={handleBellClick} />
       </LogoContainer>
-      <MiddleContainer />
+      <MiddleContainer>
+        <Canvas
+          style={{ background: '#000' }}
+          gl={{ alpha: true }}
+          camera={{ position: [0, 0, 5], fov: 50 }}
+        >
+          <ambientLight intensity={0.5} />
+          <directionalLight position={[5, 5, 5]} intensity={5.0} />
+          <directionalLight position={[-5, -5, -5]} intensity={5.0} />
+          <Suspense fallback={null}>
+            <group position={[0, -0.3, 0]} scale={[0.7, 0.7, 0.7]}>
+              <Gavel />
+            </group>
+          </Suspense>
+          <OrbitControls autoRotate autoRotateSpeed={1} />
+        </Canvas>
+      </MiddleContainer>
       <RankingContainer>
         <RankingTextContainer>
           <Text>실시간 랭킹</Text>
@@ -47,16 +71,16 @@ const HomePage = () => {
           </Option>
         </OptionContainer>
         <RankingCardContainer>
-          <RankingCard rank={1} />
-          <RankingCard rank={2} />
-          <RankingCard rank={3} />
-          <RankingCard rank={4} />
-          <RankingCard rank={5} />
-          <RankingCard rank={6} />
-          <RankingCard rank={7} />
-          <RankingCard rank={8} />
-          <RankingCard rank={9} />
-          <RankingCard rank={10} />
+          <RankingCard rank={1} onClick={handleRankingCardClick} />
+          <RankingCard rank={2} onClick={handleRankingCardClick} />
+          <RankingCard rank={3} onClick={handleRankingCardClick} />
+          <RankingCard rank={4} onClick={handleRankingCardClick} />
+          <RankingCard rank={5} onClick={handleRankingCardClick} />
+          <RankingCard rank={6} onClick={handleRankingCardClick} />
+          <RankingCard rank={7} onClick={handleRankingCardClick} />
+          <RankingCard rank={8} onClick={handleRankingCardClick} />
+          <RankingCard rank={9} onClick={handleRankingCardClick} />
+          <RankingCard rank={10} onClick={handleRankingCardClick} />
         </RankingCardContainer>
       </RankingContainer>
       <Divider />
@@ -73,13 +97,7 @@ const Box = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-`;
-
-const TopContainer = styled.div`
-  position: relative;
-  width: 100%;
-  height: 54px;
-  background-color: black;
+  overflow-x: hidden;
 `;
 
 const LogoContainer = styled.div`
@@ -106,7 +124,6 @@ const BellIcon = styled(PiBell)`
 const MiddleContainer = styled.div`
   width: 100%;
   height: 400px;
-  background-color: #ccc;
 `;
 
 const RankingContainer = styled.div`
