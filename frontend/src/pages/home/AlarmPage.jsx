@@ -2,6 +2,8 @@ import { useState } from 'react';
 import styled from 'styled-components';
 import { PiBell } from 'react-icons/pi';
 
+import CouponHeader from '../../components/CouponHeader';
+
 const AlarmPage = () => {
   const [selectedOption, setSelectedOption] = useState('전체');
 
@@ -11,7 +13,7 @@ const AlarmPage = () => {
 
   return (
     <Box>
-      <TopContainer />
+      <CouponHeader />
       <LogoContainer>
         <Logo>AUCTION</Logo>
         <BellIcon />
@@ -49,13 +51,6 @@ const Box = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-`;
-
-const TopContainer = styled.div`
-  position: relative;
-  width: 100%;
-  height: 54px;
-  background-color: black;
 `;
 
 const LogoContainer = styled.div`

@@ -4,15 +4,16 @@ import PropTypes from 'prop-types';
 import { MdOutlineFavorite } from 'react-icons/md';
 import { MdOutlineFavoriteBorder } from 'react-icons/md';
 
-const RankingCard = ({ rank }) => {
+const RankingCard = ({ rank, onClick }) => {
   const [isFavorite, setIsFavorite] = useState(false);
 
-  const toggleFavorite = () => {
+  const toggleFavorite = (e) => {
+    e.stopPropagation();
     setIsFavorite(!isFavorite);
   };
 
   return (
-    <CardContainer>
+    <CardContainer onClick={onClick}>
       <ImageContainer>
         <RankContainer>{rank}</RankContainer>
       </ImageContainer>
@@ -32,6 +33,7 @@ const RankingCard = ({ rank }) => {
 
 RankingCard.propTypes = {
   rank: PropTypes.number.isRequired,
+  onClick: PropTypes.func.isRequired,
 };
 
 export default RankingCard;
@@ -85,10 +87,11 @@ const FavoriteBorderIcon = styled(MdOutlineFavoriteBorder)`
 const FavoriteCount = styled.h1`
   font-family: 'Freesentation-3Light', sans-serif;
   font-size: 12px;
+  color: #ccc;
 `;
 
 const Name = styled.h1`
-  font-family: 'Freesentation-5Medium', sans-serif;
+  font-family: 'Freesentation-3Light', sans-serif;
   font-size: 12px;
   padding: 0 3px;
   margin-top: 1px;
@@ -106,6 +109,7 @@ const InfoText = styled.h1`
   font-size: 6px;
   padding: 0 3px;
   margin-top: 1px;
+  color: #454545;
 `;
 
 const RankContainer = styled.div`
