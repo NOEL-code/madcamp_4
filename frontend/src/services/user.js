@@ -17,8 +17,10 @@ export const login = async (userEmail, userPassword) => {
   const accessToken = response.headers.authorization;
   const refreshToken = response.headers['refresh-token'];
   const userInfo = response.data.response;
+  
   console.log(accessToken);
   store.dispatch(loginSuccess(userInfo));
+
   setCookie('accessToken', accessToken, { path: '/' });
   setCookie('refreshToken', refreshToken, { path: '/' });
   console.log('set Token', response);

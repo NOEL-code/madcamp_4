@@ -1,5 +1,3 @@
-// services/productService.js
-
 const Product = require("../models/Product");
 const User = require("../models/User");
 // 상품 전체 조회
