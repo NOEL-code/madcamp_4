@@ -6,6 +6,8 @@ import MyPage from './pages/my/MyPage';
 import HomePage from './pages/home/HomePage';
 import AlarmPage from './pages/home/AlarmPage';
 import DetailPage from './pages/detail/DetailPage';
+import LoginPage from './pages/users/LoginPage';
+import RegisterPage from './pages/users/RegisterPage';
 
 function App() {
   return (
@@ -20,6 +22,8 @@ function App() {
             <Route path="/my" element={<MyPage />} />
           </Route>
           <Route path="/detail" element={<DetailPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
         </Routes>
       </BrowserRouter>
     </div>

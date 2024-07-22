@@ -1,0 +1,125 @@
+import { useState } from 'react';
+import styled from 'styled-components';
+import { IoClose } from 'react-icons/io5';
+import { useNavigate } from 'react-router-dom';
+import CouponHeader from '../../components/CouponHeader';
+
+const LoginPage = () => {
+  const navigate = useNavigate();
+  const [id, setId] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleCloseClick = () => {
+    navigate(-1);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+  };
+
+  const handleRegisterClick = () => {
+    navigate('/register'); // 회원가입 페이지로 이동
+  };
+
+  return (
+    <Box>
+      <CouponHeader />
+      <LogoContainer>
+        <Logo>AUCTION</Logo>
+        <CloseIcon onClick={handleCloseClick} />
+      </LogoContainer>
+      <Form onSubmit={handleSubmit}>
+        <Input
+          type="text"
+          placeholder="아이디"
+          value={id}
+          onChange={(e) => setId(e.target.value)}
+        />
+        <Input
+          type="password"
+          placeholder="비밀번호"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <Button type="submit">로그인</Button>
+      </Form>
+      <RegisterText onClick={handleRegisterClick}>회원가입</RegisterText>
+    </Box>
+  );
+};
+
+export default LoginPage;
+
+const Box = styled.div`
+  position: absolute;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  overflow-x: hidden;
+`;
+
+const LogoContainer = styled.div`
+  position: relative;
+  width: 100%;
+  height: 50px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+`;
+
+const Logo = styled.h1`
+  color: #a0153e;
+  font-family: 'Freesentation-9Black', sans-serif;
+  font-size: 24px;
+`;
+
+const CloseIcon = styled(IoClose)`
+  font-size: 24px;
+  cursor: pointer;
+`;
+
+const Form = styled.form`
+  display: flex;
+  flex-direction: column;
+  padding: 25px 40px;
+  margin-top: 200px;
+`;
+
+const Input = styled.input`
+  padding: 10px 20px;
+  margin: 5px 0;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+  font-family: 'Freesentation-6SemiBold', sans-serif;
+`;
+
+const Button = styled.button`
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 10px;
+  border: none;
+  background-color: #a0153e;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+
+  font-family: 'Freesentation-6SemiBold', sans-serif;
+`;
+
+const RegisterText = styled.h1`
+  text-align: right;
+  font-family: 'Freesentation-6SemiBold', sans-serif;
+  font-size: 16px;
+  padding-right: 40px;
+  margin-top: -10px;
+  text-decoration: underline;
+
+  &:hover {
+    cursor: pointer;
+    color: #ff4c4c;
+  }
+`;
