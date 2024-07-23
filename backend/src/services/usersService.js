@@ -2,8 +2,8 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { User } = require("../models/User");
 const {
-  generateAccessToken,
-  generateRefreshToken,
+  makeAccessToken,
+  makeRefreshToken,
   verifyRefreshToken,
 } = require("../utils/auth");
 const TokenModel = require("./tokenService");
@@ -38,8 +38,8 @@ exports.registerUser = async ({
 
   await user.save();
 
-  const accessToken = generateAccessToken(user._id);
-  const refreshToken = generateRefreshToken(user._id);
+  const accessToken = makeAccessToken(user._id);
+  const refreshToken = makeRefreshToken(user._id);
 
   await TokenModel.updateRefresh({
     user_id: user.id,
@@ -75,8 +75,11 @@ exports.loginUser = async ({ userEmail, userPassword }) => {
     favorites: user.favorites,
   };
 
-  const accessToken = generateAccessToken(user._id);
-  const refreshToken = generateRefreshToken(user._id);
+  const payload = {
+    id: user.id,
+  };
+  const accessToken = makeAccessToken(payload);
+  const refreshToken = makeRefreshToken(payload);
 
   await TokenModel.updateRefresh({
     user_id: user.id,
@@ -102,7 +105,7 @@ exports.refreshAccessToken = async (refreshToken) => {
       throw new Error("유효하지 않은 리프레시 토큰");
     }
 
-    const newAccessToken = generateAccessToken(decoded.userId);
+    const newAccessToken = makeAccessToken(decoded.userId);
     console.log(
       "refreshAccessToken service successful, new accessToken:",
       newAccessToken

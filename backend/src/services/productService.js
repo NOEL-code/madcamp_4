@@ -87,9 +87,9 @@ exports.biddingProduct = async (productId, bidData) => {
   product.bidHistory.push(bidData);
   if (bidData.bidAmount > product.price) {
     product.price = bidData.bidAmount;
-    product.winnerId = bidData.bidderId;
+    // Note: winnerId will not be set here anymore.
   } else {
-    throw new Error("Must over exist bid price ");
+    throw new Error("Bid amount must be higher than the current price");
   }
   return await product.save();
 };
@@ -104,7 +104,7 @@ exports.closeBid = async (productId, userId) => {
     throw new Error("Unauthorized");
   }
 
-  // 가장 높은 입찰 금액을 찾기
+  // Find the highest bid
   let highestBid = 0;
   let highestBidderId = null;
   for (const bid of product.bidHistory) {
@@ -115,10 +115,12 @@ exports.closeBid = async (productId, userId) => {
   }
 
   if (highestBidderId) {
-    product.winnerId = highestBidderId; // 낙찰받은 사람의 ID 설정
+    product.winnerId = highestBidderId; // Set the winnerId
+  } else {
+    throw new Error("No bids available to close the auction");
   }
 
-  product.dueDate = new Date(); // 낙찰 날짜 설정
+  product.dueDate = new Date(); // Set the close date
   return await product.save();
 };
 

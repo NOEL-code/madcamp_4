@@ -22,12 +22,14 @@ exports.cancelLikeProduct = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
-
-exports.getUserLikeList = async (req, res) => {
+// controllers/likeController.js
+exports.getUserLikes = async (req, res) => {
   try {
-    const likeList = await getUserLikeList(req.user.id);
-    res.status(200).json(likeList);
-  } catch (err) {
+    const userId = req.user.id;
+    const products = await getUserLikeList(userId);
+    res.status(200).json(products);
+  } catch (error) {
+    console.error("Error in getUserLikes controller:", error);
     res.status(500).json({ message: "Server error" });
   }
 };

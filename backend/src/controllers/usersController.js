@@ -5,7 +5,6 @@ const {
   logoutUser,
   getAccountBalanceByUserId,
 } = require("../services/usersService");
-const { verifyRefreshToken, generateAccessToken } = require("../utils/auth");
 
 // 회원가입
 exports.registerUser = async (req, res) => {
@@ -85,9 +84,9 @@ exports.refreshToken = async (req, res) => {
   }
 
   try {
-    const newAccessToken = await refreshAccessToken(refreshToken);
-    console.log("refreshToken successful, new accessToken:", newAccessToken);
-    res.status(200).json(newAccessToken);
+    const accessToken = await refreshAccessToken(refreshToken);
+    console.log("refreshToken successful, new accessToken:", accessToken);
+    res.status(200).json({ accessToken });
   } catch (err) {
     console.error("refreshToken error:", err.message);
     res.status(403).json({ message: err.message });
