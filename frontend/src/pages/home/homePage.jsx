@@ -1,6 +1,5 @@
-import { Suspense } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PiBell } from 'react-icons/pi';
 import { FaRankingStar } from 'react-icons/fa6';
@@ -10,9 +9,12 @@ import { OrbitControls } from '@react-three/drei';
 import CouponHeader from '../../components/CouponHeader';
 import RankingCard from '../../components/RankingCard';
 import Gavel from '../../assets/models/Gavel';
+import { getProducts } from '../../services/product';
 
 const HomePage = () => {
   const [selectedOption, setSelectedOption] = useState('최다 관심순');
+  const [products, setProducts] = useState([]);
+  const [sortedProducts, setSortedProducts] = useState([]);
   const navigate = useNavigate();
 
   const handleOptionClick = (option) => {
@@ -23,9 +25,32 @@ const HomePage = () => {
     navigate('/alarm');
   };
 
-  const handleRankingCardClick = () => {
-    navigate('/detail');
+  const handleRankingCardClick = (productId) => {
+    navigate(`/detail/${productId}`);
   };
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      const fetchedProducts = await getProducts();
+      setProducts(fetchedProducts);
+    };
+
+    fetchProducts();
+  }, []);
+
+  useEffect(() => {
+    const sortProducts = () => {
+      let sorted;
+      if (selectedOption === '최다 관심순') {
+        sorted = [...products].sort((a, b) => b.likes - a.likes);
+      } else if (selectedOption === '높은 응찰가순') {
+        sorted = [...products].sort((a, b) => b.price - a.price);
+      }
+      setSortedProducts(sorted);
+    };
+
+    sortProducts();
+  }, [selectedOption, products]);
 
   return (
     <Box>
@@ -71,16 +96,14 @@ const HomePage = () => {
           </Option>
         </OptionContainer>
         <RankingCardContainer>
-          <RankingCard rank={1} onClick={handleRankingCardClick} />
-          <RankingCard rank={2} onClick={handleRankingCardClick} />
-          <RankingCard rank={3} onClick={handleRankingCardClick} />
-          <RankingCard rank={4} onClick={handleRankingCardClick} />
-          <RankingCard rank={5} onClick={handleRankingCardClick} />
-          <RankingCard rank={6} onClick={handleRankingCardClick} />
-          <RankingCard rank={7} onClick={handleRankingCardClick} />
-          <RankingCard rank={8} onClick={handleRankingCardClick} />
-          <RankingCard rank={9} onClick={handleRankingCardClick} />
-          <RankingCard rank={10} onClick={handleRankingCardClick} />
+          {sortedProducts.map((product, index) => (
+            <RankingCard
+              key={product._id}
+              rank={index + 1}
+              product={product}
+              onClick={() => handleRankingCardClick(product._id)}
+            />
+          ))}
         </RankingCardContainer>
       </RankingContainer>
       <Divider />

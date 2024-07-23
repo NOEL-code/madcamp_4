@@ -14,8 +14,8 @@ const authenticateToken = (req, res, next) => {
       console.log("Token verification failed", err);
       return res.sendStatus(403); // 토큰이 유효하지 않은 경우 403 반환
     }
-    console.log("Token verified successfully", user);
     req.user = user.user; // 여기서 user.user로 설정
+    console.log("req.user set to:", req.user); // 로그 추가
     next();
   });
 };

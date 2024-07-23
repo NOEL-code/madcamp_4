@@ -20,7 +20,5 @@ router.get(
   authenticateToken,
   getAccountBalanceByUserId
 ); // 계좌 잔고 조회
-router.post("/like/:productId", authenticateToken, likeProduct); // 좋아요 누르기
-router.delete("/like/:productId", authenticateToken, cancelLikeProduct); // 좋아요 취소하기
 
 module.exports = router;

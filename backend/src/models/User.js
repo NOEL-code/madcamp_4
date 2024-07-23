@@ -2,17 +2,6 @@ const mongoose = require("mongoose");
 const { Schema } = mongoose; // mongoose에서 Schema를 가져옵니다.
 
 // 즐겨찾기 항목 스키마 정의
-const favoriteItemSchema = new Schema({
-  productId: {
-    type: Schema.Types.ObjectId,
-    required: true,
-    ref: "Product",
-  },
-  addedAt: {
-    type: Date,
-    default: Date.now,
-  },
-});
 
 // 유저 스키마 정의
 const UserSchema = new Schema({
@@ -20,7 +9,6 @@ const UserSchema = new Schema({
   userPassword: String,
   name: String,
   phoneNumber: String,
-  favorites: [favoriteItemSchema],
   account: {
     balance: {
       type: Number,

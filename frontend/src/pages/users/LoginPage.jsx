@@ -2,12 +2,14 @@ import { useState } from 'react';
 import styled from 'styled-components';
 import { IoClose } from 'react-icons/io5';
 import { useNavigate } from 'react-router-dom';
+import { login } from '../../services/user';
 import CouponHeader from '../../components/CouponHeader';
 
 const LoginPage = () => {
   const navigate = useNavigate();
-  const [id, setId] = useState('');
-  const [password, setPassword] = useState('');
+  const [userEmail, setUserEmail] = useState('');
+  const [userPassword, setUserPassword] = useState('');
+  const [error, setError] = useState(null);
 
   const handleCloseClick = () => {
     navigate(-1);
@@ -15,6 +17,14 @@ const LoginPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    try {
+      await login(userEmail, userPassword);
+      navigate('/'); // 로그인 후 메인 페이지로 이동
+    } catch (err) {
+      console.log(err);
+      console.log(typeof err);
+      setError(err.toString());
+    }
   };
 
   const handleRegisterClick = () => {
@@ -32,15 +42,16 @@ const LoginPage = () => {
         <Input
           type="text"
           placeholder="아이디"
-          value={id}
-          onChange={(e) => setId(e.target.value)}
+          value={userEmail}
+          onChange={(e) => setUserEmail(e.target.value)}
         />
         <Input
           type="password"
           placeholder="비밀번호"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          value={userPassword}
+          onChange={(e) => setUserPassword(e.target.value)}
         />
+        {error && <ErrorText>{error}</ErrorText>}
         <Button type="submit">로그인</Button>
       </Form>
       <RegisterText onClick={handleRegisterClick}>회원가입</RegisterText>
@@ -106,7 +117,6 @@ const Button = styled.button`
   color: white;
   font-size: 20px;
   cursor: pointer;
-
   font-family: 'Freesentation-6SemiBold', sans-serif;
 `;
 
@@ -117,9 +127,15 @@ const RegisterText = styled.h1`
   padding-right: 40px;
   margin-top: -10px;
   text-decoration: underline;
-
   &:hover {
     cursor: pointer;
     color: #ff4c4c;
   }
+`;
+
+const ErrorText = styled.p`
+  color: red;
+  font-size: 14px;
+  margin-top: 10px;
+  font-family: 'Freesentation-6SemiBold', sans-serif;
 `;
