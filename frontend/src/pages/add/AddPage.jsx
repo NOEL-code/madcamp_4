@@ -8,6 +8,8 @@ import { FaCamera } from 'react-icons/fa';
 import { saveProduct } from '../../services/product';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import Swal from 'sweetalert2';
+import 'sweetalert2/src/sweetalert2.scss';
 
 const categories = [
   { value: '의류', label: '의류' },
@@ -38,12 +40,19 @@ const AddPage = () => {
     setCategory(selectedOption);
   };
 
+  const handlePriceChange = (e) => {
+    const value = e.target.value.replace(/,/g, '');
+    if (!isNaN(value)) {
+      setPrice(Number(value).toLocaleString());
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const formData = new FormData();
     formData.append('productName', productName);
-    formData.append('price', price);
+    formData.append('price', price.replace(/,/g, ''));
     formData.append('description', description);
     formData.append('dueDate', startDate);
     formData.append('userId', userId);
@@ -55,11 +64,18 @@ const AddPage = () => {
 
     try {
       await saveProduct(formData);
-      alert('Product uploaded successfully!');
+      Swal.fire({
+        icon: 'success',
+        title: '상품이 성공적으로 등록되었습니다!',
+      });
       navigate('/');
     } catch (err) {
       console.error(err);
-      alert('Error uploading product');
+      Swal.fire({
+        icon: 'error',
+        title:
+          '상품을 업로드하는 도중 오류가 발생하였습니다. 다시 시도해주세요.',
+      });
     }
   };
 
@@ -115,7 +131,7 @@ const AddPage = () => {
           type="text"
           placeholder="시작가를 입력하세요"
           value={price}
-          onChange={(e) => setPrice(e.target.value)}
+          onChange={handlePriceChange}
         />
         <Text>상세 정보</Text>
         <DetailsTextArea
@@ -253,7 +269,7 @@ const DetailsTextArea = styled.textarea`
 const Button = styled.button`
   font-family: 'Freesentation-6SemiBold', sans-serif;
   width: 90%;
-  margin: 10px 20px 20px 20px;
+  margin: 10px 100px 70px 20px;
   padding: 10px 15px;
   border: none;
   font-size: 14px;

@@ -1,24 +1,21 @@
 const jwt = require("jsonwebtoken");
 
-// 액세스 토큰 생성 함수
-exports.generateAccessToken = (userId) => {
-  const payload = { userId };
-  const accessToken = jwt.sign(payload, process.env.JWT_SECRET, {
-    expiresIn: "1h", // 액세스 토큰 유효기간
-  });
-  return accessToken;
+exports.makeAccessToken = (payload) => {
+  console.log("액세스 토큰 생성 시작:", payload);
+  const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "1h" });
+  console.log("액세스 토큰 생성 완료:", token);
+  return token;
 };
 
-// 리프레시 토큰 생성 함수
-exports.generateRefreshToken = (userId) => {
-  const payload = { userId };
-  const refreshToken = jwt.sign(payload, process.env.JWT_REFRESH_SECRET, {
-    expiresIn: "7d", // 리프레시 토큰 유효기간
+exports.makeRefreshToken = (payload) => {
+  console.log("리프레시 토큰 생성 시작:", payload);
+  const token = jwt.sign(payload, process.env.JWT_REFRESH_SECRET, {
+    expiresIn: "7d",
   });
-  return refreshToken;
+  console.log("리프레시 토큰 생성 완료:", token);
+  return token;
 };
 
-// 리프레시 토큰 검증 함수
 exports.verifyRefreshToken = (token) => {
   return new Promise((resolve, reject) => {
     jwt.verify(token, process.env.JWT_REFRESH_SECRET, (err, decoded) => {

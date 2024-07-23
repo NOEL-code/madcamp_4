@@ -22,7 +22,12 @@ exports.cancelLikeProduct = async (userId, productId) => {
 };
 
 exports.getUserLikeList = async (userId) => {
-  const likeList = await Like.find({ userId }).populate("productId");
-  const products = likeList.map((like) => like.productId);
-  return products;
+  try {
+    const likeList = await Like.find({ userId }).populate("productId");
+    const products = likeList.map((like) => like.productId);
+    return products;
+  } catch (error) {
+    console.error("Error fetching user like list:", error);
+    throw new Error("Failed to fetch user like list");
+  }
 };

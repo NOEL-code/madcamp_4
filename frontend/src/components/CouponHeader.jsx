@@ -1,13 +1,22 @@
 import styled from 'styled-components';
+import Swal from 'sweetalert2';
+import 'sweetalert2/dist/sweetalert2.min.css';
 
 const CouponHeader = () => {
+  const handleInstallClick = () => {
+    Swal.fire({
+      icon: 'info',
+      title: '아직 준비 중입니다.',
+    });
+  };
+
   return (
     <Header>
       <Container>
         <LogoImageContainer />
         <Text>앱 설치하고 15% 할인쿠폰 받기</Text>
       </Container>
-      <InstallButton>앱 설치</InstallButton>
+      <InstallButton onClick={handleInstallClick}>앱 설치</InstallButton>
     </Header>
   );
 };
@@ -52,4 +61,8 @@ const InstallButton = styled.button`
   font-size: 12px;
   border-radius: 15px;
   border: none;
+  cursor: pointer;
+  &:hover {
+    background-color: #f0f0f0;
+  }
 `;

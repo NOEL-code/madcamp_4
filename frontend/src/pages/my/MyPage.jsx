@@ -75,7 +75,7 @@ const MyPage = () => {
           break;
         case '나의 관심 상품':
         default:
-          products = await getLikedProductListByUserId(userInfo.id);
+          products = await getLikedProductListByUserId();
           break;
       }
       setProducts(uniqueProducts(products));

@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { IoClose } from 'react-icons/io5';
 import { useNavigate, useParams } from 'react-router-dom';
 import Slider from 'react-slick';
+import Swal from 'sweetalert2';
 import CouponHeader from '../../components/CouponHeader';
 import {
   getProductById,
@@ -12,6 +13,7 @@ import {
 import { useSelector } from 'react-redux';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
+import withReactContent from 'sweetalert2-react-content';
 
 const DetailPage = () => {
   const [selectedOption, setSelectedOption] = useState('현황');
@@ -19,6 +21,7 @@ const DetailPage = () => {
   const navigate = useNavigate();
   const { productId } = useParams();
   const userInfo = useSelector((state) => state.user.userInfo);
+  const SwalWithReact = withReactContent(Swal);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -45,24 +48,39 @@ const DetailPage = () => {
     try {
       const bidData = { bidAmount: 10000, bidderId: userInfo.id }; // 예시 데이터
       await biddingProduct(productId, bidData);
-      alert('응찰에 성공하였습니다.');
+      SwalWithReact.fire({
+        icon: 'success',
+        title: '응찰에 성공하였습니다.',
+      });
     } catch (error) {
       console.error('Failed to bid:', error);
-      alert('응찰에 실패하였습니다.');
+      SwalWithReact.fire({
+        icon: 'error',
+        title: '응찰에 실패하였습니다.',
+      });
     }
   };
 
   const handleCloseBidClick = async () => {
     if (!product.bidHistory || product.bidHistory.length === 0) {
-      alert('입찰 내역이 없어서 낙찰할 수 없습니다.');
+      SwalWithReact.fire({
+        icon: 'warning',
+        title: '입찰 내역이 없어서 낙찰할 수 없습니다.',
+      });
       return;
     }
     try {
       await closeBid(productId);
-      alert('낙찰이 완료되었습니다.');
+      SwalWithReact.fire({
+        icon: 'success',
+        title: '낙찰이 완료되었습니다.',
+      });
     } catch (error) {
       console.error('Failed to close bid:', error);
-      alert('낙찰에 실패하였습니다.');
+      SwalWithReact.fire({
+        icon: 'error',
+        title: '낙찰에 실패하였습니다.',
+      });
     }
   };
 
