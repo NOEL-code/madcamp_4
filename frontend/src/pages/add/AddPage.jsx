@@ -3,11 +3,65 @@ import styled from 'styled-components';
 import CouponHeader from '../../components/CouponHeader';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-
+import Select from 'react-select';
 import { FaCamera } from 'react-icons/fa';
+import { saveProduct } from '../../services/product';
+import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+
+const categories = [
+  { value: '의류', label: '의류' },
+  { value: '가방', label: '가방' },
+  { value: '시계', label: '시계' },
+  { value: '주얼리', label: '주얼리' },
+  { value: '테크', label: '테크' },
+  { value: '가구/리빙', label: '가구/리빙' },
+  { value: '미술품', label: '미술품' },
+  { value: '푸드', label: '푸드' },
+];
 
 const AddPage = () => {
   const [startDate, setStartDate] = useState(null);
+  const [productName, setProductName] = useState('');
+  const [price, setPrice] = useState('');
+  const [description, setDescription] = useState('');
+  const [images, setImages] = useState([]);
+  const [category, setCategory] = useState(null);
+  const userId = useSelector((state) => state.user.userInfo.id);
+  const navigate = useNavigate();
+
+  const handleFileChange = (e) => {
+    setImages(e.target.files);
+  };
+
+  const handleCategoryChange = (selectedOption) => {
+    setCategory(selectedOption);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData();
+    formData.append('productName', productName);
+    formData.append('price', price);
+    formData.append('description', description);
+    formData.append('dueDate', startDate);
+    formData.append('userId', userId);
+    formData.append('category', category.value);
+
+    for (let i = 0; i < images.length; i++) {
+      formData.append('productPhotos', images[i]);
+    }
+
+    try {
+      await saveProduct(formData);
+      alert('Product uploaded successfully!');
+      navigate('/');
+    } catch (err) {
+      console.error(err);
+      alert('Error uploading product');
+    }
+  };
 
   return (
     <Box>
@@ -18,24 +72,59 @@ const AddPage = () => {
       <Text>경매 등록하기</Text>
       <Divider />
       <Spacer />
-      <Text>사진 업로드</Text>
-      <ImageContainer>
-        <CameraIcon />
-        <CameraCount>0/5</CameraCount>
-      </ImageContainer>
-      <Text>상품명</Text>
-      <NameInput type="text" placeholder="상품명을 입력하세요" />
-      <Text>기한</Text>
-      <StyledDatePicker
-        selected={startDate}
-        onChange={(date) => setStartDate(date)}
-        dateFormat="yyyy/MM/dd"
-        placeholderText="기한을 선택하세요"
-      />
-      <Text>시작가</Text>
-      <NameInput type="text" placeholder="시작가를 입력하세요" />
-      <Text>상세 정보</Text>
-      <DetailsTextArea placeholder="상세 정보를 입력하세요" />
+      <Form onSubmit={handleSubmit}>
+        <Text>사진 업로드</Text>
+        <ImageContainer>
+          <CameraIcon />
+          <CameraCount>{images.length}/10</CameraCount>
+          <input
+            type="file"
+            multiple
+            onChange={handleFileChange}
+            accept="image/*"
+            style={{ display: 'none' }}
+            id="fileInput"
+          />
+          <label htmlFor="fileInput" style={{ cursor: 'pointer' }}>
+            <CameraIcon />
+          </label>
+        </ImageContainer>
+        <Text>상품명</Text>
+        <NameInput
+          type="text"
+          placeholder="상품명을 입력하세요"
+          value={productName}
+          onChange={(e) => setProductName(e.target.value)}
+        />
+        <Text>카테고리</Text>
+        <Select
+          value={category}
+          onChange={handleCategoryChange}
+          options={categories}
+          placeholder="카테고리를 선택하세요"
+        />
+        <Text>기한</Text>
+        <StyledDatePicker
+          selected={startDate}
+          onChange={(date) => setStartDate(date)}
+          dateFormat="yyyy/MM/dd"
+          placeholderText="기한을 선택하세요"
+        />
+        <Text>시작가</Text>
+        <NameInput
+          type="text"
+          placeholder="시작가를 입력하세요"
+          value={price}
+          onChange={(e) => setPrice(e.target.value)}
+        />
+        <Text>상세 정보</Text>
+        <DetailsTextArea
+          placeholder="상세 정보를 입력하세요"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+        />
+        <Button type="submit">등록하기</Button>
+      </Form>
     </Box>
   );
 };
@@ -83,6 +172,11 @@ const Divider = styled.div`
 const Spacer = styled.div`
   width: 100%;
   height: 10px;
+`;
+
+const Form = styled.form`
+  display: flex;
+  flex-direction: column;
 `;
 
 const ImageContainer = styled.div`
@@ -153,5 +247,22 @@ const DetailsTextArea = styled.textarea`
 
   &:focus {
     border: none;
+  }
+`;
+
+const Button = styled.button`
+  font-family: 'Freesentation-6SemiBold', sans-serif;
+  width: 90%;
+  margin: 10px 20px 20px 20px;
+  padding: 10px 15px;
+  border: none;
+  font-size: 14px;
+  background-color: #a0153e;
+  color: white;
+  border-radius: 10px;
+  outline: none;
+  cursor: pointer;
+  &:hover {
+    background-color: #d21d5a;
   }
 `;

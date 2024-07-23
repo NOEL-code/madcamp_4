@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { IoClose } from 'react-icons/io5';
 import { useNavigate } from 'react-router-dom';
+import { join } from '../../services/user';
 import CouponHeader from '../../components/CouponHeader';
 
 const RegisterPage = () => {
@@ -10,7 +11,9 @@ const RegisterPage = () => {
   const [password, setPassword] = useState('');
   const [checkPassword, setCheckPassword] = useState('');
   const [nickname, setNickname] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
   const [passwordMatch, setPasswordMatch] = useState(false);
+  const [error, setError] = useState(null);
 
   const handleCloseClick = () => {
     navigate(-1);
@@ -18,6 +21,24 @@ const RegisterPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!passwordMatch) {
+      setError('비밀번호가 일치하지 않습니다.');
+      return;
+    }
+
+    const userData = {
+      userEmail: id,
+      userPassword: password,
+      name: nickname,
+      phoneNumber: phoneNumber,
+    };
+
+    try {
+      await join(userData);
+      navigate('/login'); // 회원가입 후 로그인 페이지로 이동
+    } catch (err) {
+      setError('이미 가입된 아이디 입니다. 다른 아이디로 가입해주세요.');
+    }
   };
 
   useEffect(() => {
@@ -33,7 +54,6 @@ const RegisterPage = () => {
       </LogoContainer>
       <Form onSubmit={handleSubmit}>
         <Input
-          type="id"
           placeholder="아이디"
           value={id}
           onChange={(e) => setId(e.target.value)}
@@ -58,11 +78,18 @@ const RegisterPage = () => {
           </PasswordChecking>
         )}
         <Input
-          type="nickname"
+          type="text"
           placeholder="닉네임"
           value={nickname}
           onChange={(e) => setNickname(e.target.value)}
         />
+        <Input
+          type="text"
+          placeholder="전화번호"
+          value={phoneNumber}
+          onChange={(e) => setPhoneNumber(e.target.value)}
+        />
+        {error && <ErrorText>{error}</ErrorText>}
         <Button type="submit">회원가입</Button>
       </Form>
     </Box>
@@ -136,4 +163,11 @@ const PasswordChecking = styled.div`
   margin: 10px 0;
   color: ${(props) => (props.match ? 'green' : 'red')};
   text-align: center;
+`;
+
+const ErrorText = styled.p`
+  color: red;
+  font-size: 14px;
+  margin-top: 10px;
+  font-family: 'Freesentation-6SemiBold', sans-serif;
 `;
