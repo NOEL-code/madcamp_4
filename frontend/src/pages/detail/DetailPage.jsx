@@ -4,6 +4,7 @@ import { IoClose } from 'react-icons/io5';
 import { useNavigate, useParams } from 'react-router-dom';
 import Slider from 'react-slick';
 import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
 import CouponHeader from '../../components/CouponHeader';
 import {
   getProductById,
@@ -13,7 +14,6 @@ import {
 import { useSelector } from 'react-redux';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
-import withReactContent from 'sweetalert2-react-content';
 
 const DetailPage = () => {
   const [selectedOption, setSelectedOption] = useState('현황');
@@ -44,20 +44,56 @@ const DetailPage = () => {
     navigate(-1);
   };
 
+  const formatNumberWithCommas = (number) => {
+    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  };
+
   const handleBidClick = async () => {
-    try {
-      const bidData = { bidAmount: 10000, bidderId: userInfo.id }; // 예시 데이터
-      await biddingProduct(productId, bidData);
-      SwalWithReact.fire({
-        icon: 'success',
-        title: '응찰에 성공하였습니다.',
-      });
-    } catch (error) {
-      console.error('Failed to bid:', error);
-      SwalWithReact.fire({
-        icon: 'error',
-        title: '응찰에 실패하였습니다.',
-      });
+    const { value: bidAmount } = await SwalWithReact.fire({
+      title: '응찰 금액 입력',
+      input: 'text',
+      inputLabel: '응찰할 금액을 입력하세요',
+      inputPlaceholder: '금액 입력',
+      showCancelButton: true,
+      inputAttributes: {
+        type: 'text',
+      },
+      inputValue: '',
+      inputValidator: (value) => {
+        const numericValue = parseInt(value.replace(/,/g, ''), 10);
+        if (!numericValue) {
+          return '금액을 입력하세요!';
+        }
+        if (isNaN(numericValue) || numericValue <= 0) {
+          return '유효한 금액을 입력하세요!';
+        }
+        if (numericValue <= product.price) {
+          return `입찰 금액은 시작가보다 높아야 합니다! 현재 시작가: ${formatNumberWithCommas(
+            product.price,
+          )}원`;
+        }
+      },
+      preConfirm: (value) => {
+        const numericValue = parseInt(value.replace(/,/g, ''), 10);
+        return numericValue;
+      },
+    });
+
+    if (bidAmount) {
+      try {
+        const bidData = { bidAmount, bidderId: userInfo.id };
+        await biddingProduct(productId, bidData);
+        SwalWithReact.fire({
+          icon: 'success',
+          title: '응찰에 성공하였습니다.',
+        });
+      } catch (error) {
+        console.error('Failed to bid:', error);
+        SwalWithReact.fire({
+          icon: 'error',
+          title: '응찰에 실패하였습니다.',
+        });
+      }
     }
   };
 
