@@ -5,13 +5,13 @@ import { useNavigate, useParams } from 'react-router-dom';
 import Slider from 'react-slick';
 import CouponHeader from '../../components/CouponHeader';
 import { FaCrown } from 'react-icons/fa';
+import { getProductById, deleteProductById } from '../../services/product';
 import {
-  getProductById,
-  biddingProduct,
-  deleteProductById,
   closeBid,
-  updateProductGameActive, // 서버에서 gameActive 상태를 업데이트하는 함수
-} from '../../services/product';
+  biddingProduct,
+  updateSameScoreBid,
+} from '../../services/bid';
+import { saveOneAlarm } from '../../services/alarm';
 import { useSelector } from 'react-redux';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
@@ -137,7 +137,7 @@ const DetailPage = () => {
     if (highestBids.length > 1) {
       const tiedBidders = highestBids.map((bid) => bid.bidderId);
       try {
-        await updateProductGameActive(product._id); // 서버에서 gameActive 상태 업데이트
+        await updateSameScoreBid(product._id); // 서버에서 gameActive 상태 업데이트
         if (
           tiedBidders.includes(userInfo.id) ||
           product.userId === userInfo.id
