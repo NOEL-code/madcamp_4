@@ -11,8 +11,6 @@ import {
 } from '../../services/product';
 import { logout } from '../../services/user';
 import { logoutSuccess } from '../../store/actions/userActions';
-import { useDispatch } from 'react-redux'; // useDispatch 임포트
-
 import {
   addLikedProduct,
   removeLikedProduct,
@@ -29,10 +27,18 @@ const MyPage = () => {
 
   useEffect(() => {
     if (!userInfo) {
-      navigate('/login');
-      return;
+      navigate('/login'); // 로그인 페이지로 리디렉션
+    } else {
+      const fetchBalance = async () => {
+        try {
+          const userBalance = await getAccountBalance(userInfo.id);
+          setBalance(userBalance);
+        } catch (error) {
+          console.error('Failed to fetch account balance:', error);
+        }
+      };
+      fetchBalance();
     }
-
     const fetchBalance = async () => {
       try {
         const userBalance = await getAccountBalance(userInfo.id);
@@ -60,9 +66,7 @@ const MyPage = () => {
       console.error('Failed to logout:', error);
     }
   };
-
   const fetchProducts = async (option) => {
-    if (!userInfo) return;
     try {
       let products;
       switch (option) {
@@ -112,10 +116,6 @@ const MyPage = () => {
       return !duplicate;
     });
   };
-
-  if (!userInfo) {
-    return null; // userInfo가 없으면 컴포넌트 렌더링을 중단
-  }
 
   return (
     <Box>

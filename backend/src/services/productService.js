@@ -80,20 +80,40 @@ exports.deleteProductById = async (productId) => {
 
 // 입찰하기
 exports.biddingProduct = async (productId, bidData) => {
-  const product = await Product.findById(productId);
-  if (!product) {
-    throw new Error("Product not found");
-  }
-  product.bidHistory.push(bidData);
-  if (bidData.bidAmount > product.price) {
-    product.price = bidData.bidAmount;
-    // Note: winnerId will not be set here anymore.
-  } else {
-    throw new Error("Bid amount must be higher than the current price");
-  }
-  return await product.save();
-};
+  try {
+    const product = await Product.findById(productId);
+    if (!product) {
+      throw new Error("Product not found");
+    }
 
+    const user = await User.findById(bidData.bidderId);
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    const bidDataWithUserName = {
+      bidderId: bidData.bidderId,
+      bidderName: user.name,
+      bidAmount: bidData.bidAmount,
+    };
+
+    console.log(bidDataWithUserName.bidAmount);
+    console.log(product.price);
+
+    product.bidHistory.push(bidDataWithUserName);
+    if (bidDataWithUserName.bidAmount > product.price) {
+      product.price = bidDataWithUserName.bidAmount;
+    } else {
+      throw new Error("Bid amount must be higher than the current price");
+    }
+
+    await product.save();
+    return product;
+  } catch (error) {
+    console.error("Error in biddingProduct service:", error);
+    throw error;
+  }
+};
 // 낙찰하기
 exports.closeBid = async (productId, userId) => {
   const product = await Product.findById(productId);
