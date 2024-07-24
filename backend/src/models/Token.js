@@ -1,20 +1,21 @@
 const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
 
-const TokenSchema = mongoose.Schema(
-  {
-    user_id: {
-      type: String,
-      required: true,
-    },
-    refreshToken: {
-      type: String,
-      required: true,
-    },
-  }
-  // {
-  //   timestamp: true,
-  // }
-);
+const TokenSchema = new Schema({
+  user_id: {
+    type: Schema.Types.ObjectId,
+    required: true,
+    ref: "User",
+  },
+  refreshToken: {
+    type: String,
+    required: true,
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+});
 
 const Token = mongoose.model("Token", TokenSchema);
 

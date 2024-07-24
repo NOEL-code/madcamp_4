@@ -192,6 +192,8 @@ exports.closeBid = async (productId, userId) => {
 
     const saveAlarm = new Alarm(newAlarm);
 
+    product.isClose = 1;
+
     return await product.save();
   } catch (error) {
     console.error("Error in closeBid service:", error);
@@ -315,6 +317,23 @@ exports.getLikedProductListByUserId = async (userId) => {
     return products;
   } catch (error) {
     console.error("Error in getLikedProductListByUserId:", error);
+    throw error;
+  }
+};
+
+exports.updateSameScoreBid = async (productId) => {
+  try {
+    const product = await Product.findByIdAndUpdate(
+      productId,
+      {
+        isClose: 2,
+      },
+      { new: true }
+    );
+
+    return product;
+  } catch (error) {
+    console.error("Error in updateSameScoreBid", error);
     throw error;
   }
 };

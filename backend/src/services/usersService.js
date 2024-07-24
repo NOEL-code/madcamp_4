@@ -98,19 +98,19 @@ exports.refreshAccessToken = async (refreshToken) => {
   console.log("refreshAccessToken service called with:", refreshToken);
   try {
     const decoded = await verifyRefreshToken(refreshToken);
-    const userToken = await TokenModel.findToken(decoded.userId);
+    const userToken = await TokenModel.findToken(decoded.id);
 
     if (!userToken || userToken.refreshToken !== refreshToken) {
       console.error("refreshAccessToken error: 유효하지 않은 리프레시 토큰");
       throw new Error("유효하지 않은 리프레시 토큰");
     }
 
-    const newAccessToken = makeAccessToken(decoded.userId);
+    const newAccessToken = makeAccessToken({ id: decoded.id });
     console.log(
       "refreshAccessToken service successful, new accessToken:",
       newAccessToken
     );
-    return { accessToken: newAccessToken };
+    return newAccessToken;
   } catch (error) {
     console.error("refreshAccessToken service error:", error.message);
     throw new Error("유효하지 않은 리프레시 토큰");
