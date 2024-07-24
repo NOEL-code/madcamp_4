@@ -27,7 +27,6 @@ exports.getProducts = async (req, res) => {
 // 상품 1개 조회
 exports.getProductById = async (req, res) => {
   try {
-    console.log("여긴 아님");
     const product = await getProductById(req.params.productId);
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
@@ -98,8 +97,7 @@ exports.biddingProduct = async (req, res) => {
     const bid = await biddingProduct(req.params.productId, req.body);
     res.status(200).json(bid);
   } catch (err) {
-    console.error("Error in biddingProduct controller:", err);
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Server error" });
   }
 };
 
@@ -109,8 +107,7 @@ exports.closeBid = async (req, res) => {
     const closedBid = await closeBid(req.params.productId, req.user.id);
     res.status(200).json(closedBid);
   } catch (err) {
-    console.error("Error in closeBid controller:", err);
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Server error" });
   }
 };
 
@@ -126,31 +123,24 @@ exports.getUserProducts = async (req, res) => {
 
 // 유저가 낙찰받은 상품 리스트 조회
 exports.getSuccessBidUserProducts = async (req, res) => {
+  const userId = req.params.userId;
+  console.log("Fetching products for userId:", userId);
+
   try {
-    const userId = req.params.id;
     const products = await getSuccessBidUserProducts(userId);
-    if (products.length === 0) {
-      return res
-        .status(202)
-        .json({ message: "No products found for this user" });
-    }
     res.status(200).json(products);
-  } catch (err) {
-    console.error("Error fetching user's success bid products:", err);
-    res.status(500).json({ message: "Server error" });
+  } catch (error) {
+    console.error("Error fetching user's success bid products:", error);
+    res.status(500).json({ message: error.message });
   }
 };
 
 // 유저가 좋아요를 누른 상품 리스트 조회
 exports.getLikedProductListByUserId = async (req, res) => {
-  const { userId } = req.params;
   try {
-    console.log("사용자 ID:", userId); // 로그 추가
-    const products = await getLikedProductListByUserId(userId); // Ensure the user ID is fetched correctly
-    console.log("좋아요 상품 목록 조회 완료"); // 로그 추가
+    const products = await getLikedProductListByUserId(req.params.userId);
     res.status(200).json(products);
   } catch (err) {
-    console.error("Error fetching liked product list:", err);
     res.status(500).json({ message: "Server error" });
   }
 };
