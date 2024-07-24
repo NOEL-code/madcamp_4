@@ -30,6 +30,7 @@ const DetailPage = () => {
     const fetchProduct = async () => {
       try {
         const productData = await getProductById(productId);
+        console.log(productData);
         setProduct(productData);
       } catch (error) {
         console.error('Failed to fetch product:', error);
@@ -142,6 +143,18 @@ const DetailPage = () => {
     }
   };
 
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1; // 월은 0부터 시작하므로 +1
+    const day = date.getDate();
+    return `${year}년 ${month}월 ${day}일`;
+  };
+
+  const formatPrice = (price) => {
+    return `${formatNumberWithCommas(price)}원`;
+  };
+
   if (!product) {
     return <div>Loading...</div>;
   }
@@ -197,7 +210,24 @@ const DetailPage = () => {
         )}
       </TopContainer>
       {selectedOption === '상세 정보' && (
-        <Description>{product.description}</Description>
+        <DetailBox>
+          <DetailContainer>
+            <DetailOption>카테고리</DetailOption>
+            <DetailText>{product.category}</DetailText>
+          </DetailContainer>
+          <DetailContainer>
+            <DetailOption>마감기한</DetailOption>
+            <DetailText>{formatDate(product.dueDate)}</DetailText>
+          </DetailContainer>
+          <DetailContainer>
+            <DetailOption>시작가</DetailOption>
+            <DetailText>{formatPrice(product.price)}</DetailText>
+          </DetailContainer>
+          <DetailContainer>
+            <DetailOption>상세 정보</DetailOption>
+          </DetailContainer>
+          <DetailText>{product.description}</DetailText>
+        </DetailBox>
       )}
       <Modal
         isOpen={isModalOpen}
@@ -325,11 +355,28 @@ const Option2 = styled.h1`
   cursor: pointer;
 `;
 
-const Description = styled.div`
-  font-family: 'Freesentation-6SemiBold', sans-serif;
-  padding: 10px 20px;
-  margin-top: 10px;
+const DetailBox = styled.div`
+  padding: 15px 20px;
+  margin: 10px 20px;
   background-color: #eeeeee;
   border-radius: 10px;
-  color: #454545;
+  display: flex;
+  flex-direction: column;
+`;
+
+const DetailContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-bottom: 10px;
+`;
+
+const DetailOption = styled.div`
+  font-family: 'Freesentation-8ExtraBold', sans-serif;
+  font-size: 16px;
+`;
+
+const DetailText = styled.h1`
+  font-family: 'Freesentation-1Thin', sans-serif;
+  font-size: 16px;
 `;

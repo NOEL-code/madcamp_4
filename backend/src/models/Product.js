@@ -17,6 +17,7 @@ const bidHistorySchema = new Schema({
     required: true,
   },
 });
+
 const categories = [
   "의류",
   "가방",
