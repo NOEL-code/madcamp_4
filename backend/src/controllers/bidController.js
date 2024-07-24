@@ -71,10 +71,10 @@ exports.updateScore = async (req, res) => {
 };
 
 exports.closeGame = async (req, res) => {
-  const { productId, userId, bidAmount } = req.body;
+  const { productId, winnerId, loserIds, bidAmount } = req.body;
 
   try {
-    const closeGame = await closeGame(productId, userId, bidAmount);
+    const closeGame = await closeGame(productId, winnerId, loserIds, bidAmount);
     res.status(200).json(closeGame);
   } catch (error) {
     console.error("Error in closeGame");

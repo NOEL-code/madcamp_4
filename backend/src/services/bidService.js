@@ -187,15 +187,13 @@ exports.updateScore = async (productId, userId, score) => {
   }
 };
 
-exports.closeGame = async (productId, userId, bidAmount) => {
+exports.closeGame = async (productId, winnerId, loserIds, bidAmount) => {
   try {
     const product = await Product.findById(productId);
     if (!product) {
       throw new Error("Product not found");
     }
-    if (product.userId.toString() !== userId) {
-      throw new Error("Unauthorized");
-    }
+
     if (product.winnerId) {
       throw new Error("The auction is already closed.");
     }
@@ -211,13 +209,27 @@ exports.closeGame = async (productId, userId, bidAmount) => {
     seller.account.balance += bidAmount;
     await seller.save();
 
+    loserIds;
+
+    for (let i = 0; loserIds.length(); i++) {
+      const loser = await User.findById(loserIds[i]);
+      loser.account.balance += bidAmount;
+      await loser.save();
+
+      const newAlarm = {
+        userId: loserIds[i],
+        title: "낙찰 실패 ㅜㅜ",
+        content: `회원님께서 입찰에 참여한 ${product.productName} 상품낙찰에 실패하셨습니다. `,
+      };
+    }
+
     console.log(
       `Credited ${bidAmount} to seller ${seller.name}, new balance: ${seller.account.balance}`
     );
 
     const newAlarm = {
-      userId: userId,
-      title: "낙찰 성공",
+      userId: winnerId,
+      title: "아싸~ 낙찰 성공!",
       content: `회원님께서 입찰에 참여한 ${product.productName} 상품이 ${bidAmount}원으로 회원님께 낙찰되었습니다. `,
     };
 

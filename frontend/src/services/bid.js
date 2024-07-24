@@ -55,5 +55,17 @@ export const updateScore = async (productId, userId, score) => {
   }
 };
 
-// export const closeGame = async ()
-// router.post('/close-game', authenticateToken, closeGame); // 게임 종료 -> 낙찰하기
+export const closeGame = async (productId, winnerId, loserIds, bidAmount) => {
+  try {
+    const closeData = {
+      productId: productId,
+      winnerId: winnerId,
+      loserIds: loserIds, // 배열임!!!
+      bidAmount: bidAmount,
+    };
+    const response = await baseInstance.post(`/bid/close-game`, closeData);
+    return response.data;
+  } catch (error) {
+    console.error('Failed to close Game');
+  }
+};
