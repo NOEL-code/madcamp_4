@@ -73,7 +73,6 @@ const HomePage = () => {
 
     sortProducts();
   }, [selectedOption, products]);
-
   return (
     <Box>
       <CouponHeader />
