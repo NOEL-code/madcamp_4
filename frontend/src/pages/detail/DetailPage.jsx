@@ -14,12 +14,15 @@ import {
 import { useSelector } from 'react-redux';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
+import Modal from './Modal';
 
 const DetailPage = () => {
   const [selectedOption, setSelectedOption] = useState('현황');
   const [product, setProduct] = useState(null);
   const navigate = useNavigate();
   const { productId } = useParams();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalImageSrc, setModalImageSrc] = useState('');
   const userInfo = useSelector((state) => state.user.userInfo);
   const SwalWithReact = withReactContent(Swal);
 
@@ -44,11 +47,25 @@ const DetailPage = () => {
     navigate(-1);
   };
 
+  const handleImageClick = (imageSrc) => {
+    setModalImageSrc(imageSrc);
+    setIsModalOpen(true);
+  };
+
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+  };
+
   const formatNumberWithCommas = (number) => {
     return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   };
 
   const handleBidClick = async () => {
+    if (!userInfo) {
+      navigate('/login'); // 로그인 페이지로 리디렉션
+      return;
+    }
+
     const { value: bidAmount } = await SwalWithReact.fire({
       title: '응찰 금액 입력',
       input: 'text',
@@ -98,6 +115,11 @@ const DetailPage = () => {
   };
 
   const handleCloseBidClick = async () => {
+    if (!userInfo) {
+      navigate('/login'); // 로그인 페이지로 리디렉션
+      return;
+    }
+
     if (!product.bidHistory || product.bidHistory.length === 0) {
       SwalWithReact.fire({
         icon: 'warning',
@@ -144,7 +166,11 @@ const DetailPage = () => {
         <StyledSlider {...sliderSettings}>
           {product.productPhotoUrl.map((image, index) => (
             <ImageWrapper key={index}>
-              <img src={image} alt={`Product ${index + 1}`} />
+              <img
+                src={image}
+                alt={`Product ${index + 1}`}
+                onClick={() => handleImageClick(image)}
+              />
             </ImageWrapper>
           ))}
         </StyledSlider>
@@ -164,7 +190,7 @@ const DetailPage = () => {
             상세 정보
           </Option>
         </OptionContainer>
-        {userInfo.id === product.userId ? (
+        {product.userId === userInfo?.id ? (
           <Option2 onClick={handleCloseBidClick}>낙찰하기</Option2>
         ) : (
           <Option2 onClick={handleBidClick}>응찰하기</Option2>
@@ -173,6 +199,11 @@ const DetailPage = () => {
       {selectedOption === '상세 정보' && (
         <Description>{product.description}</Description>
       )}
+      <Modal
+        isOpen={isModalOpen}
+        onClose={handleModalClose}
+        imageSrc={modalImageSrc}
+      />
     </Box>
   );
 };
@@ -218,7 +249,7 @@ const Text = styled.h1`
 
 const SliderContainer = styled.div`
   width: 100%;
-  padding-bottom: 30px; /* dots가 항상 보이도록 하단에 공간 추가 */
+  padding-bottom: 30px;
 `;
 
 const StyledSlider = styled(Slider)`
@@ -240,6 +271,14 @@ const StyledSlider = styled(Slider)`
   .slick-dots li.slick-active button:before {
     color: #a0153e; /* active dot 색상 변경 */
   }
+  :focus {
+    outline: none; /* 추가된 부분 */
+    border: none; /* 추가된 부분 */
+  }
+  :active {
+    outline: none; /* 추가된 부분 */
+    border: none; /* 추가된 부분 */
+  }
 `;
 
 const ImageWrapper = styled.div`
@@ -247,10 +286,8 @@ const ImageWrapper = styled.div`
   justify-content: center;
   align-items: center;
   img {
-    width: 100%;
-    height: auto;
-    max-width: 600px;
-    max-height: 600px;
+    width: 390px;
+    height: 390px;
     object-fit: cover;
   }
 `;

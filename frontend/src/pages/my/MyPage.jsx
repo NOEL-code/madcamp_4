@@ -9,10 +9,16 @@ import {
   getSuccessBidUserProducts,
   getUserProducts,
 } from '../../services/product';
+import { getLikedProductListByUserId } from '../../services/like';
+import { logout } from '../../services/user';
+import { logoutSuccess } from '../../store/actions/userActions';
+import { useDispatch } from 'react-redux'; // useDispatch 임포트
+
 import {
   addLikedProduct,
   removeLikedProduct,
 } from '../../store/actions/likedProductsActions';
+
 
 const MyPage = () => {
   const [selectedOption, setSelectedOption] = useState('나의 관심 상품');
@@ -22,22 +28,41 @@ const MyPage = () => {
   const userInfo = useSelector((state) => state.user.userInfo);
   const likedProducts = useSelector((state) => state.likedProducts.products);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const fetchLikedProductList = useCallback(async () => {
+    if (!userInfo) return;
+    try {
+      const likedProductLists = await getLikedProductListByUserId(userInfo.id);
+      const likedProductId = likedProductLists.map((product) =>
+        product._id.toString(),
+      );
+      setLikedProductIds(likedProductId);
+      console.log(likedProductId);
+    } catch (err) {
+      console.error('Failed to fetch likedProductList', err);
+    }
+  }, [userInfo]);
 
   useEffect(() => {
     if (!userInfo) {
-      navigate('/login'); // 로그인 페이지로 리디렉션
-    } else {
-      const fetchBalance = async () => {
-        try {
-          const userBalance = await getAccountBalance(userInfo.id);
-          setBalance(userBalance);
-        } catch (error) {
-          console.error('Failed to fetch account balance:', error);
-        }
-      };
-      fetchBalance();
+      navigate('/login');
+      return;
     }
-  }, [userInfo, navigate]);
+
+    const fetchBalance = async () => {
+      try {
+        const userBalance = await getAccountBalance(userInfo.id);
+        setBalance(userBalance);
+      } catch (error) {
+        console.error('Failed to fetch account balance:', error);
+      }
+    };
+
+    fetchBalance();
+    fetchLikedProductList();
+  }, [userInfo, navigate, fetchLikedProductList]);
+
 
   useEffect(() => {
     if (userInfo) {
@@ -47,6 +72,8 @@ const MyPage = () => {
 
   const handleLogoutClick = async () => {
     try {
+      await logout(); // 로그아웃 함수 호출
+      dispatch(logoutSuccess()); // 로그아웃 액션 디스패치
       navigate('/login'); // 로그아웃 후 로그인 페이지로 리디렉션
     } catch (error) {
       console.error('Failed to logout:', error);
@@ -54,6 +81,7 @@ const MyPage = () => {
   };
 
   const fetchProducts = async (option) => {
+    if (!userInfo) return;
     try {
       let products;
       switch (option) {
@@ -103,6 +131,10 @@ const MyPage = () => {
       return !duplicate;
     });
   };
+
+  if (!userInfo) {
+    return null; // userInfo가 없으면 컴포넌트 렌더링을 중단
+  }
 
   return (
     <Box>

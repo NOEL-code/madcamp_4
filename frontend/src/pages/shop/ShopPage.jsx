@@ -121,9 +121,6 @@ const ShopPage = () => {
             {categories.map((category, index) => (
               <CategoryContainer
                 key={index}
-                onClick={() => handleOptionClick(category.name)}
-              >
-                <Category isSelected={selectedOption === category.name}>
                 onClick={() => handleCategoryClick(category.name)}
               >
                 <Category>

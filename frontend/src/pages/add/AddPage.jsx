@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import CouponHeader from '../../components/CouponHeader';
 import DatePicker from 'react-datepicker';
@@ -22,6 +22,49 @@ const categories = [
   { value: '푸드', label: '푸드' },
 ];
 
+const customStyles = {
+  control: (provided) => ({
+    ...provided,
+    fontFamily: 'Freesentation-6SemiBold, sans-serif',
+    width: '90%',
+    margin: '10px 20px 20px 20px',
+    padding: '5px',
+    backgroundColor: '#eeeeee',
+    border: 'none',
+    borderRadius: '10px',
+    outline: 'none',
+    boxShadow: 'none',
+  }),
+  placeholder: (provided) => ({
+    ...provided,
+    fontFamily: 'Freesentation-6SemiBold, sans-serif',
+    fontSize: '14px',
+  }),
+  singleValue: (provided) => ({
+    ...provided,
+    fontFamily: 'Freesentation-6SemiBold, sans-serif',
+    fontSize: '14px',
+  }),
+  menu: (provided) => ({
+    ...provided,
+    fontFamily: 'Freesentation-6SemiBold, sans-serif',
+    fontSize: '14px',
+    width: '90%', // 드롭다운 메뉴의 가로 길이
+    marginTop: '-10px',
+    marginLeft: '20px', // 위치를 위로 올림
+    zIndex: 10, // 드롭다운 메뉴가 다른 요소 위에 표시되도록 설정
+  }),
+  menuPortal: (base) => ({
+    ...base,
+    zIndex: 9999, // 포털을 사용하여 드롭다운 메뉴가 다른 요소 위에 표시되도록 설정
+  }),
+  option: (provided) => ({
+    ...provided,
+    fontFamily: 'Freesentation-6SemiBold, sans-serif',
+    fontSize: '14px',
+  }),
+};
+
 const AddPage = () => {
   const [startDate, setStartDate] = useState(null);
   const [productName, setProductName] = useState('');
@@ -29,8 +72,14 @@ const AddPage = () => {
   const [description, setDescription] = useState('');
   const [images, setImages] = useState([]);
   const [category, setCategory] = useState(null);
-  const userId = useSelector((state) => state.user.userInfo.id);
+  const userInfo = useSelector((state) => state.user.userInfo);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!userInfo) {
+      navigate('/login'); // 로그인 페이지로 리디렉션
+    }
+  }, [userInfo, navigate]);
 
   const handleFileChange = (e) => {
     setImages(e.target.files);
@@ -55,7 +104,7 @@ const AddPage = () => {
     formData.append('price', price.replace(/,/g, ''));
     formData.append('description', description);
     formData.append('dueDate', startDate);
-    formData.append('userId', userId);
+    formData.append('userId', userInfo.id);
     formData.append('category', category.value);
 
     for (let i = 0; i < images.length; i++) {
@@ -79,6 +128,10 @@ const AddPage = () => {
     }
   };
 
+  if (!userInfo) {
+    return null; // userInfo가 없으면 컴포넌트 렌더링을 중단
+  }
+
   return (
     <Box>
       <CouponHeader />
@@ -91,8 +144,6 @@ const AddPage = () => {
       <Form onSubmit={handleSubmit}>
         <Text>사진 업로드</Text>
         <ImageContainer>
-          <CameraIcon />
-          <CameraCount>{images.length}/10</CameraCount>
           <input
             type="file"
             multiple
@@ -104,6 +155,7 @@ const AddPage = () => {
           <label htmlFor="fileInput" style={{ cursor: 'pointer' }}>
             <CameraIcon />
           </label>
+          <CameraCount>{images.length}/5</CameraCount>
         </ImageContainer>
         <Text>상품명</Text>
         <NameInput
@@ -118,6 +170,7 @@ const AddPage = () => {
           onChange={handleCategoryChange}
           options={categories}
           placeholder="카테고리를 선택하세요"
+          styles={customStyles} // 커스텀 스타일 적용
         />
         <Text>기한</Text>
         <StyledDatePicker

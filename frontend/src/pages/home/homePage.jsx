@@ -16,13 +16,11 @@ import RankingCard from '../../components/RankingCard';
 import Rolex from '../../assets/models/Rolex';
 import Vincent from '../../assets/images/vincent.png';
 import CU from '../../assets/images/cu.png';
-import Gavel from '../../assets/models/Gavel';
 import { getProducts } from '../../services/product';
 import {
   addLikedProduct,
   removeLikedProduct,
 } from '../../store/actions/likedProductsActions';
-
 
 const HomePage = () => {
   const [selectedOption, setSelectedOption] = useState('최다 관심순');
@@ -44,7 +42,6 @@ const HomePage = () => {
     navigate(`/detail/${productId}`);
   };
 
-
   const handleToggleFavorite = (product) => {
     if (
       likedProducts.some((likedProduct) => likedProduct._id === product._id)
@@ -53,8 +50,6 @@ const HomePage = () => {
     } else {
       dispatch(addLikedProduct(product));
     }
-
-
   const handleVincentClick = () => {
     navigate('/vincent');
   };
@@ -98,8 +93,6 @@ const HomePage = () => {
 
     sortProducts();
   }, [selectedOption, products]);
-
-
   return (
     <Box>
       <CouponHeader />
@@ -119,7 +112,7 @@ const HomePage = () => {
               <directionalLight position={[5, 5, 5]} intensity={5.0} />
               <directionalLight position={[-5, -5, -5]} intensity={5.0} />
               <Suspense fallback={null}>
-                <group position={[0, -2, 0]} scale={[50, 50, 50]}>
+                <group position={[0.3, -1.8, 0]} scale={[40, 40, 40]}>
                   <Rolex />
                 </group>
               </Suspense>
