@@ -19,8 +19,11 @@ const RankingCard = ({ rank, product, onClick }) => {
   return (
     <CardContainer onClick={onClick}>
       <ImageContainer>
-        <img src={product.productPhotoUrl[0]} alt={product.productName} />
         <RankContainer>{rank}</RankContainer>
+        <StyledImage
+          src={product.productPhotoUrl[0]}
+          alt={product.productName}
+        />
       </ImageContainer>
       <TopContainer>
         <Category>{product.category}</Category>
@@ -66,12 +69,13 @@ const ImageContainer = styled.div`
   border-radius: 7px;
   position: relative;
   overflow: hidden;
+`;
 
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
+const StyledImage = styled.img`
+  width: 90px;
+  height: 90px;
+  object-fit: cover;
+  object-position: center;
 `;
 
 const TopContainer = styled.div`

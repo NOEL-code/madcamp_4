@@ -1,15 +1,29 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { PiBell } from 'react-icons/pi';
+import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 import CouponHeader from '../../components/CouponHeader';
 
 const AlarmPage = () => {
   const [selectedOption, setSelectedOption] = useState('전체');
+  const navigate = useNavigate();
+  const userInfo = useSelector((state) => state.user.userInfo);
+
+  useEffect(() => {
+    if (!userInfo) {
+      navigate('/login'); // 로그인 페이지로 리디렉션
+    }
+  }, [userInfo, navigate]);
 
   const handleOptionClick = (option) => {
     setSelectedOption(option);
   };
+
+  if (!userInfo) {
+    return null; // userInfo가 없으면 컴포넌트 렌더링을 중단
+  }
 
   return (
     <Box>

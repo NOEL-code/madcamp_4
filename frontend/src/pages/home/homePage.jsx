@@ -93,7 +93,7 @@ const HomePage = () => {
               <directionalLight position={[5, 5, 5]} intensity={5.0} />
               <directionalLight position={[-5, -5, -5]} intensity={5.0} />
               <Suspense fallback={null}>
-                <group position={[0, -1.8, 0]} scale={[40, 40, 40]}>
+                <group position={[0.3, -1.8, 0]} scale={[40, 40, 40]}>
                   <Rolex />
                 </group>
               </Suspense>
