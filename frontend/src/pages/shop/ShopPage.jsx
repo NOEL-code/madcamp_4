@@ -3,12 +3,9 @@ import styled from 'styled-components';
 import CouponHeader from '../../components/CouponHeader';
 import ProductCard from '../../components/ProductCard';
 import { useNavigate } from 'react-router-dom';
-
-import { IoIosArrowDown } from 'react-icons/io';
-import { IoIosArrowUp } from 'react-icons/io';
+import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
 import { BiSortAlt2 } from 'react-icons/bi';
 import { FaCheck } from 'react-icons/fa6';
-
 import clothImage from '../../assets/images/cloth.png';
 import bagImage from '../../assets/images/bag.png';
 import watchImage from '../../assets/images/watch.png';
@@ -35,6 +32,7 @@ const ShopPage = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [products, setProducts] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [sortOrder, setSortOrder] = useState(null); // null: no sort, 'asc': ascending, 'desc': descending
   const navigate = useNavigate();
 
   const handleCategoryClick = (category) => {
@@ -50,6 +48,14 @@ const ShopPage = () => {
     navigate(`/detail/${productId}`);
   };
 
+  const handleSortClick = () => {
+    if (sortOrder === null || sortOrder === 'desc') {
+      setSortOrder('asc');
+    } else {
+      setSortOrder('desc');
+    }
+  };
+
   useEffect(() => {
     const fetchProducts = async () => {
       const productList = await getProducts();
@@ -59,14 +65,26 @@ const ShopPage = () => {
     fetchProducts();
   }, []);
 
-  const filteredProducts = products.filter((product) => {
-    const matchesCategory =
-      selectedCategory === '카테고리' || product.category === selectedCategory;
-    const matchesSearchTerm = product.productName
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase());
-    return matchesCategory && matchesSearchTerm;
-  });
+  const sortProducts = (products) => {
+    if (sortOrder === 'asc') {
+      return products.sort((a, b) => b.likesCount - a.likesCount);
+    } else if (sortOrder === 'desc') {
+      return products.sort((a, b) => a.likesCount - b.likesCount);
+    }
+    return products;
+  };
+
+  const filteredProducts = sortProducts(
+    products.filter((product) => {
+      const matchesCategory =
+        selectedCategory === '카테고리' ||
+        product.category === selectedCategory;
+      const matchesSearchTerm = product.productName
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase());
+      return matchesCategory && matchesSearchTerm;
+    }),
+  );
 
   return (
     <>
@@ -124,7 +142,7 @@ const ShopPage = () => {
                 </DropdownMenu>
               )}
             </CategoryOptionContainer>
-            <SortContainer>
+            <SortContainer onClick={handleSortClick}>
               <SortOption>인기순</SortOption>
               <SortIcon />
             </SortContainer>
