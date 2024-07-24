@@ -5,7 +5,19 @@ const Game = require("../models/Game");
 const mongoose = require("mongoose");
 
 // 입찰하기
+
+exports.createGame = async (gameData) => {
+  console.log(gameData);
+  try {
+    const game = new Game(gameData);
+    return game.save();
+  } catch (error) {
+    console.error("Error in createGame", error);
+  }
+};
+
 exports.biddingProduct = async (productId, bidData) => {
+  console.log("너가 왜?");
   try {
     const product = await Product.findById(productId);
     if (!product) {
@@ -139,15 +151,6 @@ exports.updateSameScoreBid = async (productId) => {
   } catch (error) {
     console.error("Error in updateSameScoreBid", error);
     throw error;
-  }
-};
-
-exports.createGame = async (gameData) => {
-  try {
-    const game = new Game(gameData);
-    return game.save();
-  } catch (error) {
-    console.error("Error in createGame", error);
   }
 };
 

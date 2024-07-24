@@ -18,11 +18,14 @@ const GameSchema = new Schema({
       },
     },
   ],
+  sellerId: {
+    type: Schema.Types.ObjectId,
+  },
   productId: {
     type: Schema.Types.ObjectId,
   },
 });
 
-const Game = mongoose.model("Account", GameSchema);
+const Game = mongoose.model("game", GameSchema);
 
 module.exports = Game;

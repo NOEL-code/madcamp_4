@@ -36,6 +36,7 @@ exports.updateSameScoreBid = async (req, res) => {
 };
 
 exports.createGame = async (req, res) => {
+  console.log(req.body);
   try {
     const game = await createGame(req.body);
     res.status(200).json(game);
