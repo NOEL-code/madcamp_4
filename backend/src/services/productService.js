@@ -202,27 +202,97 @@ exports.sameScoreBidding = async (userIds) => {};
 
 // 유저가 올린 상품 리스트 조회
 exports.getUserProducts = async (userId) => {
-  return await Product.find({ userId });
+  const products = await Product.aggregate([
+    {
+      $match: { userId: new mongoose.Types.ObjectId(userId) },
+    },
+    {
+      $lookup: {
+        from: "likes",
+        localField: "_id",
+        foreignField: "productId",
+        as: "likes",
+      },
+    },
+    {
+      $addFields: {
+        likesCount: { $size: "$likes" },
+      },
+    },
+    {
+      $project: {
+        likes: 0, // likes 배열을 제외하고 반환
+      },
+    },
+  ]);
+
+  return products;
 };
 
 // 유저가 낙찰받은 상품 리스트 조회
 exports.getSuccessBidUserProducts = async (userId) => {
-  return await Product.find({ winnerId: userId }).where("winnerId").ne(null);
+  const products = await Product.aggregate([
+    {
+      $match: { winnerId: new mongoose.Types.ObjectId(userId) },
+    },
+    {
+      $lookup: {
+        from: "likes",
+        localField: "_id",
+        foreignField: "productId",
+        as: "likes",
+      },
+    },
+    {
+      $addFields: {
+        likesCount: { $size: "$likes" },
+      },
+    },
+    {
+      $project: {
+        likes: 0, // likes 배열을 제외하고 반환
+      },
+    },
+  ]);
+
+  return products;
 };
 
 // 유저가 좋아요를 누른 상품 리스트 조회
 exports.getLikedProductListByUserId = async (userId) => {
   console.log("좋아요 상품 목록 조회 시작"); // 로그 추가
-  const user = await User.findById(userId).populate({
-    path: "favorites.productId",
-    model: "Product",
-  });
+  const user = await User.findById(userId);
 
   if (!user) {
     console.log("사용자 없음"); // 로그 추가
     throw new Error("User not found");
   }
 
-  console.log("사용자 좋아요 목록:", user.favorites); // 로그 추가
-  return user.favorites.map((favorite) => favorite.productId);
+  const productIds = user.favorites.map((favorite) => favorite.productId);
+
+  const products = await Product.aggregate([
+    {
+      $match: { _id: { $in: productIds } },
+    },
+    {
+      $lookup: {
+        from: "likes",
+        localField: "_id",
+        foreignField: "productId",
+        as: "likes",
+      },
+    },
+    {
+      $addFields: {
+        likesCount: { $size: "$likes" },
+      },
+    },
+    {
+      $project: {
+        likes: 0, // likes 배열을 제외하고 반환
+      },
+    },
+  ]);
+
+  return products;
 };

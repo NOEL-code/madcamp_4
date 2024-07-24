@@ -57,12 +57,10 @@ export const logout = async () => {
 
 export const refreshAccessToken = async () => {
   const refreshToken = getCookie('refreshToken');
-  const response = await baseInstance.post('/users/refresh-token', null, {
-    headers: {
-      'Refresh-Token': refreshToken,
-    },
+  const response = await baseInstance.post('/users/refresh-token', {
+    refreshToken,
   });
-  const newAccessToken = response.headers.authorization;
+  const newAccessToken = response.data.accessToken; // 응답 본문에서 accessToken 가져오기
   setCookie('accessToken', newAccessToken, { path: '/' });
   return newAccessToken;
 };
