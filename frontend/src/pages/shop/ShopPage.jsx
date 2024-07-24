@@ -121,9 +121,6 @@ const ShopPage = () => {
             {categories.map((category, index) => (
               <CategoryContainer
                 key={index}
-                onClick={() => handleOptionClick(category.name)}
-              >
-                <Category isSelected={selectedOption === category.name}>
                 onClick={() => handleCategoryClick(category.name)}
               >
                 <Category>
@@ -337,8 +334,7 @@ const Category = styled.div`
   align-items: center;
   font-size: 12px;
   margin: 5px;
-  background-color: ${(props) => (props.isSelected ? '#ccc' : '#eeeeee')};
-  border: ${(props) => (props.isSelected ? '1px solid #000' : 'none')};
+  background-color: #dddddd;
 `;
 
 const CategoryText = styled.div`
