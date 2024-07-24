@@ -4,7 +4,14 @@ const Alarm = require("../models/Alarm");
 const Game = require("../models/Game");
 const mongoose = require("mongoose");
 
-// 입찰하기
+exports.findGameByProductId = async (productId) => {
+  try {
+    const game = await Game.findOne({ productId: productId });
+    return game;
+  } catch (error) {
+    console.error("Error in find Game");
+  }
+};
 
 exports.createGame = async (gameData) => {
   console.log(gameData);
@@ -177,6 +184,51 @@ exports.updateScore = async (productId, userId, score) => {
     return game;
   } catch (error) {
     console.error("Error in updateScore:", error);
+    throw error;
+  }
+};
+
+exports.closeGame = async (productId, userId, bidAmount) => {
+  try {
+    const product = await Product.findById(productId);
+    if (!product) {
+      throw new Error("Product not found");
+    }
+    if (product.userId.toString() !== userId) {
+      throw new Error("Unauthorized");
+    }
+    if (product.winnerId) {
+      throw new Error("The auction is already closed.");
+    }
+
+    product.dueDate = new Date(); // Set the close date
+
+    // Credit the seller's account balance
+    const seller = await User.findById(product.userId);
+    if (!seller) {
+      throw new Error("Seller not found");
+    }
+
+    seller.account.balance += bidAmount;
+    await seller.save();
+
+    console.log(
+      `Credited ${bidAmount} to seller ${seller.name}, new balance: ${seller.account.balance}`
+    );
+
+    const newAlarm = {
+      userId: userId,
+      title: "낙찰 성공",
+      content: `회원님께서 입찰에 참여한 ${product.productName} 상품이 ${bidAmount}원으로 회원님께 낙찰되었습니다. `,
+    };
+
+    const saveAlarm = new Alarm(newAlarm);
+
+    product.isClose = 1;
+
+    return await product.save();
+  } catch (error) {
+    console.error("Error in closeBid service:", error);
     throw error;
   }
 };
