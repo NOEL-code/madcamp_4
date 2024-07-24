@@ -7,10 +7,6 @@ const alarmSchema = new Schema({
     ref: "User",
     required: true,
   },
-  type: {
-    type: String,
-    required: true,
-  },
   title: {
     type: String,
     required: true,

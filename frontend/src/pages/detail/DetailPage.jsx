@@ -16,9 +16,10 @@ import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import Modal from './Modal';
 import BidModal from './BidModal';
-
 import { MdEdit } from 'react-icons/md';
 import { MdDelete } from 'react-icons/md';
+
+import { saveOneAlarm } from '../../services/alarm';
 
 const DetailPage = () => {
   const [selectedOption, setSelectedOption] = useState('현황');
@@ -32,6 +33,7 @@ const DetailPage = () => {
   const userInfo = useSelector((state) => state.user.userInfo);
   console.log(userInfo);
 
+  console.log(userInfo);
   useEffect(() => {
     const fetchProduct = async () => {
       try {
@@ -67,7 +69,11 @@ const DetailPage = () => {
     setIsBidModalOpen(false);
   };
 
-  const handleBidClick = () => {
+  const parseNumberFromCommas = (numberString) => {
+    return parseInt(numberString.replace(/,/g, ''), 10);
+  };
+
+  const handleBidClick = async () => {
     if (!userInfo) {
       navigate('/login');
       return;

@@ -1,5 +1,13 @@
 var express = require("express");
 var router = express.Router();
-const authenticateToken = require("../middlewares/authenticateToken");
+const {
+  saveOneAlarm,
+  deleteAlarm,
+  getAlarms,
+} = require("../controllers/alarmController");
+
+router.post("/", saveOneAlarm);
+router.delete("/:alarmId", deleteAlarm);
+router.get("/user/:userId", getAlarms);
 
 module.exports = router;
