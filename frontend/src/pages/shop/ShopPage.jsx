@@ -58,8 +58,11 @@ const ShopPage = () => {
           <SearchInput type="text" placeholder="검색" />
           <Categories>
             {categories.map((category, index) => (
-              <CategoryContainer key={index}>
-                <Category>
+              <CategoryContainer
+                key={index}
+                onClick={() => handleOptionClick(category.name)}
+              >
+                <Category isSelected={selectedOption === category.name}>
                   <CategoryImage
                     src={category.image}
                     category={category.name}
@@ -258,7 +261,8 @@ const Category = styled.div`
   align-items: center;
   font-size: 12px;
   margin: 5px;
-  background-color: #dddddd;
+  background-color: ${(props) => (props.isSelected ? '#ccc' : '#eeeeee')};
+  border: ${(props) => (props.isSelected ? '1px solid #000' : 'none')};
 `;
 
 const CategoryText = styled.div`

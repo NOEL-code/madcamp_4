@@ -7,9 +7,16 @@ import { FaRankingStar } from 'react-icons/fa6';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 
+import Slider from 'react-slick';
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
+
 import CouponHeader from '../../components/CouponHeader';
 import RankingCard from '../../components/RankingCard';
-import Gavel from '../../assets/models/Gavel';
+
+import Rolex from '../../assets/models/Rolex';
+import Vincent from '../../assets/images/vincent.png';
+import CU from '../../assets/images/cu.png';
 
 const HomePage = () => {
   const [selectedOption, setSelectedOption] = useState('최다 관심순');
@@ -27,6 +34,22 @@ const HomePage = () => {
     navigate('/detail');
   };
 
+  const handleVincentClick = () => {
+    navigate('/vincent');
+  };
+
+  const handleCUClick = () => {
+    navigate('/cu');
+  };
+
+  const settings = {
+    dots: false,
+    infinite: false,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+  };
+
   return (
     <Box>
       <CouponHeader />
@@ -35,21 +58,31 @@ const HomePage = () => {
         <BellIcon onClick={handleBellClick} />
       </LogoContainer>
       <MiddleContainer>
-        <Canvas
-          style={{ background: '#000' }}
-          gl={{ alpha: true }}
-          camera={{ position: [0, 0, 5], fov: 50 }}
-        >
-          <ambientLight intensity={0.5} />
-          <directionalLight position={[5, 5, 5]} intensity={5.0} />
-          <directionalLight position={[-5, -5, -5]} intensity={5.0} />
-          <Suspense fallback={null}>
-            <group position={[0, -0.3, 0]} scale={[0.7, 0.7, 0.7]}>
-              <Gavel />
-            </group>
-          </Suspense>
-          <OrbitControls autoRotate autoRotateSpeed={1} />
-        </Canvas>
+        <Slider {...settings}>
+          <SliderItem>
+            <Canvas
+              style={{ background: '#000' }}
+              gl={{ alpha: true }}
+              camera={{ position: [0, 0, 5], fov: 50 }}
+            >
+              <ambientLight intensity={0.5} />
+              <directionalLight position={[5, 5, 5]} intensity={5.0} />
+              <directionalLight position={[-5, -5, -5]} intensity={5.0} />
+              <Suspense fallback={null}>
+                <group position={[0, -2, 0]} scale={[50, 50, 50]}>
+                  <Rolex />
+                </group>
+              </Suspense>
+              <OrbitControls autoRotate autoRotateSpeed={1} />
+            </Canvas>
+          </SliderItem>
+          <SliderItem onClick={handleVincentClick}>
+            <Image src={Vincent} />
+          </SliderItem>
+          <SliderItem onClick={handleCUClick}>
+            <Image src={CU} alt="Main 2" />
+          </SliderItem>
+        </Slider>
       </MiddleContainer>
       <RankingContainer>
         <RankingTextContainer>
@@ -124,6 +157,19 @@ const BellIcon = styled(PiBell)`
 const MiddleContainer = styled.div`
   width: 100%;
   height: 400px;
+`;
+
+const SliderItem = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 400px;
+`;
+
+const Image = styled.img`
+  width: 400px;
+  height: 400px;
+  object-fit: cover;
 `;
 
 const RankingContainer = styled.div`

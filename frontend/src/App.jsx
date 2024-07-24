@@ -8,6 +8,9 @@ import AlarmPage from './pages/home/AlarmPage';
 import DetailPage from './pages/detail/DetailPage';
 import LoginPage from './pages/users/LoginPage';
 import RegisterPage from './pages/users/RegisterPage';
+import GamePage from './pages/detail/GamePage';
+import VincentPage from './pages/home/VincentPage';
+import CUPage from './pages/home/CUPage';
 
 function App() {
   return (
@@ -21,7 +24,10 @@ function App() {
             <Route path="/add" element={<AddPage />} />
             <Route path="/my" element={<MyPage />} />
           </Route>
+          <Route path="/vincent" element={<VincentPage />} />
+          <Route path="/cu" element={<CUPage />} />
           <Route path="/detail" element={<DetailPage />} />
+          <Route path="/game" element={<GamePage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
         </Routes>
