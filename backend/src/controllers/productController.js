@@ -40,7 +40,6 @@ exports.getProductById = async (req, res) => {
 
 // 상품 저장
 // controllers/productController.js
-
 exports.saveProduct = [
   upload.array("productPhotos", 10), // 최대 10개의 파일 업로드 허용
   async (req, res) => {

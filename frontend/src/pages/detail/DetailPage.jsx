@@ -3,42 +3,48 @@ import styled from 'styled-components';
 import { IoClose } from 'react-icons/io5';
 import { useNavigate, useParams } from 'react-router-dom';
 import Slider from 'react-slick';
-import Swal from 'sweetalert2';
-import withReactContent from 'sweetalert2-react-content';
 import CouponHeader from '../../components/CouponHeader';
+import { FaCrown } from 'react-icons/fa';
 import {
   getProductById,
   biddingProduct,
+  deleteProductById,
   closeBid,
 } from '../../services/product';
 import { useSelector } from 'react-redux';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import Modal from './Modal';
+import BidModal from './BidModal';
+
+import { MdEdit } from 'react-icons/md';
+import { MdDelete } from 'react-icons/md';
 
 const DetailPage = () => {
   const [selectedOption, setSelectedOption] = useState('현황');
   const [product, setProduct] = useState(null);
+  const [refresh, setRefresh] = useState(false);
   const navigate = useNavigate();
   const { productId } = useParams();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isBidModalOpen, setIsBidModalOpen] = useState(false);
   const [modalImageSrc, setModalImageSrc] = useState('');
   const userInfo = useSelector((state) => state.user.userInfo);
-  const SwalWithReact = withReactContent(Swal);
+  console.log(userInfo);
 
   useEffect(() => {
     const fetchProduct = async () => {
       try {
         const productData = await getProductById(productId);
-        console.log(productData);
         setProduct(productData);
+        console.log(productData);
       } catch (error) {
         console.error('Failed to fetch product:', error);
       }
     };
 
     fetchProduct();
-  }, [productId]);
+  }, [productId, refresh]);
 
   const handleOptionClick = (option) => {
     setSelectedOption(option);
@@ -57,62 +63,33 @@ const DetailPage = () => {
     setIsModalOpen(false);
   };
 
-  const formatNumberWithCommas = (number) => {
-    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  const handleBidModalClose = () => {
+    setIsBidModalOpen(false);
   };
 
-  const handleBidClick = async () => {
+  const handleBidClick = () => {
     if (!userInfo) {
-      navigate('/login'); // 로그인 페이지로 리디렉션
+      navigate('/login');
       return;
     }
+    setIsBidModalOpen(true);
+  };
 
-    const { value: bidAmount } = await SwalWithReact.fire({
-      title: '응찰 금액 입력',
-      input: 'text',
-      inputLabel: '응찰할 금액을 입력하세요',
-      inputPlaceholder: '금액 입력',
-      showCancelButton: true,
-      inputAttributes: {
-        type: 'text',
-      },
-      inputValue: '',
-      inputValidator: (value) => {
-        const numericValue = parseInt(value.replace(/,/g, ''), 10);
-        if (!numericValue) {
-          return '금액을 입력하세요!';
-        }
-        if (isNaN(numericValue) || numericValue <= 0) {
-          return '유효한 금액을 입력하세요!';
-        }
-        if (numericValue <= product.price) {
-          return `입찰 금액은 시작가보다 높아야 합니다! 현재 시작가: ${formatNumberWithCommas(
-            product.price,
-          )}원`;
-        }
-      },
-      preConfirm: (value) => {
-        const numericValue = parseInt(value.replace(/,/g, ''), 10);
-        return numericValue;
-      },
-    });
+  const handleBidSubmit = async (bidAmount) => {
+    if (!bidAmount) return;
 
-    if (bidAmount) {
-      try {
-        const bidData = { bidAmount, bidderId: userInfo.id };
-        await biddingProduct(productId, bidData);
-        SwalWithReact.fire({
-          icon: 'success',
-          title: '응찰에 성공하였습니다.',
-        });
-      } catch (error) {
-        console.error('Failed to bid:', error);
-        SwalWithReact.fire({
-          icon: 'error',
-          title: '응찰에 실패하였습니다.',
-        });
-      }
+    try {
+      const bidData = { bidAmount, bidderId: userInfo.id };
+      await biddingProduct(productId, bidData);
+      setIsBidModalOpen(false);
+      setRefresh(!refresh);
+    } catch (error) {
+      console.error('Failed to bid:', error);
     }
+  };
+
+  const formatNumberWithCommas = (number) => {
+    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   };
 
   const handleCloseBidClick = async () => {
@@ -122,24 +99,18 @@ const DetailPage = () => {
     }
 
     if (!product.bidHistory || product.bidHistory.length === 0) {
-      SwalWithReact.fire({
-        icon: 'warning',
-        title: '입찰 내역이 없어서 낙찰할 수 없습니다.',
-      });
       return;
     }
+
     try {
       await closeBid(productId);
-      SwalWithReact.fire({
-        icon: 'success',
-        title: '낙찰이 완료되었습니다.',
-      });
+      setProduct((prevProduct) => ({
+        ...prevProduct,
+        winnerId: userInfo.id,
+      }));
+      setRefresh(!refresh);
     } catch (error) {
       console.error('Failed to close bid:', error);
-      SwalWithReact.fire({
-        icon: 'error',
-        title: '낙찰에 실패하였습니다.',
-      });
     }
   };
 
@@ -153,6 +124,15 @@ const DetailPage = () => {
 
   const formatPrice = (price) => {
     return `${formatNumberWithCommas(price)}원`;
+  };
+
+  const handleDeleteClick = async () => {
+    try {
+      await deleteProductById(product._id);
+      navigate('/');
+    } catch (error) {
+      console.error('Failed to delete product:', error);
+    }
   };
 
   if (!product) {
@@ -174,7 +154,17 @@ const DetailPage = () => {
         <Logo>AUCTION</Logo>
         <CloseIcon onClick={handleCloseClick} />
       </LogoContainer>
-      <Text>{product.productName}</Text>
+      <TextContainer>
+        <Text>{product.productName}</Text>
+        {product.userId === userInfo?.id ? (
+          <IconContainer>
+            <EditIcon />
+            <DeleteIcon onClick={handleDeleteClick} />
+          </IconContainer>
+        ) : (
+          <></>
+        )}
+      </TextContainer>
       <SliderContainer>
         <StyledSlider {...sliderSettings}>
           {product.productPhotoUrl.map((image, index) => (
@@ -188,57 +178,126 @@ const DetailPage = () => {
           ))}
         </StyledSlider>
       </SliderContainer>
-      <TopContainer>
-        <OptionContainer>
-          <Option
-            selected={selectedOption === '현황'}
-            onClick={() => handleOptionClick('현황')}
-          >
-            현황
-          </Option>
-          <Option
-            selected={selectedOption === '상세 정보'}
-            onClick={() => handleOptionClick('상세 정보')}
-          >
-            상세 정보
-          </Option>
-        </OptionContainer>
-        {product.userId === userInfo?.id ? (
-          <Option2 onClick={handleCloseBidClick}>낙찰하기</Option2>
-        ) : (
-          <Option2 onClick={handleBidClick}>응찰하기</Option2>
-        )}
-      </TopContainer>
-      {selectedOption === '상세 정보' && (
-        <DetailBox>
-          <DetailContainer>
-            <DetailOption>카테고리</DetailOption>
-            <DetailText>{product.category}</DetailText>
-          </DetailContainer>
-          <DetailContainer>
-            <DetailOption>마감기한</DetailOption>
-            <DetailText>{formatDate(product.dueDate)}</DetailText>
-          </DetailContainer>
-          <DetailContainer>
-            <DetailOption>시작가</DetailOption>
-            <DetailText>{formatPrice(product.price)}</DetailText>
-          </DetailContainer>
-          <DetailContainer>
-            <DetailOption>상세 정보</DetailOption>
-          </DetailContainer>
-          <DetailText>{product.description}</DetailText>
-        </DetailBox>
+      {product.winnerId === undefined ? (
+        <>
+          <TopContainer>
+            <OptionContainer>
+              <Option
+                selected={selectedOption === '현황'}
+                onClick={() => handleOptionClick('현황')}
+              >
+                현황
+              </Option>
+              <Option
+                selected={selectedOption === '상세 정보'}
+                onClick={() => handleOptionClick('상세 정보')}
+              >
+                상세 정보
+              </Option>
+            </OptionContainer>
+            {product.userId === userInfo?.id ? (
+              <Option2 onClick={handleCloseBidClick}>낙찰하기</Option2>
+            ) : (
+              <Option2 onClick={handleBidClick}>응찰하기</Option2>
+            )}
+          </TopContainer>
+          {selectedOption === '상세 정보' && (
+            <DetailBox>
+              <DetailContainer>
+                <DetailOption>카테고리</DetailOption>
+                <DetailText>{product.category}</DetailText>
+              </DetailContainer>
+              <DetailContainer>
+                <DetailOption>마감기한</DetailOption>
+                <DetailText>{formatDate(product.dueDate)}</DetailText>
+              </DetailContainer>
+              <DetailContainer>
+                <DetailOption>현재 최고가</DetailOption>
+                <DetailText>{formatPrice(product.price)}</DetailText>
+              </DetailContainer>
+              <DetailContainer>
+                <DetailOption>상세 정보</DetailOption>
+              </DetailContainer>
+              <DetailText>{product.description}</DetailText>
+            </DetailBox>
+          )}
+          {selectedOption === '현황' && (
+            <HistoryBox>
+              {product.bidHistory
+                .sort((a, b) => b.bidAmount - a.bidAmount)
+                .map((bid, index, array) => (
+                  <BidContainer
+                    key={bid._id}
+                    isHighest={bid.bidAmount === array[0].bidAmount}
+                  >
+                    <BidderInfo>
+                      <BidderName>{bid.bidderName}</BidderName>
+                      {bid.bidAmount === array[0].bidAmount && (
+                        <FaCrown
+                          style={{
+                            marginLeft: '5px',
+                            marginBottom: '7px',
+                          }}
+                        />
+                      )}
+                    </BidderInfo>
+                    <BidAmount>
+                      {formatNumberWithCommas(bid.bidAmount)}원
+                    </BidAmount>
+                  </BidContainer>
+                ))}
+            </HistoryBox>
+          )}
+        </>
+      ) : (
+        <>
+          <Text2>낙찰완료!</Text2>
+          <FinishedInfo>
+            {formatPrice(product.price)}에 낙찰이 완료되었습니다
+          </FinishedInfo>
+        </>
       )}
       <Modal
         isOpen={isModalOpen}
         onClose={handleModalClose}
         imageSrc={modalImageSrc}
       />
+      <BidModal
+        isOpen={isBidModalOpen}
+        onRequestClose={handleBidModalClose}
+        onSubmit={handleBidSubmit}
+        currentPrice={product.price}
+        currentBalance={userInfo.balance}
+      />
     </Box>
   );
 };
 
 export default DetailPage;
+
+const TextContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+`;
+
+const IconContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-right: 20px;
+`;
+
+const EditIcon = styled(MdEdit)`
+  font-size: 24px;
+  margin-right: 20px;
+  color: #aaa;
+`;
+
+const DeleteIcon = styled(MdDelete)`
+  font-size: 24px;
+  color: #aaa;
+`;
 
 const Box = styled.div`
   position: absolute;
@@ -275,6 +334,13 @@ const Text = styled.h1`
   font-family: 'Freesentation-8ExtraBold', sans-serif;
   font-size: 18px;
   margin-left: 20px;
+`;
+
+const Text2 = styled.h1`
+  font-family: 'Freesentation-8ExtraBold', sans-serif;
+  font-size: 18px;
+  margin-left: 20px;
+  margin-top: 10px;
 `;
 
 const SliderContainer = styled.div`
@@ -379,4 +445,42 @@ const DetailOption = styled.div`
 const DetailText = styled.h1`
   font-family: 'Freesentation-1Thin', sans-serif;
   font-size: 16px;
+`;
+
+const HistoryBox = styled.div`
+  padding: 15px 20px;
+  display: flex;
+  flex-direction: column;
+`;
+
+const BidContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  background-color: #eeeeee;
+  border-radius: 10px;
+  padding: 10px;
+  margin-bottom: 5px;
+  background-color: ${({ isHighest }) => (isHighest ? '#ddd' : '#eeeeee')};
+`;
+
+const BidderInfo = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+const BidderName = styled.div`
+  font-family: 'Freesentation-8ExtraBold', sans-serif;
+  font-size: 16px;
+  margin-bottom: 5px;
+`;
+
+const BidAmount = styled.div`
+  font-family: 'Freesentation-1Thin', sans-serif;
+  font-size: 16px;
+`;
+
+const FinishedInfo = styled.h1`
+  font-family: 'Freesentation-1Thin', sans-serif;
+  font-size: 16px;
+  margin: 10px 0 0 20px;
 `;

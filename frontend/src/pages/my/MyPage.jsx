@@ -3,18 +3,13 @@ import styled from 'styled-components';
 import CouponHeader from '../../components/CouponHeader';
 import ProductCard from '../../components/ProductCard';
 import { useNavigate } from 'react-router-dom';
-import { getAccountBalance } from '../../services/user';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { getAccountBalance, logout } from '../../services/user';
 import {
   getSuccessBidUserProducts,
   getUserProducts,
 } from '../../services/product';
-import { logout } from '../../services/user';
 import { logoutSuccess } from '../../store/actions/userActions';
-import {
-  addLikedProduct,
-  removeLikedProduct,
-} from '../../store/actions/likedProductsActions';
 
 const MyPage = () => {
   const [selectedOption, setSelectedOption] = useState('나의 관심 상품');
@@ -37,25 +32,16 @@ const MyPage = () => {
           console.error('Failed to fetch account balance:', error);
         }
       };
+
       fetchBalance();
     }
-    const fetchBalance = async () => {
-      try {
-        const userBalance = await getAccountBalance(userInfo.id);
-        setBalance(userBalance);
-      } catch (error) {
-        console.error('Failed to fetch account balance:', error);
-      }
-    };
-
-    fetchBalance();
   }, [userInfo, navigate]);
 
   useEffect(() => {
     if (userInfo) {
       fetchProducts('나의 관심 상품');
     }
-  }, [userInfo]);
+  }, [userInfo, likedProducts]);
 
   const handleLogoutClick = async () => {
     try {
@@ -66,6 +52,7 @@ const MyPage = () => {
       console.error('Failed to logout:', error);
     }
   };
+
   const fetchProducts = async (option) => {
     try {
       let products;
@@ -95,16 +82,6 @@ const MyPage = () => {
 
   const handleProductCardClick = (productId) => {
     navigate(`/detail/${productId}`);
-  };
-
-  const handleToggleFavorite = (product) => {
-    if (
-      likedProducts.some((likedProduct) => likedProduct._id === product._id)
-    ) {
-      dispatch(removeLikedProduct(product._id));
-    } else {
-      dispatch(addLikedProduct(product));
-    }
   };
 
   // 중복된 상품 제거를 위한 유틸리티 함수
@@ -160,10 +137,6 @@ const MyPage = () => {
             key={product._id}
             product={product}
             onClick={() => handleProductCardClick(product._id)}
-            isFavorite={likedProducts.some(
-              (likedProduct) => likedProduct._id === product._id,
-            )}
-            onToggleFavorite={() => handleToggleFavorite(product)}
           />
         ))}
       </Products>
