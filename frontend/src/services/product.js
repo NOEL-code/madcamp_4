@@ -27,7 +27,7 @@ export const updateProduct = async (productId, productData) => {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
-    }
+    },
   );
   return response.data;
 };
@@ -40,7 +40,7 @@ export const deleteProductById = async (productId) => {
 export const biddingProduct = async (productId, bidData) => {
   const response = await baseInstance.post(
     `/products/bid/${productId}`,
-    bidData
+    bidData,
   );
   return response.data;
 };
@@ -57,14 +57,7 @@ export const getUserProducts = async (userId) => {
 
 export const getSuccessBidUserProducts = async (userId) => {
   const response = await baseInstance.get(
-    `/products/successBid/user/${userId}`
-  );
-  return response.data;
-};
-
-export const getLikedProductListByUserId = async (userId) => {
-  const response = await baseInstance.get(
-    `/products/likedProductList/${userId}`
+    `/products/successBid/user/${userId}`,
   );
   return response.data;
 };

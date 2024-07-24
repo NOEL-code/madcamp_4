@@ -3,7 +3,7 @@ import NavigationBar from './components/NavigationBar';
 import ShopPage from './pages/shop/ShopPage';
 import AddPage from './pages/add/AddPage';
 import MyPage from './pages/my/MyPage';
-import HomePage from './pages/home/HomePage';
+import HomePage from './pages/home/homePage';
 import AlarmPage from './pages/home/AlarmPage';
 import DetailPage from './pages/detail/DetailPage';
 import LoginPage from './pages/users/LoginPage';
@@ -26,8 +26,8 @@ function App() {
           </Route>
           <Route path="/vincent" element={<VincentPage />} />
           <Route path="/cu" element={<CUPage />} />
-          <Route path="/detail" element={<DetailPage />} />
           <Route path="/game" element={<GamePage />} />
+          <Route path="/detail/:productId" element={<DetailPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
         </Routes>

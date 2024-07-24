@@ -1,11 +1,15 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import { MdOutlineFavorite } from 'react-icons/md';
 import { MdOutlineFavoriteBorder } from 'react-icons/md';
 
-const RankingCard = ({ rank, onClick }) => {
-  const [isFavorite, setIsFavorite] = useState(false);
+const RankingCard = ({ rank, product, onClick }) => {
+  const [isFavorite, setIsFavorite] = useState(product.isFavorite);
+
+  useEffect(() => {
+    setIsFavorite(product.isFavorite);
+  }, [product.isFavorite]);
 
   const toggleFavorite = (e) => {
     e.stopPropagation();
@@ -15,17 +19,18 @@ const RankingCard = ({ rank, onClick }) => {
   return (
     <CardContainer onClick={onClick}>
       <ImageContainer>
+        <img src={product.productPhotoUrl[0]} alt={product.productName} />
         <RankContainer>{rank}</RankContainer>
       </ImageContainer>
       <TopContainer>
-        <Category>카테고리</Category>
+        <Category>{product.category}</Category>
         <FavoriteContainer onClick={toggleFavorite}>
           {isFavorite ? <FavoriteIcon /> : <FavoriteBorderIcon />}
-          <FavoriteCount>12</FavoriteCount>
+          <FavoriteCount>{product.likes}</FavoriteCount>
         </FavoriteContainer>
       </TopContainer>
-      <Name>상품명</Name>
-      <Price>20,00,000원</Price>
+      <Name>{product.productName}</Name>
+      <Price>{product.price.toLocaleString()}원</Price>
       <InfoText>실시간 최고 응찰가</InfoText>
     </CardContainer>
   );
@@ -33,6 +38,15 @@ const RankingCard = ({ rank, onClick }) => {
 
 RankingCard.propTypes = {
   rank: PropTypes.number.isRequired,
+  product: PropTypes.shape({
+    _id: PropTypes.string.isRequired,
+    category: PropTypes.string.isRequired,
+    productName: PropTypes.string.isRequired,
+    productPhotoUrl: PropTypes.arrayOf(PropTypes.string).isRequired,
+    price: PropTypes.number.isRequired,
+    likes: PropTypes.number.isRequired,
+    isFavorite: PropTypes.bool.isRequired,
+  }).isRequired,
   onClick: PropTypes.func.isRequired,
 };
 
@@ -51,6 +65,13 @@ const ImageContainer = styled.div`
   background-color: #ccc;
   border-radius: 7px;
   position: relative;
+  overflow: hidden;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
 `;
 
 const TopContainer = styled.div`

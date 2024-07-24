@@ -1,8 +1,11 @@
-// services/userService.js
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { User } = require("../models/User");
-const { makeAccessToken, makeRefreshToken } = require("../utils/makeToken");
+const {
+  makeAccessToken,
+  makeRefreshToken,
+  verifyRefreshToken,
+} = require("../utils/auth");
 const TokenModel = require("./tokenService");
 
 exports.registerUser = async ({
@@ -35,14 +38,8 @@ exports.registerUser = async ({
 
   await user.save();
 
-  const payload = {
-    user: {
-      id: user.id,
-    },
-  };
-
-  const accessToken = makeAccessToken(payload);
-  const refreshToken = makeRefreshToken(payload);
+  const accessToken = makeAccessToken(user._id);
+  const refreshToken = makeRefreshToken(user._id);
 
   await TokenModel.updateRefresh({
     user_id: user.id,
@@ -79,11 +76,8 @@ exports.loginUser = async ({ userEmail, userPassword }) => {
   };
 
   const payload = {
-    user: {
-      id: user.id,
-    },
+    id: user.id,
   };
-
   const accessToken = makeAccessToken(payload);
   const refreshToken = makeRefreshToken(payload);
 
@@ -103,21 +97,15 @@ exports.loginUser = async ({ userEmail, userPassword }) => {
 exports.refreshAccessToken = async (refreshToken) => {
   console.log("refreshAccessToken service called with:", refreshToken);
   try {
-    const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
-    const userToken = await TokenModel.findToken(decoded.user.id);
+    const decoded = await verifyRefreshToken(refreshToken);
+    const userToken = await TokenModel.findToken(decoded.userId);
 
     if (!userToken || userToken.refreshToken !== refreshToken) {
       console.error("refreshAccessToken error: 유효하지 않은 리프레시 토큰");
       throw new Error("유효하지 않은 리프레시 토큰");
     }
 
-    const payload = {
-      user: {
-        id: decoded.user.id,
-      },
-    };
-
-    const newAccessToken = makeAccessToken(payload);
+    const newAccessToken = makeAccessToken(decoded.userId);
     console.log(
       "refreshAccessToken service successful, new accessToken:",
       newAccessToken
@@ -157,26 +145,4 @@ exports.getAccountBalanceByUserId = async (userId) => {
     throw new Error("User not found");
   }
   return user.account.balance;
-};
-
-exports.likeProduct = async (userId, productId) => {
-  const user = await User.findById(userId);
-  if (!user) {
-    throw new Error("User not found");
-  }
-  user.favorites.push({ productId });
-  await user.save();
-  return user;
-};
-
-exports.cancelLikeProduct = async (userId, productId) => {
-  const user = await User.findById(userId);
-  if (!user) {
-    throw new Error("User not found");
-  }
-  user.favorites = user.favorites.filter(
-    (favorite) => favorite.productId.toString() !== productId
-  );
-  await user.save();
-  return user;
 };

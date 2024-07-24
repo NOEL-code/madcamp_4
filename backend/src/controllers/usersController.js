@@ -1,13 +1,9 @@
-// controllers/userController.js
-
 const {
   registerUser,
   loginUser,
-  refreshToken,
+  refreshAccessToken,
   logoutUser,
   getAccountBalanceByUserId,
-  likeProduct,
-  cancelLikeProduct,
 } = require("../services/usersService");
 
 // 회원가입
@@ -51,12 +47,13 @@ exports.loginUser = async (req, res) => {
     });
     res.status(201).json({ accessToken, refreshToken, resUser });
   } catch (err) {
-    if (
-      err.message === "가입된 id가 아님" ||
-      err.message === "비밀번호가 일치하지 않습니다."
-    ) {
+    if (err.message === "가입된 id가 아님") {
       console.error("loginUser error:", err.message);
-      return res.status(400).json({ message: err.message });
+      return res.status(401).json({ message: err.message });
+    }
+    if (err.message === "비밀번호가 일치하지 않습니다.") {
+      console.error("loginUser error:", err.message);
+      return res.status(403).json({ message: err.message });
     }
     console.error("loginUser error:", err.message);
     res.status(500).json({ message: "Server error" });
@@ -87,7 +84,7 @@ exports.refreshToken = async (req, res) => {
   }
 
   try {
-    const { accessToken } = await refreshToken(refreshToken);
+    const accessToken = await refreshAccessToken(refreshToken);
     console.log("refreshToken successful, new accessToken:", accessToken);
     res.status(200).json({ accessToken });
   } catch (err) {
@@ -101,26 +98,6 @@ exports.getAccountBalanceByUserId = async (req, res) => {
   try {
     const balance = await getAccountBalanceByUserId(req.params.userId);
     res.status(200).json({ balance });
-  } catch (err) {
-    res.status(500).json({ message: "Server error" });
-  }
-};
-
-// 좋아요 누르기
-exports.likeProduct = async (req, res) => {
-  try {
-    const user = await likeProduct(req.user.id, req.params.productId);
-    res.status(200).json(user);
-  } catch (err) {
-    res.status(500).json({ message: "Server error" });
-  }
-};
-
-// 좋아요 취소하기
-exports.cancelLikeProduct = async (req, res) => {
-  try {
-    const user = await cancelLikeProduct(req.user.id, req.params.productId);
-    res.status(200).json(user);
   } catch (err) {
     res.status(500).json({ message: "Server error" });
   }

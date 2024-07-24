@@ -17,6 +17,16 @@ const bidHistorySchema = new Schema({
     required: true,
   },
 });
+const categories = [
+  "의류",
+  "가방",
+  "시계",
+  "주얼리",
+  "테크",
+  "가구/리빙",
+  "미술품",
+  "푸드",
+];
 
 // Product 스키마 정의
 const productSchema = new Schema({
@@ -41,6 +51,10 @@ const productSchema = new Schema({
     // 초기값: 판매자가 등록한 최저 입찰가 -> 누군가 입찰을 하면 최고 입찰가로 수정됨
     type: Number,
     required: true,
+  },
+  category: {
+    type: String,
+    enum: categories,
   },
   dueDate: {
     type: Date,
