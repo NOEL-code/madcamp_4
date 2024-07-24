@@ -8,6 +8,8 @@ require("dotenv").config();
 
 var usersRouter = require("./src/routes/usersRouter");
 var productRouter = require("./src/routes/productRouter");
+var likeRouter = require("./src/routes/likeRouter");
+
 var app = express();
 
 const corsMiddleware = require("./src/middlewares/cors");
@@ -27,6 +29,7 @@ app.set("view engine", "jade");
 
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
+
 app.use(logger("dev"));
 app.use(corsMiddleware);
 app.use(express.json());
@@ -36,6 +39,7 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/api/users", usersRouter);
 app.use("/api/products", productRouter);
+app.use("/api/likes", likeRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

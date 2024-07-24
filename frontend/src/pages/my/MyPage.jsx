@@ -1,19 +1,111 @@
-import { useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import styled from 'styled-components';
 import CouponHeader from '../../components/CouponHeader';
 import ProductCard from '../../components/ProductCard';
 import { useNavigate } from 'react-router-dom';
+import { getAccountBalance } from '../../services/user';
+import { useSelector } from 'react-redux';
+import {
+  getSuccessBidUserProducts,
+  getUserProducts,
+} from '../../services/product';
+import { getLikedProductListByUserId } from '../../services/like';
 
 const MyPage = () => {
   const [selectedOption, setSelectedOption] = useState('나의 관심 상품');
+  const [balance, setBalance] = useState(0);
+  const [products, setProducts] = useState([]);
+  const [likedProductIds, setLikedProductIds] = useState([]);
+  const userInfo = useSelector((state) => state.user.userInfo);
   const navigate = useNavigate();
 
-  const handleOptionClick = (option) => {
-    setSelectedOption(option);
+  const fetchLikedProductList = useCallback(async () => {
+    try {
+      const likedProductLists = await getLikedProductListByUserId(userInfo.id);
+      const likedProductId = likedProductLists.map((product) =>
+        product._id.toString(),
+      );
+      setLikedProductIds(likedProductId);
+      console.log(likedProductId);
+    } catch (err) {
+      console.error('Failed to fetch likedProductList', err);
+    }
+  }, [userInfo.id]);
+
+  useEffect(() => {
+    if (!userInfo) {
+      navigate('/login'); // 로그인 페이지로 리디렉션
+    } else {
+      const fetchBalance = async () => {
+        try {
+          const userBalance = await getAccountBalance(userInfo.id);
+          setBalance(userBalance);
+        } catch (error) {
+          console.error('Failed to fetch account balance:', error);
+        }
+      };
+      fetchBalance();
+      fetchLikedProductList();
+    }
+  }, [userInfo, navigate, fetchLikedProductList]);
+
+  useEffect(() => {
+    if (userInfo) {
+      fetchProducts('나의 관심 상품');
+    }
+  }, [likedProductIds, userInfo]);
+
+  const handleLogoutClick = async () => {
+    try {
+      navigate('/login'); // 로그아웃 후 로그인 페이지로 리디렉션
+    } catch (error) {
+      console.error('Failed to logout:', error);
+    }
   };
 
-  const handleProductCardClick = () => {
-    navigate('/detail');
+  const fetchProducts = async (option) => {
+    try {
+      let products;
+      switch (option) {
+        case '판매내역':
+          products = await getUserProducts(userInfo.id);
+          break;
+        case '구매내역':
+          products = await getSuccessBidUserProducts(userInfo.id);
+          break;
+        case '나의 관심 상품':
+        default:
+          products = await getLikedProductListByUserId();
+          break;
+      }
+      setProducts(uniqueProducts(products));
+    } catch (error) {
+      console.error('Failed to fetch products:', error);
+    }
+  };
+
+  const handleOptionClick = (option) => {
+    setProducts([]);
+    setSelectedOption(option);
+    fetchProducts(option);
+  };
+
+  const handleProductCardClick = (productId) => {
+    navigate(`/detail/${productId}`);
+  };
+
+  const handleToggleFavorite = () => {
+    fetchLikedProductList();
+  };
+
+  // 중복된 상품 제거를 위한 유틸리티 함수
+  const uniqueProducts = (products) => {
+    const seen = new Set();
+    return products.filter((product) => {
+      const duplicate = seen.has(product._id.toString());
+      seen.add(product._id.toString());
+      return !duplicate;
+    });
   };
 
   return (
@@ -23,14 +115,14 @@ const MyPage = () => {
         <Logo>AUCTION</Logo>
       </LogoContainer>
       <TopContainer>
-        <Text>안지형님, 안녕하세요!</Text>
-        <Logout>로그아웃</Logout>
+        <Text>{userInfo?.name}님, 안녕하세요!</Text>
+        <Logout onClick={handleLogoutClick}>로그아웃</Logout>
       </TopContainer>
       <Divider />
       <Spacer />
       <Text>나의 잔고</Text>
       <AccountBox>
-        <Account>10,000,000,000원</Account>
+        <Account>{balance.toLocaleString()}원</Account>
       </AccountBox>
       <Divider />
       <OptionContainer>
@@ -54,10 +146,15 @@ const MyPage = () => {
         </Option>
       </OptionContainer>
       <Products>
-        <ProductCard onClick={handleProductCardClick} />
-        <ProductCard onClick={handleProductCardClick} />
-        <ProductCard onClick={handleProductCardClick} />
-        <ProductCard onClick={handleProductCardClick} />
+        {products.map((product) => (
+          <ProductCard
+            key={product._id}
+            product={product}
+            onClick={() => handleProductCardClick(product._id)}
+            isFavorite={likedProductIds.includes(product._id.toString())}
+            onToggleFavorite={handleToggleFavorite}
+          />
+        ))}
       </Products>
     </Box>
   );
@@ -111,6 +208,7 @@ const Logout = styled.h1`
   border-radius: 15px;
   padding: 5px 10px;
   margin-right: 20px;
+  cursor: pointer;
 `;
 
 const Divider = styled.div`

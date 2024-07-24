@@ -1,36 +1,57 @@
 import { useState } from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
-import { MdOutlineFavorite } from 'react-icons/md';
-import { MdOutlineFavoriteBorder } from 'react-icons/md';
+import { MdOutlineFavorite, MdOutlineFavoriteBorder } from 'react-icons/md';
+import { likeProduct, cancelLikeProduct } from '../services/like';
 
-const ProductCard = ({ onClick }) => {
-  const [isFavorite, setIsFavorite] = useState(false);
+const ProductCard = ({ product, onClick, isFavorite, onToggleFavorite }) => {
+  const [isFavoriteState, setIsFavoriteState] = useState(isFavorite);
 
-  const toggleFavorite = () => {
-    setIsFavorite(!isFavorite);
+  const toggleFavorite = async (e) => {
+    e.stopPropagation(); // 클릭 이벤트가 부모 요소로 전파되지 않도록 합니다.
+    try {
+      if (!isFavoriteState) {
+        await likeProduct(product._id);
+      } else {
+        await cancelLikeProduct(product._id);
+      }
+      setIsFavoriteState(!isFavoriteState);
+      onToggleFavorite(); // MyPage 컴포넌트에 좋아요 상태 변경 알림
+    } catch (error) {
+      console.error('Failed to update favorite status:', error);
+    }
   };
 
   return (
     <Product onClick={onClick}>
-      <ImageContainer />
+      <ImageContainer>
+        <img src={product.productPhotoUrl[0]} alt={product.productName} />
+      </ImageContainer>
       <TopContainer>
-        <Category>카테고리</Category>
+        <Category>{product.category}</Category>
         <FavoriteContainer onClick={toggleFavorite}>
-          {isFavorite ? <FavoriteIcon /> : <FavoriteBorderIcon />}
-          <FavoriteCount>12</FavoriteCount>
+          {isFavoriteState ? <FavoriteIcon /> : <FavoriteBorderIcon />}
         </FavoriteContainer>
       </TopContainer>
-      <Name>상품명</Name>
-      <Price>20,00,000원</Price>
+      <Name>{product.productName}</Name>
+      <Price>{product.price.toLocaleString()}원</Price>
       <InfoText>실시간 최고 응찰가</InfoText>
     </Product>
   );
 };
 
 ProductCard.propTypes = {
-  rank: PropTypes.number.isRequired,
+  product: PropTypes.shape({
+    _id: PropTypes.string.isRequired,
+    category: PropTypes.string.isRequired,
+    productName: PropTypes.string.isRequired,
+    productPhotoUrl: PropTypes.arrayOf(PropTypes.string).isRequired,
+    price: PropTypes.number.isRequired,
+    likes: PropTypes.number.isRequired,
+  }).isRequired,
   onClick: PropTypes.func.isRequired,
+  isFavorite: PropTypes.bool.isRequired,
+  onToggleFavorite: PropTypes.func.isRequired,
 };
 
 export default ProductCard;
@@ -48,6 +69,13 @@ const ImageContainer = styled.div`
   background-color: #ccc;
   border-radius: 7px;
   position: relative;
+  overflow: hidden;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
 `;
 
 const TopContainer = styled.div`
@@ -79,12 +107,6 @@ const FavoriteBorderIcon = styled(MdOutlineFavoriteBorder)`
   color: #a0153e;
 `;
 
-const FavoriteCount = styled.h1`
-  font-family: 'Freesentation-3Light', sans-serif;
-  font-size: 14px;
-  color: #ccc;
-`;
-
 const Name = styled.h1`
   font-family: 'Freesentation-3Light', sans-serif;
   font-size: 14px;
@@ -104,5 +126,6 @@ const InfoText = styled.h1`
   font-size: 9px;
   padding: 0 5px;
   margin-top: 1px;
+  margin-left: 3px;
   color: #454545;
 `;

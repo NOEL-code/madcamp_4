@@ -1,14 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import CouponHeader from '../../components/CouponHeader';
 import ProductCard from '../../components/ProductCard';
 import { useNavigate } from 'react-router-dom';
-
-import { IoIosArrowDown } from 'react-icons/io';
-import { IoIosArrowUp } from 'react-icons/io';
+import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
 import { BiSortAlt2 } from 'react-icons/bi';
 import { FaCheck } from 'react-icons/fa6';
-
 import clothImage from '../../assets/images/cloth.png';
 import bagImage from '../../assets/images/bag.png';
 import watchImage from '../../assets/images/watch.png';
@@ -17,6 +14,7 @@ import techImage from '../../assets/images/tech.png';
 import livingImage from '../../assets/images/living.png';
 import artImage from '../../assets/images/art.png';
 import foodImage from '../../assets/images/food.png';
+import { getProducts } from '../../services/product';
 
 const categories = [
   { name: '의류', image: clothImage },
@@ -30,12 +28,15 @@ const categories = [
 ];
 
 const ShopPage = () => {
-  const [selectedOption, setSelectedOption] = useState('카테고리');
+  const [selectedCategory, setSelectedCategory] = useState('카테고리');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [products, setProducts] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortOrder, setSortOrder] = useState(null); // null: no sort, 'asc': ascending, 'desc': descending
   const navigate = useNavigate();
 
-  const handleOptionClick = (option) => {
-    setSelectedOption(option);
+  const handleCategoryClick = (category) => {
+    setSelectedCategory(category);
     setIsDropdownOpen(false);
   };
 
@@ -43,9 +44,47 @@ const ShopPage = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
 
-  const handleProductCardClick = () => {
-    navigate('/detail');
+  const handleProductCardClick = (productId) => {
+    navigate(`/detail/${productId}`);
   };
+
+  const handleSortClick = () => {
+    if (sortOrder === null || sortOrder === 'desc') {
+      setSortOrder('asc');
+    } else {
+      setSortOrder('desc');
+    }
+  };
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      const productList = await getProducts();
+      setProducts(productList);
+    };
+
+    fetchProducts();
+  }, []);
+
+  const sortProducts = (products) => {
+    if (sortOrder === 'asc') {
+      return products.sort((a, b) => b.likesCount - a.likesCount);
+    } else if (sortOrder === 'desc') {
+      return products.sort((a, b) => a.likesCount - b.likesCount);
+    }
+    return products;
+  };
+
+  const filteredProducts = sortProducts(
+    products.filter((product) => {
+      const matchesCategory =
+        selectedCategory === '카테고리' ||
+        product.category === selectedCategory;
+      const matchesSearchTerm = product.productName
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase());
+      return matchesCategory && matchesSearchTerm;
+    }),
+  );
 
   return (
     <>
@@ -55,7 +94,12 @@ const ShopPage = () => {
           <LogoContainer>
             <Logo>AUCTION</Logo>
           </LogoContainer>
-          <SearchInput type="text" placeholder="검색" />
+          <SearchInput
+            type="text"
+            placeholder="검색"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
           <Categories>
             {categories.map((category, index) => (
               <CategoryContainer
@@ -63,6 +107,9 @@ const ShopPage = () => {
                 onClick={() => handleOptionClick(category.name)}
               >
                 <Category isSelected={selectedOption === category.name}>
+                onClick={() => handleCategoryClick(category.name)}
+              >
+                <Category>
                   <CategoryImage
                     src={category.image}
                     category={category.name}
@@ -75,17 +122,22 @@ const ShopPage = () => {
           <Divider />
           <FilterContainer>
             <CategoryOptionContainer onClick={toggleDropdown}>
-              <CategoryOption>{selectedOption}</CategoryOption>
+              <CategoryOption>{selectedCategory}</CategoryOption>
               {isDropdownOpen ? <ArrowUpIcon /> : <ArrowDownIcon />}
               {isDropdownOpen && (
                 <DropdownMenu>
+                  <DropdownItem onClick={() => handleCategoryClick('카테고리')}>
+                    전체보기
+                    {selectedCategory === '카테고리' && <CheckIcon />}
+                  </DropdownItem>
+                  <DropdownDivider />
                   {categories.map((category, index) => (
                     <div key={index}>
                       <DropdownItem
-                        onClick={() => handleOptionClick(category.name)}
+                        onClick={() => handleCategoryClick(category.name)}
                       >
                         {category.name}
-                        {selectedOption === category && <CheckIcon />}
+                        {selectedCategory === category.name && <CheckIcon />}
                       </DropdownItem>
                       {index < categories.length - 1 && <DropdownDivider />}
                     </div>
@@ -93,16 +145,19 @@ const ShopPage = () => {
                 </DropdownMenu>
               )}
             </CategoryOptionContainer>
-            <SortContainer>
+            <SortContainer onClick={handleSortClick}>
               <SortOption>인기순</SortOption>
               <SortIcon />
             </SortContainer>
           </FilterContainer>
           <Products>
-            <ProductCard onClick={handleProductCardClick} />
-            <ProductCard onClick={handleProductCardClick} />
-            <ProductCard onClick={handleProductCardClick} />
-            <ProductCard onClick={handleProductCardClick} />
+            {filteredProducts.map((product) => (
+              <ProductCard
+                key={product._id}
+                product={product}
+                onClick={() => handleProductCardClick(product._id)}
+              />
+            ))}
           </Products>
         </main>
       </Container>

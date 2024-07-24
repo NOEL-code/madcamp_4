@@ -1,7 +1,7 @@
 import { baseInstance } from './api';
 import { setCookie, getCookie, removeCookie } from './cookie';
-import store from '../store/store';
-import { loginSuccess } from '../store/actions/userAction';
+import { store } from '../store/store';
+import { loginSuccess, logoutSuccess } from '../store/actions/userActions';
 
 export const join = async (userData) => {
   const response = await baseInstance.post('/users/register', userData);
@@ -9,26 +9,49 @@ export const join = async (userData) => {
 };
 
 export const login = async (userEmail, userPassword) => {
-  const response = await baseInstance.post('/users/login', {
-    userEmail,
-    userPassword,
-  });
-  console.log('login success', response);
-  const accessToken = response.headers.authorization;
-  const refreshToken = response.headers['refresh-token'];
-  const userInfo = response.data.response;
-  console.log(accessToken);
-  store.dispatch(loginSuccess(userInfo));
-  setCookie('accessToken', accessToken, { path: '/' });
-  setCookie('refreshToken', refreshToken, { path: '/' });
-  console.log('set Token', response);
-  return { userInfo, accessToken, refreshToken };
+  try {
+    const response = await baseInstance.post('/users/login', {
+      userEmail,
+      userPassword,
+    });
+    console.log('login success', response);
+
+    const accessToken = response.data.accessToken || '';
+    const refreshToken = response.data.refreshToken || '';
+    const userInfo = response.data.resUser;
+
+    if (accessToken) {
+      setCookie('accessToken', accessToken, { path: '/' });
+    } else {
+      console.error('accessToken is undefined');
+    }
+
+    if (refreshToken) {
+      setCookie('refreshToken', refreshToken, { path: '/' });
+    } else {
+      console.error('refreshToken is undefined');
+    }
+
+    store.dispatch(loginSuccess(userInfo));
+
+    return { userInfo, accessToken, refreshToken };
+  } catch (err) {
+    if (err.response && err.response.status === 403) {
+      throw new Error('비밀번호가 일치하지 않습니다.');
+    } else if (err.response && err.response.status === 401) {
+      throw new Error('아이디가 존재하지 않습니다.');
+    } else {
+      throw new Error('로그인에 실패했습니다. 다시 시도해주세요.');
+    }
+  }
 };
 
 export const logout = async () => {
   const response = await baseInstance.post('/users/logout');
   removeCookie('accessToken');
   removeCookie('refreshToken');
+  store.dispatch(logoutSuccess()); // 로그아웃 액션 디스패치
+
   return response.data;
 };
 
@@ -47,14 +70,4 @@ export const refreshAccessToken = async () => {
 export const getAccountBalance = async (userId) => {
   const response = await baseInstance.get(`/users/accountBalance/${userId}`);
   return response.data.balance;
-};
-
-export const likeProduct = async (productId) => {
-  const response = await baseInstance.post(`/users/like/${productId}`);
-  return response.data;
-};
-
-export const cancelLikeProduct = async (productId) => {
-  const response = await baseInstance.delete(`/users/like/${productId}`);
-  return response.data;
 };

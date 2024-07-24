@@ -1,15 +1,40 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { IoClose } from 'react-icons/io5';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import Slider from 'react-slick';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
 import CouponHeader from '../../components/CouponHeader';
+import {
+  getProductById,
+  biddingProduct,
+  closeBid,
+} from '../../services/product';
+import { useSelector } from 'react-redux';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 
 const DetailPage = () => {
   const [selectedOption, setSelectedOption] = useState('현황');
+  const [product, setProduct] = useState(null);
   const navigate = useNavigate();
+  const { productId } = useParams();
+  const userInfo = useSelector((state) => state.user.userInfo);
+  const SwalWithReact = withReactContent(Swal);
+
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        const productData = await getProductById(productId);
+        setProduct(productData);
+      } catch (error) {
+        console.error('Failed to fetch product:', error);
+      }
+    };
+
+    fetchProduct();
+  }, [productId]);
 
   const handleOptionClick = (option) => {
     setSelectedOption(option);
@@ -19,13 +44,85 @@ const DetailPage = () => {
     navigate(-1);
   };
 
-  const sampleImages = [
-    'https://via.placeholder.com/600',
-    'https://via.placeholder.com/600',
-    'https://via.placeholder.com/600',
-    'https://via.placeholder.com/600',
-    'https://via.placeholder.com/600',
-  ];
+  const formatNumberWithCommas = (number) => {
+    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  };
+
+  const handleBidClick = async () => {
+    const { value: bidAmount } = await SwalWithReact.fire({
+      title: '응찰 금액 입력',
+      input: 'text',
+      inputLabel: '응찰할 금액을 입력하세요',
+      inputPlaceholder: '금액 입력',
+      showCancelButton: true,
+      inputAttributes: {
+        type: 'text',
+      },
+      inputValue: '',
+      inputValidator: (value) => {
+        const numericValue = parseInt(value.replace(/,/g, ''), 10);
+        if (!numericValue) {
+          return '금액을 입력하세요!';
+        }
+        if (isNaN(numericValue) || numericValue <= 0) {
+          return '유효한 금액을 입력하세요!';
+        }
+        if (numericValue <= product.price) {
+          return `입찰 금액은 시작가보다 높아야 합니다! 현재 시작가: ${formatNumberWithCommas(
+            product.price,
+          )}원`;
+        }
+      },
+      preConfirm: (value) => {
+        const numericValue = parseInt(value.replace(/,/g, ''), 10);
+        return numericValue;
+      },
+    });
+
+    if (bidAmount) {
+      try {
+        const bidData = { bidAmount, bidderId: userInfo.id };
+        await biddingProduct(productId, bidData);
+        SwalWithReact.fire({
+          icon: 'success',
+          title: '응찰에 성공하였습니다.',
+        });
+      } catch (error) {
+        console.error('Failed to bid:', error);
+        SwalWithReact.fire({
+          icon: 'error',
+          title: '응찰에 실패하였습니다.',
+        });
+      }
+    }
+  };
+
+  const handleCloseBidClick = async () => {
+    if (!product.bidHistory || product.bidHistory.length === 0) {
+      SwalWithReact.fire({
+        icon: 'warning',
+        title: '입찰 내역이 없어서 낙찰할 수 없습니다.',
+      });
+      return;
+    }
+    try {
+      await closeBid(productId);
+      SwalWithReact.fire({
+        icon: 'success',
+        title: '낙찰이 완료되었습니다.',
+      });
+    } catch (error) {
+      console.error('Failed to close bid:', error);
+      SwalWithReact.fire({
+        icon: 'error',
+        title: '낙찰에 실패하였습니다.',
+      });
+    }
+  };
+
+  if (!product) {
+    return <div>Loading...</div>;
+  }
 
   const sliderSettings = {
     dots: true,
@@ -42,12 +139,12 @@ const DetailPage = () => {
         <Logo>AUCTION</Logo>
         <CloseIcon onClick={handleCloseClick} />
       </LogoContainer>
-      <Text>상품명</Text>
+      <Text>{product.productName}</Text>
       <SliderContainer>
         <StyledSlider {...sliderSettings}>
-          {sampleImages.map((image, index) => (
+          {product.productPhotoUrl.map((image, index) => (
             <ImageWrapper key={index}>
-              <img src={image} alt={`Sample ${index + 1}`} />
+              <img src={image} alt={`Product ${index + 1}`} />
             </ImageWrapper>
           ))}
         </StyledSlider>
@@ -67,8 +164,15 @@ const DetailPage = () => {
             상세 정보
           </Option>
         </OptionContainer>
-        <Option2>응찰하기</Option2>
+        {userInfo.id === product.userId ? (
+          <Option2 onClick={handleCloseBidClick}>낙찰하기</Option2>
+        ) : (
+          <Option2 onClick={handleBidClick}>응찰하기</Option2>
+        )}
       </TopContainer>
+      {selectedOption === '상세 정보' && (
+        <Description>{product.description}</Description>
+      )}
     </Box>
   );
 };
@@ -181,4 +285,14 @@ const Option2 = styled.h1`
   padding: 5px 10px;
   background-color: #a0153e;
   color: white;
+  cursor: pointer;
+`;
+
+const Description = styled.div`
+  font-family: 'Freesentation-6SemiBold', sans-serif;
+  padding: 10px 20px;
+  margin-top: 10px;
+  background-color: #eeeeee;
+  border-radius: 10px;
+  color: #454545;
 `;

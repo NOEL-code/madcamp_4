@@ -21,16 +21,21 @@ baseInstance.interceptors.request.use(
   },
   (error) => {
     return Promise.reject(error);
-  }
+  },
 );
 
 baseInstance.interceptors.response.use(
   (response) => response,
   async (error) => {
-    console.log(error);
     const statusCode = error.response?.status;
-    if (statusCode === 401) {
-      console.log('토큰 인증실패');
+    const originalRequest = error.config;
+
+    if (originalRequest.url.includes('/users/login') && statusCode === 401) {
+      return Promise.reject(error);
+    }
+
+    if (statusCode === 403 && !originalRequest._retry) {
+      originalRequest._retry = true;
       try {
         const refreshToken = getCookie('refreshToken');
         if (!refreshToken) {
@@ -39,28 +44,23 @@ baseInstance.interceptors.response.use(
         }
         const refreshResponse = await axios.post(
           `${BASE_URL}/users/refresh-token`,
-          null,
-          {
-            headers: {
-              'Refresh-Token': `${refreshToken}`,
-            },
-          }
+          { refreshToken }, // 수정된 부분: refreshToken을 바디로 전송
         );
-        console.log('refreshResponse', refreshResponse);
-        const newAccessToken = refreshResponse.headers.authorization;
+        const newAccessToken = refreshResponse.data.accessToken;
         setCookie('accessToken', newAccessToken, {
           path: '/',
         });
 
-        error.config.headers.Authorization = newAccessToken;
+        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
 
-        return axios(error.config);
+        return axios(originalRequest);
       } catch (err) {
         removeCookie('accessToken');
         removeCookie('refreshToken');
         return Promise.reject(err);
       }
     }
+
     return Promise.reject(error);
-  }
+  },
 );
