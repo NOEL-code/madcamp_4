@@ -9,6 +9,7 @@ import CouponHeader from '../../components/CouponHeader';
 import { getProductById } from '../../services/product';
 import { useSelector } from 'react-redux';
 import { getUserNameById } from '../../services/user';
+import { updateScore, findGameByProductId } from '../../services/bid';
 
 const GamePage = () => {
   const navigate = useNavigate();
@@ -59,6 +60,19 @@ const GamePage = () => {
     fetchUserNames();
   }, [productId, sellerId, tiedBidders, currentUserId]);
 
+  const fetchGameScores = async () => {
+    try {
+      const gameData = await findGameByProductId(productId);
+      const scores = {};
+      gameData.users.forEach((user) => {
+        scores[user.userId] = user.score;
+      });
+      setBidderScores(scores);
+    } catch (error) {
+      console.error('Failed to fetch game scores:', error);
+    }
+  };
+
   const handleCloseClick = () => {
     navigate('/');
   };
@@ -100,10 +114,9 @@ const GamePage = () => {
             setIsGameRunning(false);
 
             // 게임 종료 후 점수 업데이트
-            setBidderScores((prevScores) => ({
-              ...prevScores,
-              [currentUserId]: score,
-            }));
+            updateScore(productId, currentUserId, score).then(() => {
+              fetchGameScores();
+            });
 
             setScore(0);
             return 10;
@@ -140,7 +153,7 @@ const GamePage = () => {
               <StartIcon />
               <ButtonText>시작하기</ButtonText>
             </Button>
-            <Button onClick={stopGame} type="button" disabled={isGameRunning}>
+            <Button onClick={stopGame} type="button" disabled={!isGameRunning}>
               <PauseIcon />
               <ButtonText>일시 정지</ButtonText>
             </Button>
