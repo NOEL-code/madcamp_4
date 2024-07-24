@@ -2,11 +2,15 @@ import { useState } from 'react';
 import styled from 'styled-components';
 import { IoClose } from 'react-icons/io5';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 import { login } from '../../services/user';
 import CouponHeader from '../../components/CouponHeader';
+import { getLikedProductListByUserId } from '../../services/like';
+import { setLikedProducts } from '../../store/actions/likedProductsActions'; // Import the action
 
 const LoginPage = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [userEmail, setUserEmail] = useState('');
   const [userPassword, setUserPassword] = useState('');
   const [error, setError] = useState(null);
@@ -19,10 +23,11 @@ const LoginPage = () => {
     e.preventDefault();
     try {
       await login(userEmail, userPassword);
+      const likedProducts = await getLikedProductListByUserId();
+      dispatch(setLikedProducts(likedProducts)); // Dispatch the action
       navigate('/'); // 로그인 후 메인 페이지로 이동
     } catch (err) {
       console.log(err);
-      console.log(typeof err);
       setError(err.toString());
     }
   };

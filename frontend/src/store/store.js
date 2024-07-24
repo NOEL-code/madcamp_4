@@ -3,6 +3,7 @@ import { thunk } from 'redux-thunk';
 import userReducer from './reducers/userReducer';
 import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage'; // 로컬 스토리지를 사용합니다
+import likedProductsReducer from './reducers/likedProductsReducer';
 
 const persistConfig = {
   key: 'root',
@@ -11,6 +12,7 @@ const persistConfig = {
 
 const rootReducer = combineReducers({
   user: userReducer,
+  likedProducts: likedProductsReducer,
   // 다른 리듀서를 추가할 수 있습니다.
 });
 

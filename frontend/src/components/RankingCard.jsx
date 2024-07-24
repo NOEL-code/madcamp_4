@@ -1,19 +1,25 @@
 import { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
-import { MdOutlineFavorite } from 'react-icons/md';
-import { MdOutlineFavoriteBorder } from 'react-icons/md';
+import { MdOutlineFavorite, MdOutlineFavoriteBorder } from 'react-icons/md';
 
-const RankingCard = ({ rank, product, onClick }) => {
-  const [isFavorite, setIsFavorite] = useState(product.isFavorite);
+const RankingCard = ({
+  rank,
+  product,
+  isFavorite,
+  onToggleFavorite,
+  onClick,
+}) => {
+  const [favorite, setFavorite] = useState(isFavorite);
 
   useEffect(() => {
-    setIsFavorite(product.isFavorite);
-  }, [product.isFavorite]);
+    setFavorite(isFavorite);
+  }, [isFavorite]);
 
   const toggleFavorite = (e) => {
     e.stopPropagation();
-    setIsFavorite(!isFavorite);
+    setFavorite(!favorite);
+    onToggleFavorite();
   };
 
   return (
@@ -25,7 +31,7 @@ const RankingCard = ({ rank, product, onClick }) => {
       <TopContainer>
         <Category>{product.category}</Category>
         <FavoriteContainer onClick={toggleFavorite}>
-          {isFavorite ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+          {favorite ? <FavoriteIcon /> : <FavoriteBorderIcon />}
           <FavoriteCount>{product.likes}</FavoriteCount>
         </FavoriteContainer>
       </TopContainer>
@@ -45,8 +51,9 @@ RankingCard.propTypes = {
     productPhotoUrl: PropTypes.arrayOf(PropTypes.string).isRequired,
     price: PropTypes.number.isRequired,
     likes: PropTypes.number.isRequired,
-    isFavorite: PropTypes.bool.isRequired,
   }).isRequired,
+  isFavorite: PropTypes.bool.isRequired,
+  onToggleFavorite: PropTypes.func.isRequired,
   onClick: PropTypes.func.isRequired,
 };
 
