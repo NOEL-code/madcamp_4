@@ -7,8 +7,6 @@ const {
   refreshToken,
   logoutUser,
   getAccountBalanceByUserId,
-  likeProduct,
-  cancelLikeProduct,
 } = require("../controllers/usersController");
 
 router.post("/register", registerUser); // 회원가입

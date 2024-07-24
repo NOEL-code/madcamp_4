@@ -7,6 +7,9 @@ const bidHistorySchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: "User",
   },
+  bidderName: {
+    type: String,
+  },
   bidAmount: {
     type: Number,
     required: true,
