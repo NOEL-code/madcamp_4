@@ -5,12 +5,9 @@ import { useNavigate, useParams } from 'react-router-dom';
 import Slider from 'react-slick';
 import CouponHeader from '../../components/CouponHeader';
 import { FaCrown } from 'react-icons/fa';
-import {
-  getProductById,
-  biddingProduct,
-  deleteProductById,
-  closeBid,
-} from '../../services/product';
+import { getProductById, deleteProductById } from '../../services/product';
+import { closeBid } from '../../services/bid';
+import { biddingProduct } from '../../services/bid';
 import { useSelector } from 'react-redux';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
