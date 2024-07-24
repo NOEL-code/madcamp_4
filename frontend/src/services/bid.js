@@ -15,6 +15,16 @@ export const updateSameScoreBid = async (productId) => {
   return response.data;
 };
 
+export const findGameByProductId = async (productId) => {
+  try {
+    const response = await baseInstance.get(`/bid/game/${productId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Failed to get Game');
+    throw error;
+  }
+};
+
 export const createGame = async (productId, sellerId, users) => {
   try {
     const gameData = {
@@ -30,3 +40,20 @@ export const createGame = async (productId, sellerId, users) => {
     throw error;
   }
 };
+
+export const updateScore = async (productId, userId, score) => {
+  try {
+    const updateData = {
+      productId: productId,
+      userId: userId,
+      score: score,
+    };
+    const response = await baseInstance.post('/bid/update-score', updateData);
+    return response.data;
+  } catch (error) {
+    console.error('Failed to update score');
+  }
+};
+
+// export const closeGame = async ()
+// router.post('/close-game', authenticateToken, closeGame); // 게임 종료 -> 낙찰하기

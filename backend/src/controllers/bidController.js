@@ -3,6 +3,9 @@ const {
   closeBid,
   updateSameScoreBid,
   createGame,
+  updateScore,
+  closeGame,
+  findGameByProductId,
 } = require("../services/bidService");
 
 // 입찰하기
@@ -35,8 +38,18 @@ exports.updateSameScoreBid = async (req, res) => {
   }
 };
 
+exports.findGameByProductId = async (req, res) => {
+  const productId = req.params.productId;
+  try {
+    const game = await findGameByProductId(productId);
+    res.status(200).json(game);
+  } catch (err) {
+    console.error("Error in find Game");
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
 exports.createGame = async (req, res) => {
-  console.log(req.body);
   try {
     const game = await createGame(req.body);
     res.status(200).json(game);
@@ -53,6 +66,18 @@ exports.updateScore = async (req, res) => {
     res.status(200).json(game);
   } catch (err) {
     console.error("Error in updateScore", err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+exports.closeGame = async (req, res) => {
+  const { productId, userId, bidAmount } = req.body;
+
+  try {
+    const closeGame = await closeGame(productId, userId, bidAmount);
+    res.status(200).json(closeGame);
+  } catch (error) {
+    console.error("Error in closeGame");
     res.status(500).json({ message: "Server error" });
   }
 };
