@@ -5,6 +5,7 @@ import { PiBell } from 'react-icons/pi';
 import { FaRankingStar } from 'react-icons/fa6';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
+import { useDispatch, useSelector } from 'react-redux';
 
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
@@ -17,13 +18,19 @@ import Vincent from '../../assets/images/vincent.png';
 import CU from '../../assets/images/cu.png';
 import Gavel from '../../assets/models/Gavel';
 import { getProducts } from '../../services/product';
+import {
+  addLikedProduct,
+  removeLikedProduct,
+} from '../../store/actions/likedProductsActions';
 
 
 const HomePage = () => {
   const [selectedOption, setSelectedOption] = useState('최다 관심순');
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const likedProducts = useSelector((state) => state.likedProducts.products);
   const [products, setProducts] = useState([]);
   const [sortedProducts, setSortedProducts] = useState([]);
-  const navigate = useNavigate();
 
   const handleOptionClick = (option) => {
     setSelectedOption(option);
@@ -36,6 +43,16 @@ const HomePage = () => {
   const handleRankingCardClick = (productId) => {
     navigate(`/detail/${productId}`);
   };
+
+
+  const handleToggleFavorite = (product) => {
+    if (
+      likedProducts.some((likedProduct) => likedProduct._id === product._id)
+    ) {
+      dispatch(removeLikedProduct(product._id));
+    } else {
+      dispatch(addLikedProduct(product));
+    }
 
 
   const handleVincentClick = () => {
@@ -52,12 +69,17 @@ const HomePage = () => {
     speed: 500,
     slidesToShow: 1,
     slidesToScroll: 1,
+
   };
 
   useEffect(() => {
     const fetchProducts = async () => {
-      const fetchedProducts = await getProducts();
-      setProducts(fetchedProducts);
+      try {
+        const fetchedProducts = await getProducts();
+        setProducts(fetchedProducts);
+      } catch (error) {
+        console.error('Failed to fetch products:', error);
+      }
     };
 
     fetchProducts();
@@ -138,6 +160,10 @@ const HomePage = () => {
               rank={index + 1}
               product={product}
               onClick={() => handleRankingCardClick(product._id)}
+              isFavorite={likedProducts.some(
+                (likedProduct) => likedProduct._id === product._id,
+              )}
+              onToggleFavorite={() => handleToggleFavorite(product)}
             />
           ))}
         </RankingCardContainer>
