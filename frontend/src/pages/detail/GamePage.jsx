@@ -7,13 +7,23 @@ import { FaPause } from 'react-icons/fa';
 import { useNavigate, useLocation } from 'react-router-dom';
 import CouponHeader from '../../components/CouponHeader';
 import { getProductById } from '../../services/product';
+import { useSelector } from 'react-redux';
+import { getUserNameById } from '../../services/user';
+import { updateScore, findGameByProductId } from '../../services/bid';
 
 const GamePage = () => {
   const navigate = useNavigate();
   const { state } = useLocation(); // useLocation 훅을 사용하여 state를 받아옴
   const { productId, sellerId, tiedBidders } = state;
 
+  const userInfo = useSelector((state) => state.user.userInfo);
+  const currentUserId = userInfo?.id;
+
   const [product, setProduct] = useState(null);
+  const [sellerName, setSellerName] = useState('');
+  const [bidderNames, setBidderNames] = useState({});
+  const [currentUserName, setCurrentUserName] = useState('');
+  const [bidderScores, setBidderScores] = useState({});
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -25,8 +35,43 @@ const GamePage = () => {
       }
     };
 
+    const fetchUserNames = async () => {
+      try {
+        const sellerName = await getUserNameById(sellerId);
+        setSellerName(sellerName);
+
+        const bidderNames = {};
+        for (const bidderId of tiedBidders) {
+          const name = await getUserNameById(bidderId);
+          bidderNames[bidderId] = name;
+        }
+        setBidderNames(bidderNames);
+
+        if (currentUserId) {
+          const currentUserName = await getUserNameById(currentUserId);
+          setCurrentUserName(currentUserName);
+        }
+      } catch (error) {
+        console.error('Failed to fetch user names:', error);
+      }
+    };
+
     fetchProduct();
-  }, [productId]);
+    fetchUserNames();
+  }, [productId, sellerId, tiedBidders, currentUserId]);
+
+  const fetchGameScores = async () => {
+    try {
+      const gameData = await findGameByProductId(productId);
+      const scores = {};
+      gameData.users.forEach((user) => {
+        scores[user.userId] = user.score;
+      });
+      setBidderScores(scores);
+    } catch (error) {
+      console.error('Failed to fetch game scores:', error);
+    }
+  };
 
   const handleCloseClick = () => {
     navigate('/');
@@ -67,6 +112,12 @@ const GamePage = () => {
           if (prevTime === 1) {
             alert(`짝짝짝! 점수는 ${score} 입니다.`);
             setIsGameRunning(false);
+
+            // 게임 종료 후 점수 업데이트
+            updateScore(productId, currentUserId, score).then(() => {
+              fetchGameScores();
+            });
+
             setScore(0);
             return 10;
           }
@@ -102,7 +153,7 @@ const GamePage = () => {
               <StartIcon />
               <ButtonText>시작하기</ButtonText>
             </Button>
-            <Button onClick={stopGame} type="button" disabled={isGameRunning}>
+            <Button onClick={stopGame} type="button" disabled={!isGameRunning}>
               <PauseIcon />
               <ButtonText>일시 정지</ButtonText>
             </Button>
@@ -121,6 +172,17 @@ const GamePage = () => {
           <Button2 type="button">SCORE {score}</Button2>
           <Button2 type="button">{time} SECONDS LEFT</Button2>
         </Button2Container>
+        <BiddersContainer>
+          {tiedBidders.map((bidderId, index) => (
+            <BidderItem key={index}>
+              <BidderNickname>
+                {bidderNames[bidderId] || 'Loading...'}
+              </BidderNickname>
+              <BidderScore>{bidderScores[bidderId]}</BidderScore>
+            </BidderItem>
+          ))}
+        </BiddersContainer>
+        {currentUserId === sellerId && <FinishButton>낙찰하기</FinishButton>}
       </Wrap>
     </Box>
   );
@@ -251,4 +313,43 @@ const MoleListLi = styled.li`
   display: flex;
   justify-content: center;
   align-items: center;
+`;
+
+const BiddersContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  margin-top: 30px;
+`;
+
+const BidderItem = styled.div`
+  padding: 10px 20px;
+  border-radius: 10px;
+  background-color: #eee;
+  margin-bottom: 10px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+`;
+
+const BidderNickname = styled.h1`
+  font-family: 'Freesentation-6SemiBold', sans-serif;
+  font-size: 16px;
+  color: #000;
+`;
+
+const BidderScore = styled.h1`
+  font-family: 'Freesentation-6SemiBold', sans-serif;
+  font-size: 16px;
+  color: #000;
+`;
+
+const FinishButton = styled.div`
+  width: 100%;
+  font-family: 'Freesentation-8ExtraBold', sans-serif;
+  font-size: 16px;
+  color: #a0153e;
+  text-align: center;
+  padding: 10px;
+  border-radius: 10px;
+  background-color: #eee;
 `;
