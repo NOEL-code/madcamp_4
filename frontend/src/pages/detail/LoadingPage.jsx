@@ -1,10 +1,29 @@
+import { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { IoClose } from 'react-icons/io5';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import CouponHeader from '../../components/CouponHeader';
+import { getProductById } from '../../services/product';
 
 const LoadingPage = () => {
   const navigate = useNavigate();
+  const { state } = useLocation(); // useLocation 훅을 사용하여 state를 받아옴
+  const { productId } = state;
+
+  const [product, setProduct] = useState(null);
+
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        const productData = await getProductById(productId);
+        setProduct(productData);
+      } catch (error) {
+        console.error('Failed to fetch product:', error);
+      }
+    };
+
+    fetchProduct();
+  }, [productId]);
   const handleCloseClick = () => {
     navigate('/');
   };
@@ -16,7 +35,7 @@ const LoadingPage = () => {
         <Logo>AUCTION</Logo>
         <CloseIcon onClick={handleCloseClick} />
       </LogoContainer>
-      <Text>상품명</Text>
+      <Text>{product ? product.productName : 'Loading...'}</Text>
       <Progress>낙찰이 진행중입니다</Progress>
     </Box>
   );
