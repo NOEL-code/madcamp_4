@@ -1,9 +1,8 @@
-const { Alarm } = required("../models/Alarm.js");
+const Alarm = require("../models/Alarm");
 
-exports.saveAlarm = async (userId, type, title, content) => {
+exports.saveOneAlarm = async (userId, title, content) => {
   const newAlarmData = {
     userId: userId,
-    type: type,
     title: title,
     content: content,
   };
@@ -14,4 +13,8 @@ exports.saveAlarm = async (userId, type, title, content) => {
 
 exports.deleteAlarm = async (alarmId) => {
   return await Alarm.findByIdAndDelete(alarmId);
+};
+
+exports.getAlarms = async (userId) => {
+  return await Alarm.find({ userId });
 };

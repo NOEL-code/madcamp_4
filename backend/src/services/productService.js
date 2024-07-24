@@ -1,7 +1,7 @@
 const Product = require("../models/Product");
 const { User } = require("../models/User");
 const mongoose = require("mongoose");
-
+const Alarm = require("../models/Alarm");
 // 상품 전체 조회
 exports.getProducts = async () => {
   const products = await Product.aggregate([
@@ -183,12 +183,22 @@ exports.closeBid = async (productId, userId) => {
       `Credited ${highestBid} to seller ${seller.name}, new balance: ${seller.account.balance}`
     );
 
+    const newAlarm = {
+      userId: userId,
+      title: "낙찰 성공",
+      content: `회원님께서 입찰에 참여한 ${product.productName} 상품이 ${product.price}원으로 회원님께 낙찰되었습니다. `,
+    };
+
+    const saveAlarm = new Alarm(newAlarm);
+
     return await product.save();
   } catch (error) {
     console.error("Error in closeBid service:", error);
     throw error;
   }
 };
+
+exports.sameScoreBidding = async (userIds) => {};
 
 // 유저가 올린 상품 리스트 조회
 exports.getUserProducts = async (userId) => {

@@ -24,6 +24,7 @@ const LoginPage = () => {
     try {
       await login(userEmail, userPassword);
       const likedProducts = await getLikedProductListByUserId();
+      console.log(likedProducts);
       dispatch(setLikedProducts(likedProducts)); // Dispatch the action
       navigate('/'); // 로그인 후 메인 페이지로 이동
     } catch (err) {
