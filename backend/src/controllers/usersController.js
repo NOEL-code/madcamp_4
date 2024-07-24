@@ -92,7 +92,6 @@ exports.refreshToken = async (req, res) => {
     res.status(403).json({ message: err.message });
   }
 };
-
 // 계좌 잔고 조회
 exports.getAccountBalanceByUserId = async (req, res) => {
   try {
