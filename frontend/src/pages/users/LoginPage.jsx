@@ -16,7 +16,7 @@ const LoginPage = () => {
   const [error, setError] = useState(null);
 
   const handleCloseClick = () => {
-    navigate(-1);
+    navigate('/');
   };
 
   const handleSubmit = async (e) => {
