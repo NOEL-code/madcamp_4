@@ -5,10 +5,9 @@ export const setLikedProducts = (products) => ({
   payload: products,
 });
 
-export const addLikedProduct = (product) => async (dispatch, getState) => {
-  const { userInfo } = getState().user;
+export const addLikedProduct = (product) => async (dispatch) => {
   try {
-    await likeProduct(product._id, userInfo.id);
+    await likeProduct(product._id);
     dispatch({
       type: 'ADD_LIKED_PRODUCT',
       payload: product,
@@ -18,13 +17,15 @@ export const addLikedProduct = (product) => async (dispatch, getState) => {
   }
 };
 
-export const removeLikedProduct = (productId) => async (dispatch, getState) => {
-  const { userInfo } = getState().user;
+export const removeLikedProduct = (product) => async (dispatch, getState) => {
   try {
-    await cancelLikeProduct(productId, userInfo.id);
+    await cancelLikeProduct(product._id);
+    const existingProduct = getState().likedProducts.products.find(
+      (p) => p._id === product._id,
+    );
     dispatch({
       type: 'REMOVE_LIKED_PRODUCT',
-      payload: productId,
+      payload: existingProduct,
     });
   } catch (error) {
     console.error('Failed to remove liked product:', error);

@@ -82,7 +82,11 @@ const AddPage = () => {
   }, [userInfo, navigate]);
 
   const handleFileChange = (e) => {
-    setImages(e.target.files);
+    const selectedFiles = Array.from(e.target.files);
+    if (images.length + selectedFiles.length > 4) {
+      return;
+    }
+    setImages((prevImages) => [...prevImages, ...selectedFiles]);
   };
 
   const handleCategoryChange = (selectedOption) => {
@@ -143,20 +147,27 @@ const AddPage = () => {
       <Spacer />
       <Form onSubmit={handleSubmit}>
         <Text>사진 업로드</Text>
-        <ImageContainer>
-          <input
-            type="file"
-            multiple
-            onChange={handleFileChange}
-            accept="image/*"
-            style={{ display: 'none' }}
-            id="fileInput"
-          />
-          <label htmlFor="fileInput" style={{ cursor: 'pointer' }}>
-            <CameraIcon />
-          </label>
-          <CameraCount>{images.length}/5</CameraCount>
-        </ImageContainer>
+        <ImageUploadContainer>
+          <ImageInputContainer>
+            <input
+              type="file"
+              multiple
+              onChange={handleFileChange}
+              accept="image/*"
+              style={{ display: 'none' }}
+              id="fileInput"
+            />
+            <label htmlFor="fileInput" style={{ cursor: 'pointer' }}>
+              <CameraIcon />
+            </label>
+            <CameraCount>{images.length}/4</CameraCount>
+          </ImageInputContainer>
+          {images.map((image, index) => (
+            <ImageWrapper key={index}>
+              <img src={URL.createObjectURL(image)} alt={`uploaded ${index}`} />
+            </ImageWrapper>
+          ))}
+        </ImageUploadContainer>
         <Text>상품명</Text>
         <NameInput
           type="text"
@@ -248,16 +259,40 @@ const Form = styled.form`
   flex-direction: column;
 `;
 
-const ImageContainer = styled.div`
+const ImageUploadContainer = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  margin: 10px 20px;
+`;
+
+const ImageInputContainer = styled.div`
   width: 60px;
   height: 60px;
   border: 1px solid #ccc;
   border-radius: 7px;
-  margin: 10px 0 20px 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  margin-right: 10px; /* 이미지를 나란히 배치하기 위해 여백 추가 */
+`;
+
+const ImageWrapper = styled.div`
+  width: 60px;
+  height: 60px;
+  border: 1px solid #ccc;
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 10px; /* 이미지를 나란히 배치하기 위해 여백 추가 */
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 7px;
+  }
 `;
 
 const CameraIcon = styled(FaCamera)`

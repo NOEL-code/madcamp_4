@@ -1,24 +1,25 @@
-import { useState } from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import { MdOutlineFavorite, MdOutlineFavoriteBorder } from 'react-icons/md';
-import { likeProduct, cancelLikeProduct } from '../services/like';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  addLikedProduct,
+  removeLikedProduct,
+} from '../store/actions/likedProductsActions';
 
-const ProductCard = ({ product, onClick, isFavorite, onToggleFavorite }) => {
-  const [isFavoriteState, setIsFavoriteState] = useState(isFavorite);
+const ProductCard = ({ product, onClick }) => {
+  const dispatch = useDispatch();
+  const likedProducts = useSelector((state) => state.likedProducts.products);
+  const isFavorite = likedProducts.some(
+    (likedProduct) => likedProduct._id === product._id,
+  );
 
   const toggleFavorite = async (e) => {
-    e.stopPropagation(); // 클릭 이벤트가 부모 요소로 전파되지 않도록 합니다.
-    try {
-      if (!isFavoriteState) {
-        await likeProduct(product._id);
-      } else {
-        await cancelLikeProduct(product._id);
-      }
-      setIsFavoriteState(!isFavoriteState);
-      onToggleFavorite(); // MyPage 컴포넌트에 좋아요 상태 변경 알림
-    } catch (error) {
-      console.error('Failed to update favorite status:', error);
+    e.stopPropagation();
+    if (isFavorite) {
+      dispatch(removeLikedProduct(product));
+    } else {
+      dispatch(addLikedProduct(product));
     }
   };
 
@@ -26,11 +27,13 @@ const ProductCard = ({ product, onClick, isFavorite, onToggleFavorite }) => {
     <Product onClick={onClick}>
       <ImageContainer>
         <img src={product.productPhotoUrl[0]} alt={product.productName} />
+        {product.winnerId && <Overlay>낙찰 완료</Overlay>}
       </ImageContainer>
       <TopContainer>
         <Category>{product.category}</Category>
         <FavoriteContainer onClick={toggleFavorite}>
-          {isFavoriteState ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+          {isFavorite ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+          <FavoriteCount>{product.likesCount}</FavoriteCount>
         </FavoriteContainer>
       </TopContainer>
       <Name>{product.productName}</Name>
@@ -47,11 +50,10 @@ ProductCard.propTypes = {
     productName: PropTypes.string.isRequired,
     productPhotoUrl: PropTypes.arrayOf(PropTypes.string).isRequired,
     price: PropTypes.number.isRequired,
-    likes: PropTypes.number.isRequired,
+    likesCount: PropTypes.number.isRequired,
+    winnerId: PropTypes.string,
   }).isRequired,
   onClick: PropTypes.func.isRequired,
-  isFavorite: PropTypes.bool.isRequired,
-  onToggleFavorite: PropTypes.func.isRequired,
 };
 
 export default ProductCard;
@@ -102,6 +104,13 @@ const FavoriteIcon = styled(MdOutlineFavorite)`
   color: #a0153e;
 `;
 
+const FavoriteCount = styled.span`
+  font-family: 'Freesentation-6SemiBold', sans-serif;
+  font-size: 14px;
+  color: #000;
+  margin-left: 5px;
+`;
+
 const FavoriteBorderIcon = styled(MdOutlineFavoriteBorder)`
   font-size: 14px;
   color: #a0153e;
@@ -128,4 +137,17 @@ const InfoText = styled.h1`
   margin-top: 1px;
   margin-left: 3px;
   color: #454545;
+`;
+
+const Overlay = styled.div`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-family: 'Freesentation-6SemiBold', sans-serif;
+  font-size: 16px;
 `;

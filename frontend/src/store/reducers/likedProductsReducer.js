@@ -18,7 +18,7 @@ const likedProductsReducer = (state = initialState, action) => {
       return {
         ...state,
         products: state.products.filter(
-          (product) => product._id !== action.payload,
+          (product) => product._id !== action.payload._id,
         ),
       };
     default:

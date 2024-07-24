@@ -1,13 +1,16 @@
+import { useState } from 'react';
 import styled from 'styled-components';
-import Swal from 'sweetalert2';
-import 'sweetalert2/dist/sweetalert2.min.css';
+import InstallModal from './InstallModal';
 
 const CouponHeader = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const handleInstallClick = () => {
-    Swal.fire({
-      icon: 'info',
-      title: '아직 준비 중입니다.',
-    });
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
   };
 
   return (
@@ -17,6 +20,7 @@ const CouponHeader = () => {
         <Text>앱 설치하고 15% 할인쿠폰 받기</Text>
       </Container>
       <InstallButton onClick={handleInstallClick}>앱 설치</InstallButton>
+      <InstallModal isOpen={isModalOpen} onClose={handleCloseModal} />
     </Header>
   );
 };

@@ -1,5 +1,6 @@
 const Product = require("../models/Product");
 const { User } = require("../models/User");
+const { Like } = require("../models/Like");
 const mongoose = require("mongoose");
 const Alarm = require("../models/Alarm");
 // 상품 전체 조회
@@ -271,42 +272,49 @@ exports.getSuccessBidUserProducts = async (userId) => {
     );
   }
 };
-
-// 유저가 좋아요를 누른 상품 리스트 조회
 exports.getLikedProductListByUserId = async (userId) => {
-  console.log("좋아요 상품 목록 조회 시작"); // 로그 추가
-  const user = await User.findById(userId);
+  try {
+    console.log(userId);
+    console.log("좋아요 상품 목록 조회 시작");
 
-  if (!user) {
-    console.log("사용자 없음"); // 로그 추가
-    throw new Error("User not found");
+    const likes = await Like.find({ userId });
+
+    if (likes.length === 0) {
+      console.log("좋아요를 누른 상품이 없습니다.");
+      return [];
+    }
+
+    const productIds = likes.map((like) => like.productId);
+    console.log("좋아요 상품 ID 목록:", productIds);
+
+    const products = await Product.aggregate([
+      {
+        $match: { _id: { $in: productIds } },
+      },
+      {
+        $lookup: {
+          from: "likes",
+          localField: "_id",
+          foreignField: "productId",
+          as: "likes",
+        },
+      },
+      {
+        $addFields: {
+          likesCount: { $size: "$likes" },
+        },
+      },
+      {
+        $project: {
+          likes: 0, // likes 배열을 제외하고 반환
+        },
+      },
+    ]);
+
+    console.log("좋아요 상품 목록 조회 완료:", products);
+    return products;
+  } catch (error) {
+    console.error("Error in getLikedProductListByUserId:", error);
+    throw error;
   }
-
-  const productIds = user.favorites.map((favorite) => favorite.productId);
-
-  const products = await Product.aggregate([
-    {
-      $match: { _id: { $in: productIds } },
-    },
-    {
-      $lookup: {
-        from: "likes",
-        localField: "_id",
-        foreignField: "productId",
-        as: "likes",
-      },
-    },
-    {
-      $addFields: {
-        likesCount: { $size: "$likes" },
-      },
-    },
-    {
-      $project: {
-        likes: 0, // likes 배열을 제외하고 반환
-      },
-    },
-  ]);
-
-  return products;
 };

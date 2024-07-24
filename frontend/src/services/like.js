@@ -12,5 +12,6 @@ export const cancelLikeProduct = async (productId) => {
 
 export const getLikedProductListByUserId = async () => {
   const response = await baseInstance.get(`/likes`);
+  console.log(response.data);
   return response.data;
 };
