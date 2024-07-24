@@ -14,13 +14,6 @@ const bidHistorySchema = new Schema({
     type: Number,
     required: true,
   },
-  gameScore: {
-    type: Number,
-  },
-  isSameScore: {
-    type: Boolean,
-    default: false,
-  },
   bidTime: {
     type: Date,
     default: Date.now,
