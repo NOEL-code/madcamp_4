@@ -1,10 +1,10 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import CouponHeader from '../../components/CouponHeader';
 import ProductCard from '../../components/ProductCard';
 import { useNavigate } from 'react-router-dom';
 import { getAccountBalance } from '../../services/user';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import {
   getSuccessBidUserProducts,
   getUserProducts,
@@ -14,12 +14,19 @@ import { logout } from '../../services/user';
 import { logoutSuccess } from '../../store/actions/userActions';
 import { useDispatch } from 'react-redux'; // useDispatch 임포트
 
+import {
+  addLikedProduct,
+  removeLikedProduct,
+} from '../../store/actions/likedProductsActions';
+
+
 const MyPage = () => {
   const [selectedOption, setSelectedOption] = useState('나의 관심 상품');
   const [balance, setBalance] = useState(0);
   const [products, setProducts] = useState([]);
-  const [likedProductIds, setLikedProductIds] = useState([]);
+  const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.user.userInfo);
+  const likedProducts = useSelector((state) => state.likedProducts.products);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -56,11 +63,12 @@ const MyPage = () => {
     fetchLikedProductList();
   }, [userInfo, navigate, fetchLikedProductList]);
 
+
   useEffect(() => {
     if (userInfo) {
       fetchProducts('나의 관심 상품');
     }
-  }, [likedProductIds, userInfo]);
+  }, [userInfo]);
 
   const handleLogoutClick = async () => {
     try {
@@ -85,7 +93,7 @@ const MyPage = () => {
           break;
         case '나의 관심 상품':
         default:
-          products = await getLikedProductListByUserId();
+          products = likedProducts;
           break;
       }
       setProducts(uniqueProducts(products));
@@ -104,8 +112,14 @@ const MyPage = () => {
     navigate(`/detail/${productId}`);
   };
 
-  const handleToggleFavorite = () => {
-    fetchLikedProductList();
+  const handleToggleFavorite = (product) => {
+    if (
+      likedProducts.some((likedProduct) => likedProduct._id === product._id)
+    ) {
+      dispatch(removeLikedProduct(product._id));
+    } else {
+      dispatch(addLikedProduct(product));
+    }
   };
 
   // 중복된 상품 제거를 위한 유틸리티 함수
@@ -165,8 +179,10 @@ const MyPage = () => {
             key={product._id}
             product={product}
             onClick={() => handleProductCardClick(product._id)}
-            isFavorite={likedProductIds.includes(product._id.toString())}
-            onToggleFavorite={handleToggleFavorite}
+            isFavorite={likedProducts.some(
+              (likedProduct) => likedProduct._id === product._id,
+            )}
+            onToggleFavorite={() => handleToggleFavorite(product)}
           />
         ))}
       </Products>
