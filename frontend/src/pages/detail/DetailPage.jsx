@@ -15,6 +15,7 @@ import { useSelector } from 'react-redux';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import Modal from './Modal';
+import { saveOneAlarm } from '../../services/alarm';
 
 const DetailPage = () => {
   const [selectedOption, setSelectedOption] = useState('현황');
@@ -114,6 +115,9 @@ const DetailPage = () => {
           icon: 'success',
           title: '응찰에 성공하였습니다.',
         });
+        const content = `${userInfo.name}님이 ${product.productName}에 ${bidAmount}원을 입찰하셨습니다.`;
+
+        await saveOneAlarm(product.userId, '입찰', content);
       } catch (error) {
         console.error('Failed to bid:', error);
         SwalWithReact.fire({
@@ -139,6 +143,8 @@ const DetailPage = () => {
     }
     try {
       await closeBid(productId);
+
+      await saveOneAlarm();
       SwalWithReact.fire({
         icon: 'success',
         title: '낙찰이 완료되었습니다.',
