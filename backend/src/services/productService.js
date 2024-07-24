@@ -91,16 +91,41 @@ exports.biddingProduct = async (productId, bidData) => {
       throw new Error("User not found");
     }
 
+    // Check if the user has enough balance
+    if (user.account.balance < bidData.bidAmount) {
+      throw new Error("Insufficient balance");
+    }
+
     const bidDataWithUserName = {
       bidderId: bidData.bidderId,
       bidderName: user.name,
       bidAmount: bidData.bidAmount,
     };
 
-    console.log(bidDataWithUserName.bidAmount);
-    console.log(product.price);
+    user.account.balance -= bidData.bidAmount;
+    await user.save();
+
+    // Refund the previous highest bidder
+    if (product.bidHistory.length > 0) {
+      const lastBid = product.bidHistory[product.bidHistory.length - 1];
+      const previousBidder = await User.findById(lastBid.bidderId);
+      if (previousBidder) {
+        previousBidder.account.balance += lastBid.bidAmount;
+        await previousBidder.save();
+        console.log(
+          `Refunded ${lastBid.bidAmount} to previous bidder ${previousBidder.name}, new balance: ${previousBidder.account.balance}`
+        );
+      }
+    }
+
+    // Deduct the bid amount from the current bidder's balance
+
+    console.log(
+      `Deducted ${bidData.bidAmount} from current bidder ${user.name}, new balance: ${user.account.balance}`
+    );
 
     product.bidHistory.push(bidDataWithUserName);
+
     if (bidDataWithUserName.bidAmount > product.price) {
       product.price = bidDataWithUserName.bidAmount;
     } else {
