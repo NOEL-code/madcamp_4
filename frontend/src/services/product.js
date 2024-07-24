@@ -61,3 +61,10 @@ export const getSuccessBidUserProducts = async (userId) => {
   );
   return response.data;
 };
+
+export const updateProductGameActive = async (productId) => {
+  const response = await baseInstance.put(
+    `/products/bid/sameScore/${productId}`,
+  );
+  return response.data;
+};

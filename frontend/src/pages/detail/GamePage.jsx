@@ -10,7 +10,7 @@ import CouponHeader from '../../components/CouponHeader';
 const GamePage = () => {
   const navigate = useNavigate();
   const handleCloseClick = () => {
-    navigate(-1);
+    navigate('/');
   };
 
   const [moles, setMoles] = useState(

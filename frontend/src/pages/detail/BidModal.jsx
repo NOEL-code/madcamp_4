@@ -25,9 +25,9 @@ const BidModal = ({
       setErrorMessage('유효한 금액을 입력하세요!');
       return;
     }
-    if (numericValue <= currentPrice) {
+    if (numericValue < currentPrice) {
       setErrorMessage(
-        `입찰 금액은 현재 가격(${currentPrice.toLocaleString()}원)보다 높아야 합니다!`,
+        `입찰 금액은 현재 가격(${currentPrice.toLocaleString()}원)보다 낮을 수 없습니다!`,
       );
       return;
     }

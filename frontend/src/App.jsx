@@ -11,6 +11,7 @@ import RegisterPage from './pages/users/RegisterPage';
 import GamePage from './pages/detail/GamePage';
 import VincentPage from './pages/home/VincentPage';
 import CUPage from './pages/home/CUPage';
+import LoadingPage from './pages/detail/LoadingPage';
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
           <Route path="/detail/:productId" element={<DetailPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route path="/loading" element={<LoadingPage />} />
         </Routes>
       </BrowserRouter>
     </div>

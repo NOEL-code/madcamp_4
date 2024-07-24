@@ -127,7 +127,7 @@ exports.biddingProduct = async (productId, bidData) => {
 
     product.bidHistory.push(bidDataWithUserName);
 
-    if (bidDataWithUserName.bidAmount > product.price) {
+    if (bidDataWithUserName.bidAmount >= product.price) {
       product.price = bidDataWithUserName.bidAmount;
     } else {
       throw new Error("Bid amount must be higher than the current price");
