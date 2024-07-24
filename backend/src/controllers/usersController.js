@@ -4,6 +4,7 @@ const {
   refreshAccessToken,
   logoutUser,
   getAccountBalanceByUserId,
+  getCurrentUser,
 } = require("../services/usersService");
 
 // 회원가입
@@ -90,6 +91,15 @@ exports.refreshToken = async (req, res) => {
   } catch (err) {
     console.error("refreshToken error:", err.message);
     res.status(403).json({ message: err.message });
+  }
+};
+
+exports.getUserById = async (req, res) => {
+  try {
+    const user = await getCurrentUser(req.params.userId);
+    res.status(200).json(user);
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
   }
 };
 // 계좌 잔고 조회

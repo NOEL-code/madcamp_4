@@ -128,8 +128,6 @@ exports.getCurrentUser = async (userId) => {
   return {
     id: user._id,
     userName: user.name,
-    userEmail: user.userEmail,
-    phoneNumber: user.phoneNumber,
   };
 };
 

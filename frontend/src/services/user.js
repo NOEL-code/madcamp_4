@@ -65,6 +65,11 @@ export const refreshAccessToken = async () => {
   return newAccessToken;
 };
 
+export const getUserNameById = async (userId) => {
+  const response = await baseInstance.get(`users/${userId}`);
+  return response.data.name;
+};
+
 export const getAccountBalance = async (userId) => {
   const response = await baseInstance.get(`/users/accountBalance/${userId}`);
   return response.data.balance;

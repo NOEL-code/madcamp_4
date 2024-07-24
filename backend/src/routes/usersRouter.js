@@ -7,6 +7,7 @@ const {
   refreshToken,
   logoutUser,
   getAccountBalanceByUserId,
+  getUserById,
 } = require("../controllers/usersController");
 
 router.post("/register", registerUser); // 회원가입
@@ -18,5 +19,6 @@ router.get(
   authenticateToken,
   getAccountBalanceByUserId
 ); // 계좌 잔고 조회
+router.get("/:userId", getUserById);
 
 module.exports = router;
