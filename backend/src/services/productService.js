@@ -229,33 +229,47 @@ exports.getUserProducts = async (userId) => {
   return products;
 };
 
-// 유저가 낙찰받은 상품 리스트 조회
+// 유저가 낙찰받은 상품 리스트 조
 exports.getSuccessBidUserProducts = async (userId) => {
-  const products = await Product.aggregate([
-    {
-      $match: { winnerId: new mongoose.Types.ObjectId(userId) },
-    },
-    {
-      $lookup: {
-        from: "likes",
-        localField: "_id",
-        foreignField: "productId",
-        as: "likes",
+  try {
+    console.log("Fetching products for userId:", userId);
+    const products = await Product.aggregate([
+      {
+        $match: { winnerId: new mongoose.Types.ObjectId(userId) },
       },
-    },
-    {
-      $addFields: {
-        likesCount: { $size: "$likes" },
+      {
+        $lookup: {
+          from: "likes",
+          localField: "_id",
+          foreignField: "productId",
+          as: "likes",
+        },
       },
-    },
-    {
-      $project: {
-        likes: 0, // likes 배열을 제외하고 반환
+      {
+        $addFields: {
+          likesCount: { $size: "$likes" },
+        },
       },
-    },
-  ]);
+      {
+        $project: {
+          likes: 0, // likes 배열을 제외하고 반환
+        },
+      },
+    ]);
 
-  return products;
+    console.log("Products found:", products);
+
+    if (products.length === 0) {
+      throw new Error("No products found for this user");
+    }
+
+    return products;
+  } catch (error) {
+    console.error("Error in getSuccessBidUserProducts:", error);
+    throw new Error(
+      "Error fetching user's success bid products: " + error.message
+    );
+  }
 };
 
 // 유저가 좋아요를 누른 상품 리스트 조회
