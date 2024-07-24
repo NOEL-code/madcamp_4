@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import CouponHeader from '../../components/CouponHeader';
 import ProductCard from '../../components/ProductCard';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
 import { BiSortAlt2 } from 'react-icons/bi';
 import { FaCheck } from 'react-icons/fa6';
@@ -15,6 +16,10 @@ import livingImage from '../../assets/images/living.png';
 import artImage from '../../assets/images/art.png';
 import foodImage from '../../assets/images/food.png';
 import { getProducts } from '../../services/product';
+import {
+  addLikedProduct,
+  removeLikedProduct,
+} from '../../store/actions/likedProductsActions';
 
 const categories = [
   { name: '의류', image: clothImage },
@@ -34,6 +39,8 @@ const ShopPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortOrder, setSortOrder] = useState(null); // null: no sort, 'asc': ascending, 'desc': descending
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const likedProducts = useSelector((state) => state.likedProducts.products);
 
   const handleCategoryClick = (category) => {
     setSelectedCategory(category);
@@ -53,6 +60,16 @@ const ShopPage = () => {
       setSortOrder('asc');
     } else {
       setSortOrder('desc');
+    }
+  };
+
+  const handleToggleFavorite = (product) => {
+    if (
+      likedProducts.some((likedProduct) => likedProduct._id === product._id)
+    ) {
+      dispatch(removeLikedProduct(product._id));
+    } else {
+      dispatch(addLikedProduct(product));
     }
   };
 
@@ -153,6 +170,10 @@ const ShopPage = () => {
                 key={product._id}
                 product={product}
                 onClick={() => handleProductCardClick(product._id)}
+                isFavorite={likedProducts.some(
+                  (likedProduct) => likedProduct._id === product._id,
+                )}
+                onToggleFavorite={handleToggleFavorite}
               />
             ))}
           </Products>
