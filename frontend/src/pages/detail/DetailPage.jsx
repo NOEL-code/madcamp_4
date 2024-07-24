@@ -6,8 +6,12 @@ import Slider from 'react-slick';
 import CouponHeader from '../../components/CouponHeader';
 import { FaCrown } from 'react-icons/fa';
 import { getProductById, deleteProductById } from '../../services/product';
-import { closeBid } from '../../services/bid';
-import { biddingProduct } from '../../services/bid';
+import {
+  closeBid,
+  biddingProduct,
+  updateSameScoreBid,
+} from '../../services/bid';
+import { saveOneAlarm } from '../../services/alarm';
 import { useSelector } from 'react-redux';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
@@ -15,8 +19,6 @@ import Modal from './Modal';
 import BidModal from './BidModal';
 import { MdEdit } from 'react-icons/md';
 import { MdDelete } from 'react-icons/md';
-
-import { saveOneAlarm } from '../../services/alarm';
 
 const DetailPage = () => {
   const [selectedOption, setSelectedOption] = useState('현황');
@@ -28,22 +30,45 @@ const DetailPage = () => {
   const [isBidModalOpen, setIsBidModalOpen] = useState(false);
   const [modalImageSrc, setModalImageSrc] = useState('');
   const userInfo = useSelector((state) => state.user.userInfo);
-  console.log(userInfo);
 
-  console.log(userInfo);
   useEffect(() => {
     const fetchProduct = async () => {
       try {
         const productData = await getProductById(productId);
         setProduct(productData);
-        console.log(productData);
+
+        // 동점자 또는 판매자가 접속했을 때 바로 game 페이지로 리디렉션
+        const highestBids = productData.bidHistory.filter(
+          (bid) => bid.bidAmount === productData.bidHistory[0].bidAmount,
+        );
+        const tiedBidders = highestBids.map((bid) => bid.bidderId);
+
+        if (
+          productData.isClose == 2 &&
+          (tiedBidders.includes(userInfo.id) ||
+            productData.userId === userInfo.id)
+        ) {
+          navigate('/game', {
+            state: {
+              productId: productData._id,
+              sellerId: productData.userId,
+              tiedBidders,
+            },
+          });
+        } else if (productData.isClose == 2) {
+          navigate('/loading', {
+            state: {
+              productId: productData._id,
+            },
+          });
+        }
       } catch (error) {
         console.error('Failed to fetch product:', error);
       }
     };
 
     fetchProduct();
-  }, [productId, refresh]);
+  }, [productId, refresh, navigate, userInfo]);
 
   const handleOptionClick = (option) => {
     setSelectedOption(option);
@@ -64,10 +89,6 @@ const DetailPage = () => {
 
   const handleBidModalClose = () => {
     setIsBidModalOpen(false);
-  };
-
-  const parseNumberFromCommas = (numberString) => {
-    return parseInt(numberString.replace(/,/g, ''), 10);
   };
 
   const handleBidClick = async () => {
@@ -109,15 +130,42 @@ const DetailPage = () => {
       return;
     }
 
-    try {
-      await closeBid(productId);
-      setProduct((prevProduct) => ({
-        ...prevProduct,
-        winnerId: userInfo.id,
-      }));
-      setRefresh(!refresh);
-    } catch (error) {
-      console.error('Failed to close bid:', error);
+    const highestBids = product.bidHistory.filter(
+      (bid) => bid.bidAmount === product.bidHistory[0].bidAmount,
+    );
+
+    if (highestBids.length > 1) {
+      const tiedBidders = highestBids.map((bid) => bid.bidderId);
+      try {
+        await updateSameScoreBid(product._id); // 서버에서 gameActive 상태 업데이트
+        if (
+          tiedBidders.includes(userInfo.id) ||
+          product.userId === userInfo.id
+        ) {
+          navigate('/game', {
+            state: {
+              productId: product._id,
+              sellerId: product.userId,
+              tiedBidders,
+            },
+          });
+        } else {
+          navigate('/loading');
+        }
+      } catch (error) {
+        console.error('Failed to update game active state:', error);
+      }
+    } else {
+      try {
+        await closeBid(productId);
+        setProduct((prevProduct) => ({
+          ...prevProduct,
+          winnerId: highestBids[0].bidderId,
+        }));
+        setRefresh(!refresh);
+      } catch (error) {
+        console.error('Failed to close bid:', error);
+      }
     }
   };
 
