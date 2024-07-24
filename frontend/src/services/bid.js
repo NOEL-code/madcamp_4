@@ -18,6 +18,7 @@ export const updateSameScoreBid = async (productId) => {
 export const findGameByProductId = async (productId) => {
   try {
     const response = await baseInstance.get(`/bid/game/${productId}`);
+    console.log(response.data);
     return response.data;
   } catch (error) {
     console.error('Failed to get Game');
@@ -48,7 +49,7 @@ export const updateScore = async (productId, userId, score) => {
       userId: userId,
       score: score,
     };
-    const response = await baseInstance.post('/bid/update-score', updateData);
+    const response = await baseInstance.put('/bid/update/score', updateData);
     return response.data;
   } catch (error) {
     console.error('Failed to update score');
@@ -63,7 +64,7 @@ export const closeGame = async (productId, winnerId, loserIds, bidAmount) => {
       loserIds: loserIds, // 배열임!!!
       bidAmount: bidAmount,
     };
-    const response = await baseInstance.post(`/bid/close-game`, closeData);
+    const response = await baseInstance.post(`/bid/close/game`, closeData);
     return response.data;
   } catch (error) {
     console.error('Failed to close Game');

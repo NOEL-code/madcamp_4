@@ -4,7 +4,7 @@ const {
   updateSameScoreBid,
   createGame,
   updateScore,
-  closeGame,
+  closeGameService,
   findGameByProductId,
 } = require("../services/bidService");
 
@@ -74,7 +74,12 @@ exports.closeGame = async (req, res) => {
   const { productId, winnerId, loserIds, bidAmount } = req.body;
 
   try {
-    const closeGame = await closeGame(productId, winnerId, loserIds, bidAmount);
+    const closeGame = await closeGameService(
+      productId,
+      winnerId,
+      loserIds,
+      bidAmount
+    );
     res.status(200).json(closeGame);
   } catch (error) {
     console.error("Error in closeGame");

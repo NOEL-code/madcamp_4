@@ -54,6 +54,7 @@ const DetailPage = () => {
               productId: productData._id,
               sellerId: productData.userId,
               tiedBidders,
+              price: productData.price,
             },
           });
         } else if (productData.isClose == 2) {
@@ -158,6 +159,7 @@ const DetailPage = () => {
               productId: product._id,
               sellerId: product.userId,
               tiedBidders,
+              price: product.price,
             },
           });
         } else {
