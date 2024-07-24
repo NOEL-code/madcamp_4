@@ -1,6 +1,7 @@
 const Product = require("../models/Product");
 const { User } = require("../models/User");
 const Alarm = require("../models/Alarm");
+const Game = require("../models/Game");
 const mongoose = require("mongoose");
 
 // 입찰하기
@@ -62,6 +63,7 @@ exports.biddingProduct = async (productId, bidData) => {
     throw error;
   }
 };
+
 // 낙찰하기
 exports.closeBid = async (productId, userId) => {
   try {
@@ -136,6 +138,42 @@ exports.updateSameScoreBid = async (productId) => {
     return product;
   } catch (error) {
     console.error("Error in updateSameScoreBid", error);
+    throw error;
+  }
+};
+
+exports.createGame = async (gameData) => {
+  try {
+    const game = new Game(gameData);
+    return game.save();
+  } catch (error) {
+    console.error("Error in createGame", error);
+  }
+};
+
+exports.updateScore = async (productId, userId, score) => {
+  try {
+    // productId로 게임을 찾습니다.
+    const game = await Game.findOne({ productId });
+    if (!game) {
+      throw new Error("Game not found");
+    }
+
+    // users 배열에서 userId로 사용자를 찾습니다.
+    const user = game.users.find((user) => user.userId.toString() === userId);
+    if (!user) {
+      throw new Error("User not found in game");
+    }
+
+    // 사용자의 점수를 업데이트합니다.
+    user.score = score;
+
+    // 게임을 저장합니다.
+    await game.save();
+
+    return game;
+  } catch (error) {
+    console.error("Error in updateScore:", error);
     throw error;
   }
 };

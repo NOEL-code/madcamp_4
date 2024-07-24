@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const SameScoreBiddingSchema = new Schema({
+const GameSchema = new Schema({
   users: [
     {
       userId: {
@@ -10,6 +10,7 @@ const SameScoreBiddingSchema = new Schema({
       },
       score: {
         type: Number,
+        default: 0,
       },
       isComplete: {
         type: Boolean,
@@ -22,6 +23,6 @@ const SameScoreBiddingSchema = new Schema({
   },
 });
 
-const SameScoreBidding = mongoose.model("Account", SameScoreBiddingSchema);
+const Game = mongoose.model("Account", GameSchema);
 
-module.exports = SameScoreBidding;
+module.exports = Game;
