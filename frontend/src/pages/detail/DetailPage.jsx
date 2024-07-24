@@ -26,6 +26,7 @@ const DetailPage = () => {
   const userInfo = useSelector((state) => state.user.userInfo);
   const SwalWithReact = withReactContent(Swal);
 
+  console.log(userInfo);
   useEffect(() => {
     const fetchProduct = async () => {
       try {
@@ -60,13 +61,17 @@ const DetailPage = () => {
     return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   };
 
+  const parseNumberFromCommas = (numberString) => {
+    return parseInt(numberString.replace(/,/g, ''), 10);
+  };
+
   const handleBidClick = async () => {
     if (!userInfo) {
       navigate('/login'); // 로그인 페이지로 리디렉션
       return;
     }
 
-    const { value: bidAmount } = await SwalWithReact.fire({
+    const { value: bidAmountStr } = await SwalWithReact.fire({
       title: '응찰 금액 입력',
       input: 'text',
       inputLabel: '응찰할 금액을 입력하세요',
@@ -77,26 +82,31 @@ const DetailPage = () => {
       },
       inputValue: '',
       inputValidator: (value) => {
-        const numericValue = parseInt(value.replace(/,/g, ''), 10);
+        const numericValue = parseNumberFromCommas(value);
         if (!numericValue) {
           return '금액을 입력하세요!';
         }
         if (isNaN(numericValue) || numericValue <= 0) {
           return '유효한 금액을 입력하세요!';
         }
-        if (numericValue <= product.price) {
+        if (numericValue < product.price) {
           return `입찰 금액은 시작가보다 높아야 합니다! 현재 시작가: ${formatNumberWithCommas(
             product.price,
           )}원`;
         }
+        if (numericValue > userInfo.balance) {
+          return `잔고가 부족합니다! 현재 잔고: ${formatNumberWithCommas(
+            userInfo.account.balance,
+          )}원`;
+        }
       },
       preConfirm: (value) => {
-        const numericValue = parseInt(value.replace(/,/g, ''), 10);
-        return numericValue;
+        return formatNumberWithCommas(parseNumberFromCommas(value));
       },
     });
 
-    if (bidAmount) {
+    if (bidAmountStr) {
+      const bidAmount = parseNumberFromCommas(bidAmountStr);
       try {
         const bidData = { bidAmount, bidderId: userInfo.id };
         await biddingProduct(productId, bidData);

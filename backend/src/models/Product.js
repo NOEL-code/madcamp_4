@@ -14,6 +14,13 @@ const bidHistorySchema = new Schema({
     type: Number,
     required: true,
   },
+  gameScore: {
+    type: Number,
+  },
+  isSameScore: {
+    type: Boolean,
+    default: false,
+  },
   bidTime: {
     type: Date,
     default: Date.now,
@@ -72,6 +79,10 @@ const productSchema = new Schema({
     // 낙찰받은 사람의 id
     type: Schema.Types.ObjectId,
     ref: "User",
+  },
+  isClose: {
+    type: Number,
+    default: 0, // 0: 입찰 받는 중, 1: 판매완료, 2: 동점자 게임 대기 중
   },
 });
 
