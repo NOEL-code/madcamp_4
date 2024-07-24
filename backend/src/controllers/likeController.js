@@ -1,8 +1,5 @@
-const {
-  likeProduct,
-  cancelLikeProduct,
-  getUserLikeList,
-} = require("../services/likeService");
+const { likeProduct, cancelLikeProduct } = require("../services/likeService");
+const { getLikedProductListByUserId } = require("../services/productService");
 
 exports.likeProduct = async (req, res) => {
   try {
@@ -26,7 +23,7 @@ exports.cancelLikeProduct = async (req, res) => {
 exports.getUserLikes = async (req, res) => {
   try {
     const userId = req.user.id;
-    const products = await getUserLikeList(userId);
+    const products = await getLikedProductListByUserId(userId);
     res.status(200).json(products);
   } catch (error) {
     console.error("Error in getUserLikes controller:", error);
