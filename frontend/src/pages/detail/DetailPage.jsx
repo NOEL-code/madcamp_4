@@ -89,7 +89,7 @@ const DetailPage = () => {
         if (isNaN(numericValue) || numericValue <= 0) {
           return '유효한 금액을 입력하세요!';
         }
-        if (numericValue <= product.price) {
+        if (numericValue < product.price) {
           return `입찰 금액은 시작가보다 높아야 합니다! 현재 시작가: ${formatNumberWithCommas(
             product.price,
           )}원`;

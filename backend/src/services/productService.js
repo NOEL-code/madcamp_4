@@ -7,7 +7,7 @@ exports.getProducts = async () => {
   const products = await Product.aggregate([
     {
       $lookup: {
-        from: "like",
+        from: "likes",
         localField: "_id",
         foreignField: "productId",
         as: "likes",
@@ -141,32 +141,53 @@ exports.biddingProduct = async (productId, bidData) => {
 };
 // 낙찰하기
 exports.closeBid = async (productId, userId) => {
-  const product = await Product.findById(productId);
-  if (!product) {
-    throw new Error("Product not found");
-  }
-  if (product.userId.toString() !== userId) {
-    throw new Error("Unauthorized");
-  }
-
-  // Find the highest bid
-  let highestBid = 0;
-  let highestBidderId = null;
-  for (const bid of product.bidHistory) {
-    if (bid.bidAmount > highestBid) {
-      highestBid = bid.bidAmount;
-      highestBidderId = bid.bidderId;
+  try {
+    const product = await Product.findById(productId);
+    if (!product) {
+      throw new Error("Product not found");
     }
-  }
+    if (product.userId.toString() !== userId) {
+      throw new Error("Unauthorized");
+    }
+    if (product.winnerId) {
+      throw new Error("The auction is already closed.");
+    }
 
-  if (highestBidderId) {
-    product.winnerId = highestBidderId; // Set the winnerId
-  } else {
-    throw new Error("No bids available to close the auction");
-  }
+    // Find the highest bid
+    let highestBid = 0;
+    let highestBidderId = null;
+    for (const bid of product.bidHistory) {
+      if (bid.bidAmount > highestBid) {
+        highestBid = bid.bidAmount;
+        highestBidderId = bid.bidderId;
+      }
+    }
 
-  product.dueDate = new Date(); // Set the close date
-  return await product.save();
+    if (highestBidderId) {
+      product.winnerId = highestBidderId; // Set the winnerId
+    } else {
+      throw new Error("No bids available to close the auction");
+    }
+
+    product.dueDate = new Date(); // Set the close date
+
+    // Credit the seller's account balance
+    const seller = await User.findById(product.userId);
+    if (!seller) {
+      throw new Error("Seller not found");
+    }
+    seller.account.balance += highestBid;
+    await seller.save();
+
+    console.log(
+      `Credited ${highestBid} to seller ${seller.name}, new balance: ${seller.account.balance}`
+    );
+
+    return await product.save();
+  } catch (error) {
+    console.error("Error in closeBid service:", error);
+    throw error;
+  }
 };
 
 // 유저가 올린 상품 리스트 조회
