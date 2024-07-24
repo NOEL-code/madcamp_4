@@ -19,6 +19,7 @@ import Modal from './Modal';
 import BidModal from './BidModal';
 import { MdEdit } from 'react-icons/md';
 import { MdDelete } from 'react-icons/md';
+import { createGame } from '../../services/bid';
 
 const DetailPage = () => {
   const [selectedOption, setSelectedOption] = useState('현황');
@@ -137,7 +138,17 @@ const DetailPage = () => {
     if (highestBids.length > 1) {
       const tiedBidders = highestBids.map((bid) => bid.bidderId);
       try {
-        await updateSameScoreBid(product._id); // 서버에서 gameActive 상태 업데이트
+        await updateSameScoreBid(product._id);
+        // createGame 함수 호출하여 서버에 게임 정보 전송
+        await createGame(
+          product._id,
+          product.userId,
+          tiedBidders.map((bidderId) => ({
+            userId: bidderId,
+            score: 0,
+            isComplete: false,
+          })),
+        );
         if (
           tiedBidders.includes(userInfo.id) ||
           product.userId === userInfo.id
