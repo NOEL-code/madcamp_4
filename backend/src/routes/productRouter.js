@@ -26,10 +26,6 @@ router.get("/user/:userId", getUserProducts); // 유저가 올린 상품 리스�
 
 router.get("/successBid/user/:userId", getSuccessBidUserProducts); // 유저가 낙찰받은 상품 리스트 조회
 
-router.get(
-  "/likedProductList/:userId",
-  authenticateToken,
-  getLikedProductListByUserId
-); // 유저가 좋아요를 누른 상품 리스트 조회
+router.get("/likedProductList/:userId", getLikedProductListByUserId); // 유저가 좋아요를 누른 상품 리스트 조회
 
 module.exports = router;

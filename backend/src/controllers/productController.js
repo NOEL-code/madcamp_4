@@ -142,6 +142,7 @@ exports.getLikedProductListByUserId = async (req, res) => {
     const products = await getLikedProductListByUserId(req.params.userId);
     res.status(200).json(products);
   } catch (err) {
+    console.error("Error in getLikedProductListByUserIdController:", err);
     res.status(500).json({ message: "Server error" });
   }
 };
