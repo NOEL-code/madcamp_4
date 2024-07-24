@@ -11,6 +11,7 @@ const {
   getUserProducts,
   getSuccessBidUserProducts,
   getLikedProductListByUserId,
+  updateSameScoreBid,
 } = require("../services/productService");
 const upload = require("../utils/s3");
 
@@ -141,6 +142,17 @@ exports.getLikedProductListByUserId = async (req, res) => {
     const products = await getLikedProductListByUserId(req.params.userId);
     res.status(200).json(products);
   } catch (err) {
+    console.error("Error in getLikedProductListByUserIdController:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+exports.updateSameScoreBid = async (req, res) => {
+  try {
+    const product = await updateSameScoreBid(req.params.productId);
+    res.status(200).json(product);
+  } catch (err) {
+    console.error("Error in updateSameScoreBid", err);
     res.status(500).json({ message: "Server error" });
   }
 };

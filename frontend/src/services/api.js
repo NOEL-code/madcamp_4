@@ -44,7 +44,7 @@ baseInstance.interceptors.response.use(
         }
         const refreshResponse = await axios.post(
           `${BASE_URL}/users/refresh-token`,
-          { refreshToken }, // 수정된 부분: refreshToken을 바디로 전송
+          { refreshToken }, // refreshToken을 바디로 전송
         );
         const newAccessToken = refreshResponse.data.accessToken;
         setCookie('accessToken', newAccessToken, {

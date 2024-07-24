@@ -87,6 +87,10 @@ const DetailPage = () => {
     try {
       const bidData = { bidAmount, bidderId: userInfo.id };
       await biddingProduct(productId, bidData);
+
+      const content = `${userInfo.name}님이 ${product.productName}에 ${bidAmount}원을 입찰하셨습니다.`;
+
+      await saveOneAlarm(product.userId, '입찰', content);
       setIsBidModalOpen(false);
       setRefresh(!refresh);
     } catch (error) {
