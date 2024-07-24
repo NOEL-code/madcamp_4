@@ -18,6 +18,9 @@ const GameSchema = new Schema({
       },
     },
   ],
+  sellerId: {
+    type: Schema.Types.ObjectId,
+  },
   productId: {
     type: Schema.Types.ObjectId,
   },

@@ -164,7 +164,6 @@ exports.updateScore = async (productId, userId, score) => {
     if (!user) {
       throw new Error("User not found in game");
     }
-
     // 사용자의 점수를 업데이트합니다.
     user.score = score;
 
