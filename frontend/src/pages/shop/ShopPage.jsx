@@ -3,7 +3,6 @@ import styled from 'styled-components';
 import CouponHeader from '../../components/CouponHeader';
 import ProductCard from '../../components/ProductCard';
 import { useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
 import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
 import { BiSortAlt2 } from 'react-icons/bi';
 import { FaCheck } from 'react-icons/fa6';
@@ -16,10 +15,7 @@ import livingImage from '../../assets/images/living.png';
 import artImage from '../../assets/images/art.png';
 import foodImage from '../../assets/images/food.png';
 import { getProducts } from '../../services/product';
-import {
-  addLikedProduct,
-  removeLikedProduct,
-} from '../../store/actions/likedProductsActions';
+import { useSelector } from 'react-redux';
 
 const categories = [
   { name: '의류', image: clothImage },
@@ -33,17 +29,18 @@ const categories = [
 ];
 
 const ShopPage = () => {
+  const [activeCategory, setActiveCategory] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState('카테고리');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [products, setProducts] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [sortOrder, setSortOrder] = useState(null); // null: no sort, 'asc': ascending, 'desc': descending
+  const [sortOrder, setSortOrder] = useState(null);
   const navigate = useNavigate();
-  const dispatch = useDispatch();
   const likedProducts = useSelector((state) => state.likedProducts.products);
 
   const handleCategoryClick = (category) => {
     setSelectedCategory(category);
+    setActiveCategory(category);
     setIsDropdownOpen(false);
   };
 
@@ -63,24 +60,18 @@ const ShopPage = () => {
     }
   };
 
-  const handleToggleFavorite = (product) => {
-    if (
-      likedProducts.some((likedProduct) => likedProduct._id === product._id)
-    ) {
-      dispatch(removeLikedProduct(product._id));
-    } else {
-      dispatch(addLikedProduct(product));
-    }
+  const fetchProducts = async () => {
+    const productList = await getProducts();
+    setProducts(productList);
   };
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      const productList = await getProducts();
-      setProducts(productList);
-    };
-
     fetchProducts();
   }, []);
+
+  useEffect(() => {
+    fetchProducts();
+  }, [likedProducts]);
 
   const sortProducts = (products) => {
     if (sortOrder === 'asc') {
@@ -123,7 +114,7 @@ const ShopPage = () => {
                 key={index}
                 onClick={() => handleCategoryClick(category.name)}
               >
-                <Category>
+                <Category isActive={selectedCategory === category.name}>
                   <CategoryImage
                     src={category.image}
                     category={category.name}
@@ -170,10 +161,6 @@ const ShopPage = () => {
                 key={product._id}
                 product={product}
                 onClick={() => handleProductCardClick(product._id)}
-                isFavorite={likedProducts.some(
-                  (likedProduct) => likedProduct._id === product._id,
-                )}
-                onToggleFavorite={handleToggleFavorite}
               />
             ))}
           </Products>
@@ -334,7 +321,7 @@ const Category = styled.div`
   align-items: center;
   font-size: 12px;
   margin: 5px;
-  background-color: #dddddd;
+  background-color: ${(props) => (props.isActive ? '#aaa' : '#dddddd')};
 `;
 
 const CategoryText = styled.div`
