@@ -1,42 +1,145 @@
-#root {
-  max-width: 1280px;
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.container {
+  max-width: 100%; /* 아이폰 12 Pro 너비에 맞춤 */
   margin: 0 auto;
-  padding: 2rem;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  height: 100vh;
+}
+
+.header {
+  background-color: #000;
+  color: #fff;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-content button {
+  background-color: #fff;
+  color: #000;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  font-size: 12px;
+  border-radius: 15px;
+}
+
+h1 {
+  color: #800000;
+  text-align: center;
+  margin-top: 10px;
+}
+
+.search-container {
+  margin: 20px 20px 20px 30px;
+}
+
+.search-container input {
+  width: 87%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.categories {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 10px;
+  justify-items: center;
+  margin: 10px 0;
+}
+
+.category {
+  display: flex;
+  flex-direction: column;
+  width: 60px;
+  height: 60px;
+  border: 1px solid #ccc;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 12px;
+  margin: 5px;
+}
+
+.filter-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+  margin-top: 10px;
+}
+
+.filter-container select {
+  padding: 5px;
+}
+
+.sort {
+  cursor: pointer;
+}
+
+.products {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px;
+  padding: 0 10px;
+}
+
+.product {
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+.product-info {
   text-align: center;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+.likes {
+  color: red;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
+footer {
+  background-color: #f1f1f1;
+  padding: 10px 0;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  border-top: 1px solid #ccc;
+}
+
+footer nav {
+  display: flex;
+  justify-content: space-around;
+}
+
+footer nav a {
+  text-decoration: none;
+  color: #000;
+}
+
+@media (max-width: 375px) {
+  .container {
+    width: 100%;
   }
-  to {
-    transform: rotate(360deg);
+
+  .category {
+    width: 50px;
+    height: 50px;
+    font-size: 10px;
   }
-}
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
+  .product {
+    width: 100%;
   }
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
 }

@@ -1,17 +1,33 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { PiBell } from 'react-icons/pi';
+import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+
+import CouponHeader from '../../components/CouponHeader';
 
 const AlarmPage = () => {
   const [selectedOption, setSelectedOption] = useState('전체');
+  const navigate = useNavigate();
+  const userInfo = useSelector((state) => state.user.userInfo);
+
+  useEffect(() => {
+    if (!userInfo) {
+      navigate('/login'); // 로그인 페이지로 리디렉션
+    }
+  }, [userInfo, navigate]);
 
   const handleOptionClick = (option) => {
     setSelectedOption(option);
   };
 
+  if (!userInfo) {
+    return null; // userInfo가 없으면 컴포넌트 렌더링을 중단
+  }
+
   return (
     <Box>
-      <TopContainer />
+      <CouponHeader />
       <LogoContainer>
         <Logo>AUCTION</Logo>
         <BellIcon />
@@ -24,7 +40,7 @@ const AlarmPage = () => {
         >
           전체
         </Option>
-        <Option
+        {/* <Option
           selected={selectedOption === '낙찰'}
           onClick={() => handleOptionClick('낙찰')}
         >
@@ -35,8 +51,34 @@ const AlarmPage = () => {
           onClick={() => handleOptionClick('응찰')}
         >
           응찰
-        </Option>
+        </Option> */}
       </OptionContainer>
+      <AlarmList>
+        <AlarmItem>
+          <AlarmTitle>낙찰 성공</AlarmTitle>
+          <AlarmContent>
+            고객님이 제시한 금액 50,000원에 <br />[ 모나리자 ] 가
+            낙찰되었습니다! 축하드립니다
+          </AlarmContent>
+        </AlarmItem>
+        <ItemDivider />
+        <AlarmItem>
+          <AlarmTitle>낙찰 실패</AlarmTitle>
+          <AlarmContent>
+            넘족이님이 제시한 금액 100,000원에 <br />[ 고려청자 ] 가
+            낙찰되었습니다.. 아쉽군요!
+          </AlarmContent>
+        </AlarmItem>
+        <ItemDivider />
+        <AlarmItem>
+          <AlarmTitle>쫄?</AlarmTitle>
+          <AlarmContent>
+            넘족이님이 [ 샤넬백 ]에 <br />
+            고객님이 제시한 금액보다 높은 금액을 제시했습니다!
+          </AlarmContent>
+        </AlarmItem>
+        <ItemDivider />
+      </AlarmList>
     </Box>
   );
 };
@@ -49,13 +91,6 @@ const Box = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-`;
-
-const TopContainer = styled.div`
-  position: relative;
-  width: 100%;
-  height: 54px;
-  background-color: black;
 `;
 
 const LogoContainer = styled.div`
@@ -101,4 +136,32 @@ const Option = styled.h1`
   padding: 5px 10px;
   margin-right: 10px;
   background-color: ${(props) => (props.selected ? '#eeeeee' : 'transparent')};
+`;
+
+const AlarmList = styled.div`
+  padding: 20px;
+`;
+
+const AlarmItem = styled.div`
+  margin-bottom: 20px;
+`;
+
+const AlarmTitle = styled.h2`
+  font-family: 'Freesentation-8ExtraBold', sans-serif;
+  font-size: 16px;
+  color: #a0153e;
+`;
+
+const AlarmContent = styled.p`
+  font-family: 'Freesentation-6SemiBold', sans-serif;
+  font-size: 14px;
+  color: #373a40;
+  margin-top: 5px;
+`;
+
+const ItemDivider = styled.div`
+  width: 100%;
+  height: 1px;
+  background-color: #ccc;
+  margin: 10px 0;
 `;

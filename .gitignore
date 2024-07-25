@@ -63,6 +63,7 @@ jspm_packages/
 *.sw?
 
 # React specific (frontend)
+frontend/package-lock.json
 frontend/build/
 frontend/public/static/
 frontend/public/manifest.json
