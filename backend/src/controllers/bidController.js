@@ -75,13 +75,13 @@ exports.closeGame = async (req, res) => {
   const { productId, winnerId, loserIds, bidAmount } = req.body;
 
   try {
-    const closeGameResult = await closeGameService(
+    const closeGame = await closeGameService(
       productId,
       winnerId,
       loserIds,
       bidAmount
     );
-    res.status(200).json(closeGameResult);
+    res.status(200).json(closeGame);
   } catch (error) {
     console.error("Error in closeGame", error);
     res.status(500).json({ message: "Server error" });

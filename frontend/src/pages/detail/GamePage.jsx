@@ -9,12 +9,16 @@ import CouponHeader from '../../components/CouponHeader';
 import { getProductById } from '../../services/product';
 import { useSelector } from 'react-redux';
 import { getUserNameById } from '../../services/user';
-import { updateScore, findGameByProductId } from '../../services/bid';
+import {
+  updateScore,
+  findGameByProductId,
+  closeGame,
+} from '../../services/bid';
 
 const GamePage = () => {
   const navigate = useNavigate();
   const { state } = useLocation(); // useLocation 훅을 사용하여 state를 받아옴
-  const { productId, sellerId, tiedBidders } = state;
+  const { productId, sellerId, tiedBidders, price } = state;
 
   const userInfo = useSelector((state) => state.user.userInfo);
   const currentUserId = userInfo?.id;
@@ -24,6 +28,8 @@ const GamePage = () => {
   const [bidderNames, setBidderNames] = useState({});
   const [currentUserName, setCurrentUserName] = useState('');
   const [bidderScores, setBidderScores] = useState({});
+
+  const [isCurrentUserComplete, setIsCurrentUserComplete] = useState(false);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -56,8 +62,25 @@ const GamePage = () => {
       }
     };
 
+    const fetchGameScores = async () => {
+      try {
+        const gameData = await findGameByProductId(productId);
+        const scores = {};
+        gameData.users.forEach((user) => {
+          scores[user.userId] = user.score;
+          if (user.userId === currentUserId) {
+            setIsCurrentUserComplete(user.isComplete);
+          }
+        });
+        setBidderScores(scores);
+      } catch (error) {
+        console.error('Failed to fetch game scores:', error);
+      }
+    };
+
     fetchProduct();
     fetchUserNames();
+    fetchGameScores();
   }, [productId, sellerId, tiedBidders, currentUserId]);
 
   const fetchGameScores = async () => {
@@ -75,6 +98,22 @@ const GamePage = () => {
 
   const handleCloseClick = () => {
     navigate('/');
+  };
+
+  const handleFinishClick = async () => {
+    if (currentUserId === sellerId) {
+      const winnerId = Object.keys(bidderScores).reduce((a, b) =>
+        bidderScores[a] > bidderScores[b] ? a : b,
+      );
+      const loserIds = tiedBidders.filter((bidderId) => bidderId !== winnerId);
+
+      try {
+        await closeGame(productId, winnerId, loserIds, price);
+        navigate(-1);
+      } catch (error) {
+        console.error('Failed to close Game', error);
+      }
+    }
   };
 
   const [moles, setMoles] = useState(
@@ -113,10 +152,11 @@ const GamePage = () => {
             alert(`짝짝짝! 점수는 ${score} 입니다.`);
             setIsGameRunning(false);
 
-            // 게임 종료 후 점수 업데이트
-            updateScore(productId, currentUserId, score).then(() => {
-              fetchGameScores();
-            });
+            if (tiedBidders.includes(currentUserId) && !isCurrentUserComplete) {
+              updateScore(productId, currentUserId, score).then(() => {
+                fetchGameScores(); // 점수 업데이트 후 다시 게임 점수 fetch
+              });
+            }
 
             setScore(0);
             return 10;
@@ -128,7 +168,7 @@ const GamePage = () => {
     return () => {
       clearInterval(moleInterval);
     };
-  }, [isGameRunning, moles, score]);
+  }, [isGameRunning, moles, score, productId, currentUserId, tiedBidders]);
 
   const startGame = () => {
     setIsGameRunning(true);
@@ -182,7 +222,9 @@ const GamePage = () => {
             </BidderItem>
           ))}
         </BiddersContainer>
-        {currentUserId === sellerId && <FinishButton>낙찰하기</FinishButton>}
+        {currentUserId === sellerId && (
+          <FinishButton onClick={handleFinishClick}>낙찰하기</FinishButton>
+        )}
       </Wrap>
     </Box>
   );

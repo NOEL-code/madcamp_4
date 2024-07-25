@@ -84,33 +84,15 @@ exports.biddingProduct = async (productId, bidData) => {
 };
 
 // 낙찰하기
-exports.closeBid = async (productId, userId) => {
+exports.closeGame = async (productId, winnerId, loserIds, bidAmount) => {
   try {
     const product = await Product.findById(productId);
     if (!product) {
       throw new Error("Product not found");
     }
-    if (product.userId.toString() !== userId) {
-      throw new Error("Unauthorized");
-    }
+
     if (product.winnerId) {
       throw new Error("The auction is already closed.");
-    }
-
-    // Find the highest bid
-    let highestBid = 0;
-    let highestBidderId = null;
-    for (const bid of product.bidHistory) {
-      if (bid.bidAmount > highestBid) {
-        highestBid = bid.bidAmount;
-        highestBidderId = bid.bidderId;
-      }
-    }
-
-    if (highestBidderId) {
-      product.winnerId = highestBidderId; // Set the winnerId
-    } else {
-      throw new Error("No bids available to close the auction");
     }
 
     product.dueDate = new Date(); // Set the close date
@@ -120,26 +102,40 @@ exports.closeBid = async (productId, userId) => {
     if (!seller) {
       throw new Error("Seller not found");
     }
-    seller.account.balance += highestBid;
+
+    seller.account.balance += bidAmount;
     await seller.save();
 
+    for (let i = 0; i < loserIds.length; i++) {
+      const loser = await User.findById(loserIds[i]);
+      loser.account.balance += bidAmount;
+      await loser.save();
+
+      const newAlarm = new Alarm({
+        userId: loserIds[i],
+        title: "낙찰 실패 ㅜㅜ",
+        content: `회원님께서 입찰에 참여한 ${product.productName} 상품 낙찰에 실패하셨습니다.`,
+      });
+      await newAlarm.save();
+    }
+
     console.log(
-      `Credited ${highestBid} to seller ${seller.name}, new balance: ${seller.account.balance}`
+      `Credited ${bidAmount} to seller ${seller.name}, new balance: ${seller.account.balance}`
     );
 
-    const newAlarm = {
-      userId: userId,
-      title: "낙찰 성공",
-      content: `회원님께서 입찰에 참여한 ${product.productName} 상품이 ${product.price}원으로 회원님께 낙찰되었습니다. `,
-    };
-
-    const saveAlarm = new Alarm(newAlarm);
+    const winnerAlarm = new Alarm({
+      userId: winnerId,
+      title: "아싸~ 낙찰 성공!",
+      content: `회원님께서 입찰에 참여한 ${product.productName} 상품이 ${bidAmount}원으로 회원님께 낙찰되었습니다.`,
+    });
+    await winnerAlarm.save();
 
     product.isClose = 1;
+    product.winnerId = winnerId;
 
     return await product.save();
   } catch (error) {
-    console.error("Error in closeBid service:", error);
+    console.error("Error in closeGame service:", error);
     throw error;
   }
 };
@@ -186,8 +182,9 @@ exports.updateScore = async (productId, userId, score) => {
     throw error;
   }
 };
+
 exports.closeGameService = async (productId, winnerId, loserIds, bidAmount) => {
-  console.log("ㅎㅇㅎㅇ");
+
   try {
     // Convert IDs to ObjectId
     const productObjectId = new mongoose.Types.ObjectId(productId);
@@ -249,7 +246,8 @@ exports.closeGameService = async (productId, winnerId, loserIds, bidAmount) => {
 
     return await product.save();
   } catch (error) {
-    console.error("Error in closeGame service:", error);
+
+    console.error("Error in close Game service:", error);
     throw error;
   }
 };

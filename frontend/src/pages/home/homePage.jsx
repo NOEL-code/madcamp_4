@@ -178,6 +178,7 @@ const Box = styled.div`
   flex-direction: column;
   width: 100%;
   overflow-x: hidden;
+  padding-bottom: 50px;
 `;
 
 const LogoContainer = styled.div`
@@ -274,7 +275,7 @@ const Divider = styled.div`
   width: 100%;
   height: 1px;
   background-color: #ccc;
-  margin-top: 10px;
+  margin-top: 20px;
 `;
 
 const Footer = styled.h1`
@@ -282,6 +283,6 @@ const Footer = styled.h1`
   font-size: 10px;
   color: #ccc;
   width: 100%;
-  margin: 60px 0;
+  margin: 30px 0;
   text-align: center;
 `;
