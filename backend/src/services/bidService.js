@@ -26,6 +26,7 @@ exports.createGame = async (gameData) => {
         title: "맞다이 ㄱㄱ",
         content: `회원님께서 입찰에 참여한 상품은 맞다이로 낙찰자를 결정하게 되었습니디. 게임에 참여하시고 상품을 쟁취하세요!`,
       });
+      console.log(newAlarm);
       await newAlarm.save();
     }
 
