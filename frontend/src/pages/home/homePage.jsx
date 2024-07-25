@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import { PiBell } from 'react-icons/pi';
 import { FaRankingStar } from 'react-icons/fa6';
-import { Canvas } from '@react-three/fiber';
+import { Canvas, useThree } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -21,6 +21,45 @@ import {
   addLikedProduct,
   removeLikedProduct,
 } from '../../store/actions/likedProductsActions';
+
+function RolexScene() {
+  const { gl } = useThree();
+
+  useEffect(() => {
+    const handleContextLost = (event) => {
+      event.preventDefault();
+      console.log('WebGL context lost. Attempting to restore...');
+      // handle context lost, e.g., show a message to the user
+    };
+
+    const handleContextRestored = () => {
+      console.log('WebGL context restored.');
+      // handle context restored, e.g., reinitialize your scene or objects
+    };
+
+    gl.domElement.addEventListener('webglcontextlost', handleContextLost);
+    gl.domElement.addEventListener(
+      'webglcontextrestored',
+      handleContextRestored,
+    );
+
+    return () => {
+      gl.domElement.removeEventListener('webglcontextlost', handleContextLost);
+      gl.domElement.removeEventListener(
+        'webglcontextrestored',
+        handleContextRestored,
+      );
+    };
+  }, [gl]);
+
+  return (
+    <Suspense fallback={null}>
+      <group position={[0.3, -1.8, 0]} scale={[40, 40, 40]}>
+        <Rolex />
+      </group>
+    </Suspense>
+  );
+}
 
 const HomePage = () => {
   const [selectedOption, setSelectedOption] = useState('최다 관심순');
@@ -113,11 +152,7 @@ const HomePage = () => {
               <ambientLight intensity={0.5} />
               <directionalLight position={[5, 5, 5]} intensity={5.0} />
               <directionalLight position={[-5, -5, -5]} intensity={5.0} />
-              <Suspense fallback={null}>
-                <group position={[0.3, -1.8, 0]} scale={[40, 40, 40]}>
-                  <Rolex />
-                </group>
-              </Suspense>
+              <RolexScene />
               <OrbitControls autoRotate autoRotateSpeed={1} />
             </Canvas>
           </SliderItem>

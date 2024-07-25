@@ -1,8 +1,7 @@
 import axios from 'axios';
 import { getCookie, setCookie, removeCookie } from './cookie';
 
-export const BASE_URL =
-  'http://ec2-3-36-52-168.ap-northeast-2.compute.amazonaws.com/api';
+export const BASE_URL = 'http://localhost:3000/api';
 
 export const baseInstance = axios.create({
   baseURL: BASE_URL,
