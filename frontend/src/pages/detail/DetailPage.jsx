@@ -17,7 +17,6 @@ import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import Modal from './Modal';
 import BidModal from './BidModal';
-import { MdEdit } from 'react-icons/md';
 import { MdDelete } from 'react-icons/md';
 import { createGame } from '../../services/bid';
 
@@ -209,7 +208,7 @@ const DetailPage = () => {
 
   const sliderSettings = {
     dots: true,
-    infinite: true,
+    infinite: product?.productPhotoUrl.length > 1,
     speed: 500,
     slidesToShow: 1,
     slidesToScroll: 1,
@@ -226,7 +225,6 @@ const DetailPage = () => {
         <Text>{product.productName}</Text>
         {product.userId === userInfo?.id ? (
           <IconContainer>
-            <EditIcon />
             <DeleteIcon onClick={handleDeleteClick} />
           </IconContainer>
         ) : (
@@ -335,7 +333,7 @@ const DetailPage = () => {
         onRequestClose={handleBidModalClose}
         onSubmit={handleBidSubmit}
         currentPrice={product.price}
-        currentBalance={userInfo.balance}
+        currentBalance={userInfo ? userInfo.balance : 0} // 수정된 부분
       />
     </Box>
   );
@@ -356,23 +354,18 @@ const IconContainer = styled.div`
   margin-right: 20px;
 `;
 
-const EditIcon = styled(MdEdit)`
-  font-size: 24px;
-  margin-right: 20px;
-  color: #aaa;
-`;
-
 const DeleteIcon = styled(MdDelete)`
   font-size: 24px;
   color: #aaa;
 `;
 
 const Box = styled.div`
-  position: absolute;
+  position: relative;
   top: 0;
   display: flex;
   flex-direction: column;
   width: 100%;
+  height: auto;
   overflow-x: hidden;
 `;
 
@@ -389,8 +382,9 @@ const LogoContainer = styled.div`
 
 const Logo = styled.h1`
   color: #a0153e;
-  font-family: 'Freesentation-9Black', sans-serif;
+  font-family: 'HSSummer', sans-serif;
   font-size: 24px;
+  margin-top: 15px;
 `;
 
 const CloseIcon = styled(IoClose)`

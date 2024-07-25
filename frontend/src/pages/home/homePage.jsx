@@ -207,11 +207,12 @@ const HomePage = () => {
 export default HomePage;
 
 const Box = styled.div`
-  position: absolute;
+  position: relative;
   top: 0;
   display: flex;
   flex-direction: column;
   width: 100%;
+  height: auto;
   overflow-x: hidden;
   padding-bottom: 50px;
 `;
@@ -229,8 +230,9 @@ const LogoContainer = styled.div`
 
 const Logo = styled.h1`
   color: #a0153e;
-  font-family: 'Freesentation-9Black', sans-serif;
+  font-family: 'HSSummer', sans-serif;
   font-size: 24px;
+  margin-top: 15px;
 `;
 
 const BellIcon = styled(PiBell)`

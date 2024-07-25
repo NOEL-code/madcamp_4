@@ -28,9 +28,8 @@ const VincentPage = () => {
       </MomaImageContainer>
       <Title1>MoMA</Title1>
       <Title2>[ 빈센트 반 고흐 경매전 ]</Title2>
-      <Spacer />
       <Info>뉴욕 모마미술관의 첫 경매에 도전해보세요</Info>
-      <Info>2024년 8월 3일, 오직 이곳에서만.</Info>
+      <Info2>2024년 8월 3일, 오직 이곳에서만.</Info2>
       <Pictures>
         <VincentImage src={Vincent1} />
         <VincentImage src={Vincent2} />
@@ -71,12 +70,12 @@ const VincentPage = () => {
 export default VincentPage;
 
 const Box = styled.div`
-  position: absolute;
+  position: relative;
   top: 0;
   display: flex;
   flex-direction: column;
   width: 100%;
-  height: 190vh;
+  height: auto;
   overflow-x: hidden;
   background-color: #aaa;
 `;
@@ -95,8 +94,9 @@ const LogoContainer = styled.div`
 
 const Logo = styled.h1`
   color: #a0153e;
-  font-family: 'Freesentation-9Black', sans-serif;
+  font-family: 'HSSummer', sans-serif;
   font-size: 24px;
+  margin-top: 15px;
 `;
 
 const CloseIcon = styled(IoClose)`
@@ -129,7 +129,7 @@ const GradientOverlay = styled.div`
 const Title1 = styled.div`
   position: absolute;
   top: 320px;
-  right: 130px;
+  right: 30%;
   font-family: 'Freesentation-8ExtraBold', sans-serif;
   font-size: 48px;
   color: #fff;
@@ -138,18 +138,21 @@ const Title1 = styled.div`
 const Title2 = styled.div`
   position: absolute;
   top: 370px;
-  right: 125px;
+  right: 28%;
   font-family: 'Freesentation-9Black', sans-serif;
   font-size: 18px;
   color: #535c91;
 `;
 
-const Spacer = styled.div`
-  width: 100%;
-  height: 80px;
+const Info = styled.h1`
+  text-align: center;
+  font-family: 'Freesentation-1Thin', sans-serif;
+  font-size: 16px;
+  color: white;
+  margin-top: 80px;
 `;
 
-const Info = styled.h1`
+const Info2 = styled.h1`
   text-align: center;
   font-family: 'Freesentation-1Thin', sans-serif;
   font-size: 16px;
@@ -164,7 +167,7 @@ const Pictures = styled.div`
 `;
 
 const VincentImage = styled.img`
-  width: 195px;
+  width: 50%;
   height: auto;
   display: block;
 `;
