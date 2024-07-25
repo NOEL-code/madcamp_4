@@ -64,8 +64,9 @@ export const closeGame = async (productId, winnerId, loserIds, bidAmount) => {
       loserIds: loserIds, // 배열임!!!
       bidAmount: bidAmount,
     };
-    console.log(closeData);
-    const response = await baseInstance.post(`/bid/close/game`, closeData);
+
+    const response = await baseInstance.post(`/bid/game/close`, closeData);
+
     return response.data;
   } catch (error) {
     console.error('Failed to close Game');

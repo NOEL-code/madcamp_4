@@ -184,8 +184,16 @@ exports.updateScore = async (productId, userId, score) => {
 };
 
 exports.closeGameService = async (productId, winnerId, loserIds, bidAmount) => {
+
   try {
-    const product = await Product.findById(productId);
+    // Convert IDs to ObjectId
+    const productObjectId = new mongoose.Types.ObjectId(productId);
+    const winnerObjectId = new mongoose.Types.ObjectId(winnerId);
+    const loserObjectIds = loserIds.map(
+      (id) => new mongoose.Types.ObjectId(id)
+    );
+
+    const product = await Product.findById(productObjectId);
     if (!product) {
       throw new Error("Product not found");
     }
@@ -205,36 +213,40 @@ exports.closeGameService = async (productId, winnerId, loserIds, bidAmount) => {
     seller.account.balance += bidAmount;
     await seller.save();
 
-    loserIds;
+    for (let i = 0; i < loserObjectIds.length; i++) {
+      const loser = await User.findById(loserObjectIds[i]);
+      if (loser) {
+        loser.account.balance += bidAmount;
+        await loser.save();
 
-    for (let i = 0; loserIds.length(); i++) {
-      const loser = await User.findById(loserIds[i]);
-      loser.account.balance += bidAmount;
-      await loser.save();
+        const newAlarm = new Alarm({
+          userId: loser._id,
+          title: "낙찰 실패 ㅜㅜ",
+          content: `회원님께서 입찰에 참여한 ${product.productName} 상품낙찰에 실패하셨습니다. `,
+        });
 
-      const newAlarm = {
-        userId: loserIds[i],
-        title: "낙찰 실패 ㅜㅜ",
-        content: `회원님께서 입찰에 참여한 ${product.productName} 상품낙찰에 실패하셨습니다. `,
-      };
+        await newAlarm.save();
+      }
     }
 
     console.log(
       `Credited ${bidAmount} to seller ${seller.name}, new balance: ${seller.account.balance}`
     );
 
-    const newAlarm = {
-      userId: winnerId,
+    const winnerAlarm = new Alarm({
+      userId: winnerObjectId,
       title: "아싸~ 낙찰 성공!",
       content: `회원님께서 입찰에 참여한 ${product.productName} 상품이 ${bidAmount}원으로 회원님께 낙찰되었습니다. `,
-    };
+    });
 
-    const saveAlarm = new Alarm(newAlarm);
+    await winnerAlarm.save();
 
+    product.winnerId = winnerObjectId;
     product.isClose = 1;
 
     return await product.save();
   } catch (error) {
+
     console.error("Error in close Game service:", error);
     throw error;
   }

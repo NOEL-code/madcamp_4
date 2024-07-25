@@ -17,7 +17,8 @@ router.put("/sameScore/:productId", authenticateToken, updateSameScoreBid); // �
 
 router.get("/game/:productId", authenticateToken, findGameByProductId); //게임 정보 가져오가
 router.post("/create/game", authenticateToken, createGame); // 게임 만들기
-router.put("/update/score", authenticateToken, updateScore); //게임 점수 업데이트 하기
-router.post("/close/game", authenticateToken, closeGame); // 게임 종료 -> 낙찰하기
+router.put("/update-score", authenticateToken, updateScore); //게임 점수 업데이트 하기
+router.post("/game/close", authenticateToken, closeGame); // 게임 종료 -> 낙찰하기
+
 
 module.exports = router;
