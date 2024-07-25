@@ -16,7 +16,9 @@ const CouponHeader = () => {
   return (
     <Header>
       <Container>
-        <LogoImageContainer />
+        <LogoImageContainer>
+          <LogoText>A</LogoText>
+        </LogoImageContainer>
         <Text>앱 설치하고 15% 할인쿠폰 받기</Text>
       </Container>
       <InstallButton onClick={handleInstallClick}>앱 설치</InstallButton>
@@ -46,10 +48,19 @@ const Container = styled.div`
 const LogoImageContainer = styled.div`
   width: 30px;
   height: 30px;
-  background-color: #ccc;
+  background-color: #eee;
   border-radius: 5px;
   border: 1px solid white;
   margin-right: 10px;
+  display; flex;
+`;
+
+const LogoText = styled.h1`
+  color: #a0153e;
+  font-family: 'HSSummer', sans-serif;
+  font-size: 28px;
+  text-align: center;
+  margin-top: -5px;
 `;
 
 const Text = styled.h1`

@@ -117,11 +117,7 @@ const AddPage = () => {
 
     try {
       await saveProduct(formData);
-      Swal.fire({
-        icon: 'success',
-        title: '상품이 성공적으로 등록되었습니다!',
-      });
-      navigate('/');
+      navigate('/shop');
     } catch (err) {
       console.error(err);
       Swal.fire({
@@ -189,6 +185,7 @@ const AddPage = () => {
           onChange={(date) => setStartDate(date)}
           dateFormat="yyyy/MM/dd"
           placeholderText="기한을 선택하세요"
+          minDate={new Date()}
         />
         <Text>시작가</Text>
         <NameInput
@@ -232,8 +229,9 @@ const LogoContainer = styled.div`
 
 const Logo = styled.h1`
   color: #a0153e;
-  font-family: 'Freesentation-9Black', sans-serif;
+  font-family: 'HSSummer', sans-serif;
   font-size: 24px;
+  margin-top: 15px;
 `;
 
 const Text = styled.h1`

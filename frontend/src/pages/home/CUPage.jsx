@@ -35,12 +35,12 @@ const CUPage = () => {
 export default CUPage;
 
 const Box = styled.div`
-  position: absolute;
+  position: relative;
   top: 0;
   display: flex;
   flex-direction: column;
   width: 100%;
-  height: 145vh;
+  height: 180vh;
   overflow-x: hidden;
   background-color: #9bcf53;
 `;
@@ -59,8 +59,9 @@ const LogoContainer = styled.div`
 
 const Logo = styled.h1`
   color: #a0153e;
-  font-family: 'Freesentation-9Black', sans-serif;
+  font-family: 'HSSummer', sans-serif;
   font-size: 24px;
+  margin-top: 15px;
 `;
 
 const CloseIcon = styled(IoClose)`
