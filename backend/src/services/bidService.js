@@ -177,6 +177,7 @@ exports.updateSameScoreBid = async (productId) => {
 };
 
 exports.updateScore = async (productId, userId, score) => {
+  console.log(productId, userId, score);
   try {
     // productId로 게임을 찾습니다.
     const game = await Game.findOne({ productId });
