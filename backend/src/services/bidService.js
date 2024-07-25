@@ -18,9 +18,12 @@ exports.createGame = async (gameData) => {
   try {
     const game = new Game(gameData);
 
-    const userIds = gameData.users;
+    // userIds가 배열인지 확인하고, 배열이 아니라면 배열로 변환합니다.
+    const userIds = Array.isArray(gameData.users)
+      ? gameData.users
+      : [gameData.users];
 
-    for (let i = 0; i < userIds.length(); i++) {
+    for (let i = 0; i < userIds.length; i++) {
       const newAlarm = new Alarm({
         userId: userIds[i].userId,
         title: "맞다이 ㄱㄱ",
@@ -30,7 +33,7 @@ exports.createGame = async (gameData) => {
       await newAlarm.save();
     }
 
-    return game.save();
+    return await game.save();
   } catch (error) {
     console.error("Error in createGame", error);
   }
