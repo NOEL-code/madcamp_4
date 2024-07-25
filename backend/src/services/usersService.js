@@ -8,18 +8,24 @@ const {
 } = require("../utils/auth");
 const TokenModel = require("./tokenService");
 
-exports.registerUser = async ({
+exports.registerUserService = async ({
   userEmail,
   userPassword,
   name,
   phoneNumber,
 }) => {
-  console.log("registerUser service called with:", {
+  console.log("registerUserService called with:", {
     userEmail,
     userPassword,
     name,
     phoneNumber,
   });
+
+  // Check if the user already exists
+  const existingUser = await User.findOne({ userEmail });
+  if (existingUser) {
+    throw new Error("User already exists");
+  }
 
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(userPassword, salt);
@@ -41,7 +47,7 @@ exports.registerUser = async ({
     refreshToken,
   });
 
-  console.log("registerUser service successful, tokens:", {
+  console.log("registerUserService successful, tokens:", {
     accessToken,
     refreshToken,
   });

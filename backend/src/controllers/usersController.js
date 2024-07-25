@@ -1,5 +1,5 @@
 const {
-  registerUser,
+  registerUserService,
   loginUser,
   refreshAccessToken,
   logoutUser,
@@ -13,7 +13,7 @@ exports.registerUser = async (req, res) => {
   const { userEmail, userPassword, name, phoneNumber } = req.body;
 
   try {
-    const { accessToken, refreshToken } = await registerUser({
+    const { accessToken, refreshToken } = await registerUserService({
       userEmail,
       userPassword,
       name,
@@ -30,7 +30,6 @@ exports.registerUser = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
-
 // 로그인
 exports.loginUser = async (req, res) => {
   console.log("loginUser called with body:", req.body);
