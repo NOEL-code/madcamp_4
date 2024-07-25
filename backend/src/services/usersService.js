@@ -39,8 +39,8 @@ exports.registerUserService = async ({
 
   await user.save();
 
-  const accessToken = makeAccessToken(user._id);
-  const refreshToken = makeRefreshToken(user._id);
+  const accessToken = makeAccessToken(user._id); // userId를 객체로 전달
+  const refreshToken = makeRefreshToken(user._id); // userId를 객체로 전달
 
   await TokenModel.updateRefresh({
     user_id: user.id,
