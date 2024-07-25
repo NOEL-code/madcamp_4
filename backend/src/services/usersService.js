@@ -21,12 +21,10 @@ exports.registerUser = async ({
     phoneNumber,
   });
 
-  let user = await User.findOne({ userEmail });
-
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(userPassword, salt);
 
-  user = new User({
+  const user = new User({
     userEmail,
     userPassword: hashedPassword,
     name,
