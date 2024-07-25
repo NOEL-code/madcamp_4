@@ -20,11 +20,8 @@ exports.registerUser = async ({
     name,
     phoneNumber,
   });
+
   let user = await User.findOne({ userEmail });
-  if (user) {
-    console.error("registerUser error: User already exists");
-    throw new Error("User already exists");
-  }
 
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(userPassword, salt);
@@ -37,6 +34,20 @@ exports.registerUser = async ({
   });
 
   await user.save();
+
+  const accessToken = makeAccessToken(user._id);
+  const refreshToken = makeRefreshToken(user._id);
+
+  await TokenModel.updateRefresh({
+    user_id: user.id,
+    refreshToken,
+  });
+
+  console.log("registerUser service successful, tokens:", {
+    accessToken,
+    refreshToken,
+  });
+  return { accessToken, refreshToken };
 };
 
 exports.loginUser = async ({ userEmail, userPassword }) => {
