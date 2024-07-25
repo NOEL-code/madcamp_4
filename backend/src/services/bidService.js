@@ -176,7 +176,7 @@ exports.updateScore = async (productId, userId, score) => {
     }
     // 사용자의 점수를 업데이트합니다.
     user.score = score;
-
+    user.isComplete = true;
     // 게임을 저장합니다.
     await game.save();
 
