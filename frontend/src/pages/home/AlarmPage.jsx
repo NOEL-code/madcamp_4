@@ -87,7 +87,6 @@ const Logo = styled.h1`
   color: #a0153e;
   font-family: 'HSSummer', sans-serif;
   font-size: 24px;
-  margin-top: 15px;
 `;
 
 const BellIcon = styled(PiBell)`
