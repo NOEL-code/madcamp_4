@@ -147,6 +147,8 @@ exports.closeBid = async (productId, userId) => {
 
     const saveAlarm = new Alarm(newAlarm);
 
+    await saveAlarm.save();
+
     product.isClose = 1;
 
     return await product.save();
