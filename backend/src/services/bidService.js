@@ -205,7 +205,6 @@ exports.updateScore = async (productId, userId, score) => {
     throw error;
   }
 };
-
 exports.closeGameService = async (productId, winnerId, loserIds, bidAmount) => {
   try {
     // Convert IDs to ObjectId
@@ -218,6 +217,32 @@ exports.closeGameService = async (productId, winnerId, loserIds, bidAmount) => {
     const product = await Product.findById(productObjectId);
     if (!product) {
       throw new Error("Product not found");
+    }
+
+    // Fetch the game associated with the product
+    const game = await Game.findOne({ productId: productObjectId });
+    if (!game) {
+      throw new Error("Game not found");
+    }
+
+    // Find the highest score
+    const highestScore = Math.max(...game.users.map((user) => user.score));
+
+    // Check if there are multiple users with the highest score
+    const usersWithHighestScore = game.users.filter(
+      (user) => user.score === highestScore
+    );
+
+    if (usersWithHighestScore.length > 1) {
+      // If there are multiple users with the highest score, set isComplete to false for all users
+      game.users.forEach((user) => {
+        user.isComplete = false;
+      });
+      await game.save();
+
+      // Update product status
+      product.isClose = 2; // Assuming 2 indicates a game with multiple highest scores
+      return await product.save();
     }
 
     product.dueDate = new Date(); // Set the close date
