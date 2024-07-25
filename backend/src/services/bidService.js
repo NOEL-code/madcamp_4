@@ -18,11 +18,11 @@ exports.createGame = async (gameData) => {
   try {
     const game = new Game(gameData);
 
-    const userIds = gameData.users.userId;
+    const userIds = gameData.users;
 
     for (let i = 0; i < userIds.length(); i++) {
       const newAlarm = new Alarm({
-        userId: userIds[i],
+        userId: userIds[i].userId,
         title: "맞다이 ㄱㄱ",
         content: `회원님께서 입찰에 참여한 상품은 맞다이로 낙찰자를 결정하게 되었습니디. 게임에 참여하시고 상품을 쟁취하세요!`,
       });
