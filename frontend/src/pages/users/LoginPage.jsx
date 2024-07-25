@@ -102,7 +102,7 @@ const Form = styled.form`
   display: flex;
   flex-direction: column;
   padding: 25px 40px;
-  margin-top: 200px;
+  margin-top: 130px;
 `;
 
 const Input = styled.input`
