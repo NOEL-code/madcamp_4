@@ -5,17 +5,33 @@ import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
 import CouponHeader from '../../components/CouponHeader';
+import { getAlarms } from '../../services/alarm'; // 알람 가져오기 함수 import
 
 const AlarmPage = () => {
   const [selectedOption, setSelectedOption] = useState('전체');
+  const [alarms, setAlarms] = useState([]); // 알람 상태 추가
   const navigate = useNavigate();
   const userInfo = useSelector((state) => state.user.userInfo);
+
+  console.log(userInfo);
 
   useEffect(() => {
     if (!userInfo) {
       navigate('/login'); // 로그인 페이지로 리디렉션
+    } else {
+      fetchAlarms(userInfo.id); // 사용자 정보가 있을 때 알람 가져오기
     }
   }, [userInfo, navigate]);
+
+  const fetchAlarms = async (userId) => {
+    try {
+      const fetchedAlarms = await getAlarms(userId);
+      console.log(fetchedAlarms);
+      setAlarms(fetchedAlarms);
+    } catch (error) {
+      console.error('Error fetching alarms:', error);
+    }
+  };
 
   const handleOptionClick = (option) => {
     setSelectedOption(option);
@@ -54,30 +70,13 @@ const AlarmPage = () => {
         </Option> */}
       </OptionContainer>
       <AlarmList>
-        <AlarmItem>
-          <AlarmTitle>낙찰 성공</AlarmTitle>
-          <AlarmContent>
-            고객님이 제시한 금액 50,000원에 <br />[ 모나리자 ] 가
-            낙찰되었습니다! 축하드립니다
-          </AlarmContent>
-        </AlarmItem>
-        <ItemDivider />
-        <AlarmItem>
-          <AlarmTitle>낙찰 실패</AlarmTitle>
-          <AlarmContent>
-            넘족이님이 제시한 금액 100,000원에 <br />[ 고려청자 ] 가
-            낙찰되었습니다.. 아쉽군요!
-          </AlarmContent>
-        </AlarmItem>
-        <ItemDivider />
-        <AlarmItem>
-          <AlarmTitle>쫄?</AlarmTitle>
-          <AlarmContent>
-            넘족이님이 [ 샤넬백 ]에 <br />
-            고객님이 제시한 금액보다 높은 금액을 제시했습니다!
-          </AlarmContent>
-        </AlarmItem>
-        <ItemDivider />
+        {alarms.map((alarm) => (
+          <AlarmItem key={alarm._id}>
+            <AlarmTitle>{alarm.title}</AlarmTitle>
+            <AlarmContent>{alarm.content}</AlarmContent>
+            <ItemDivider />
+          </AlarmItem>
+        ))}
       </AlarmList>
     </Box>
   );
