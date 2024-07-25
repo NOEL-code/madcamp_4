@@ -117,11 +117,7 @@ const AddPage = () => {
 
     try {
       await saveProduct(formData);
-      Swal.fire({
-        icon: 'success',
-        title: '상품이 성공적으로 등록되었습니다!',
-      });
-      navigate('/');
+      navigate('/shop');
     } catch (err) {
       console.error(err);
       Swal.fire({
