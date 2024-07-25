@@ -6,7 +6,7 @@ Command: npx gltfjsx@6.4.1 gavel.glb
 import { useGLTF } from '@react-three/drei';
 
 export function Model(props) {
-  const { nodes, materials } = useGLTF('src/assets/models/gavel.glb');
+  const { nodes, materials } = useGLTF('./gavel.glb');
   return (
     <group {...props} dispose={null}>
       <group

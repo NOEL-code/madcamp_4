@@ -6,7 +6,7 @@ Command: npx gltfjsx@6.4.1 rolex.glb
 import { useGLTF } from '@react-three/drei';
 
 export function Rolex(props) {
-  const { nodes, materials } = useGLTF('src/assets/models/rolex.glb');
+  const { nodes, materials } = useGLTF('./src/assets/models/rolex.glb');
   return (
     <group {...props} dispose={null}>
       <group scale={0.019}>
