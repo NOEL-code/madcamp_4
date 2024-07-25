@@ -95,7 +95,7 @@ const ShopPage = () => {
   );
 
   return (
-    <>
+    <Box>
       <Container>
         <CouponHeader />
         <main>
@@ -168,10 +168,20 @@ const ShopPage = () => {
       </Container>
       <Divider />
       <Footer>Copyright @madcamp</Footer>
-    </>
+    </Box>
   );
 };
+
 export default ShopPage;
+
+const Box = styled.div`
+  position: absolute;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding-bottom: 50px;
+`;
 
 const Container = styled.div`
   max-width: 100%;
@@ -436,6 +446,6 @@ const Footer = styled.h1`
   font-size: 10px;
   color: #ccc;
   width: 100%;
-  margin: 60px 0;
+  margin: 30px 0;
   text-align: center;
 `;

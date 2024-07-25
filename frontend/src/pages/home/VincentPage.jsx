@@ -57,7 +57,13 @@ const VincentPage = () => {
           <VincentImage2 src={Portrait} />
         </HighLightContainer>
       </HighLightBox>
-      <Bottom />
+      <Bottom>
+        <WarningTitle>주의사항</WarningTitle>
+        <WarningText>
+          본 행사는 당사 상황에 따라 변경 및 조기 종료될 수 있습니다.
+        </WarningText>
+        <WarningText>배송에 10일~1년 가량 소요될 수 있습니다.</WarningText>
+      </Bottom>
     </Box>
   );
 };
@@ -70,7 +76,7 @@ const Box = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-  height: 200vh;
+  height: 190vh;
   overflow-x: hidden;
   background-color: #aaa;
 `;
@@ -221,6 +227,21 @@ const DetailInfo2 = styled.h1`
 
 const Bottom = styled.div`
   width: 100%;
-  height: 50px;
-  background-color: #535c91;
+  height: 140px;
+  background-color: #ddd;
+  padding: 30px 20px;
+`;
+
+const WarningTitle = styled.h1`
+  font-family: 'Freesentation-3Light', sans-serif;
+  font-size: 16px;
+  color: #686d76;
+  margin-bottom: 10px;
+`;
+
+const WarningText = styled.h1`
+  font-family: 'Freesentation-1Thin', sans-serif;
+  font-size: 16px;
+  color: #686d76;
+  margin: 5px 0;
 `;

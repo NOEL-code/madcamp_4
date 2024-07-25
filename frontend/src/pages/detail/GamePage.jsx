@@ -29,6 +29,8 @@ const GamePage = () => {
   const [currentUserName, setCurrentUserName] = useState('');
   const [bidderScores, setBidderScores] = useState({});
 
+  const [isCurrentUserComplete, setIsCurrentUserComplete] = useState(false);
+
   useEffect(() => {
     const fetchProduct = async () => {
       try {
@@ -66,6 +68,9 @@ const GamePage = () => {
         const scores = {};
         gameData.users.forEach((user) => {
           scores[user.userId] = user.score;
+          if (user.userId === currentUserId) {
+            setIsCurrentUserComplete(user.isComplete);
+          }
         });
         setBidderScores(scores);
       } catch (error) {
@@ -147,7 +152,7 @@ const GamePage = () => {
             alert(`짝짝짝! 점수는 ${score} 입니다.`);
             setIsGameRunning(false);
 
-            if (tiedBidders.includes(currentUserId)) {
+            if (tiedBidders.includes(currentUserId) && !isCurrentUserComplete) {
               updateScore(productId, currentUserId, score).then(() => {
                 fetchGameScores(); // 점수 업데이트 후 다시 게임 점수 fetch
               });
