@@ -33,26 +33,6 @@ const AlarmPage = () => {
         <BellIcon />
       </LogoContainer>
       <Divider />
-      <OptionContainer>
-        <Option
-          selected={selectedOption === '전체'}
-          onClick={() => handleOptionClick('전체')}
-        >
-          전체
-        </Option>
-        {/* <Option
-          selected={selectedOption === '낙찰'}
-          onClick={() => handleOptionClick('낙찰')}
-        >
-          낙찰
-        </Option>
-        <Option
-          selected={selectedOption === '응찰'}
-          onClick={() => handleOptionClick('응찰')}
-        >
-          응찰
-        </Option> */}
-      </OptionContainer>
       <AlarmList>
         <AlarmItem>
           <AlarmTitle>낙찰 성공</AlarmTitle>
@@ -106,8 +86,9 @@ const LogoContainer = styled.div`
 
 const Logo = styled.h1`
   color: #a0153e;
-  font-family: 'Freesentation-9Black', sans-serif;
+  font-family: 'HSSummer', sans-serif;
   font-size: 24px;
+  margin-top: 15px;
 `;
 
 const BellIcon = styled(PiBell)`
