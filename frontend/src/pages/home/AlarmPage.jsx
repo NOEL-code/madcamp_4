@@ -26,8 +26,12 @@ const AlarmPage = () => {
   const fetchAlarms = async (userId) => {
     try {
       const fetchedAlarms = await getAlarms(userId);
-      console.log(fetchedAlarms);
-      setAlarms(fetchedAlarms);
+      // 최신순으로 정렬
+      const sortedAlarms = fetchedAlarms.sort(
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
+      );
+      console.log(sortedAlarms);
+      setAlarms(sortedAlarms);
     } catch (error) {
       console.error('Error fetching alarms:', error);
     }
