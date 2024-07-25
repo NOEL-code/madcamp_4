@@ -184,7 +184,6 @@ exports.updateScore = async (productId, userId, score) => {
 };
 
 exports.closeGameService = async (productId, winnerId, loserIds, bidAmount) => {
-
   try {
     // Convert IDs to ObjectId
     const productObjectId = new mongoose.Types.ObjectId(productId);
@@ -196,10 +195,6 @@ exports.closeGameService = async (productId, winnerId, loserIds, bidAmount) => {
     const product = await Product.findById(productObjectId);
     if (!product) {
       throw new Error("Product not found");
-    }
-
-    if (product.winnerId) {
-      throw new Error("The auction is already closed.");
     }
 
     product.dueDate = new Date(); // Set the close date
@@ -246,7 +241,6 @@ exports.closeGameService = async (productId, winnerId, loserIds, bidAmount) => {
 
     return await product.save();
   } catch (error) {
-
     console.error("Error in close Game service:", error);
     throw error;
   }

@@ -73,7 +73,7 @@ exports.updateScore = async (req, res) => {
 
 exports.closeGame = async (req, res) => {
   const { productId, winnerId, loserIds, bidAmount } = req.body;
-
+  console.log("asdf");
   try {
     const closeGame = await closeGameService(
       productId,
