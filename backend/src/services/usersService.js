@@ -1,10 +1,9 @@
 const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
 const { User } = require("../models/User");
 const {
   makeAccessToken,
-  makeRefreshToken,
   verifyRefreshToken,
+  makeRefreshToken,
 } = require("../utils/auth");
 const TokenModel = require("./tokenService");
 
@@ -79,8 +78,8 @@ exports.loginUser = async ({ userEmail, userPassword }) => {
   const payload = {
     id: user.id,
   };
-  const accessToken = makeAccessToken(payload);
-  const refreshToken = makeRefreshToken(payload);
+  const accessToken = makeAccessToken(payload); // userId를 객체로 전달
+  const refreshToken = makeRefreshToken(payload); // userId를 객체로 전달
 
   await TokenModel.updateRefresh({
     user_id: user.id,
