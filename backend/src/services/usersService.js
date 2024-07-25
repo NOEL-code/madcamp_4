@@ -1,10 +1,6 @@
 const bcrypt = require("bcryptjs");
 const { User } = require("../models/User");
-const {
-  makeAccessToken,
-  verifyRefreshToken,
-  makeRefreshToken,
-} = require("../utils/auth");
+const { makeAccessToken, makeRefreshToken } = require("../utils/auth");
 const TokenModel = require("./tokenService");
 
 exports.registerUserService = async ({
@@ -20,7 +16,6 @@ exports.registerUserService = async ({
     phoneNumber,
   });
 
-  // Check if the user already exists
   const existingUser = await User.findOne({ userEmail });
   if (existingUser) {
     throw new Error("User already exists");
@@ -42,7 +37,7 @@ exports.registerUserService = async ({
   const refreshToken = makeRefreshToken(user._id); // userId를 객체로 전달
 
   await TokenModel.updateRefresh({
-    user_id: user.id,
+    user_id: user._id,
     refreshToken,
   });
 
@@ -76,13 +71,13 @@ exports.loginUser = async ({ userEmail, userPassword }) => {
   };
 
   const payload = {
-    id: user.id,
+    id: user._id.toString(),
   };
-  const accessToken = makeAccessToken(payload); // userId를 객체로 전달
-  const refreshToken = makeRefreshToken(payload); // userId를 객체로 전달
+  const accessToken = makeAccessToken(user._id); // userId를 객체로 전달
+  const refreshToken = makeRefreshToken(user._id); // userId를 객체로 전달
 
   await TokenModel.updateRefresh({
-    user_id: user.id,
+    user_id: user._id,
     refreshToken,
   });
 
@@ -105,7 +100,7 @@ exports.refreshAccessToken = async (refreshToken) => {
       throw new Error("유효하지 않은 리프레시 토큰");
     }
 
-    const newAccessToken = makeAccessToken({ id: decoded.id });
+    const newAccessToken = makeAccessToken(decoded.id);
     console.log(
       "refreshAccessToken service successful, new accessToken:",
       newAccessToken
