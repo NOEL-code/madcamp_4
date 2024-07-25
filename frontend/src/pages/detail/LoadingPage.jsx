@@ -87,7 +87,7 @@ const Text = styled.h1`
 const Progress = styled.h1`
   font-family: 'Freesentation-8ExtraBold', sans-serif;
   font-size: 24px;
-  margin-top: 300px;
+  margin-top: 250px;
   margin-left: 100px;
   color: #fff;
 `;
