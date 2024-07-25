@@ -13,14 +13,14 @@ exports.registerUser = async (req, res) => {
   const { userEmail, userPassword, name, phoneNumber } = req.body;
 
   try {
-    const { accessToken, refreshToken } = await registerUser({
+    await registerUser({
       userEmail,
       userPassword,
       name,
       phoneNumber,
     });
-    console.log("registerUser successful:", { accessToken, refreshToken });
-    res.status(201).json({ accessToken, refreshToken });
+
+    res.status(201).json();
   } catch (err) {
     if (err.message === "User already exists") {
       console.error("registerUser error: User already exists");

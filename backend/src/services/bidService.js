@@ -17,6 +17,18 @@ exports.createGame = async (gameData) => {
   console.log(gameData);
   try {
     const game = new Game(gameData);
+
+    const userIds = gameData.users.userId;
+
+    for (let i = 0; i < userIds.length(); i++) {
+      const newAlarm = new Alarm({
+        userId: userIds[i],
+        title: "맞다이 ㄱㄱ",
+        content: `회원님께서 입찰에 참여한 상품은 맞다이로 낙찰자를 결정하게 되었습니디. 게임에 참여하시고 상품을 쟁취하세요!`,
+      });
+      await newAlarm.save();
+    }
+
     return game.save();
   } catch (error) {
     console.error("Error in createGame", error);
@@ -84,15 +96,33 @@ exports.biddingProduct = async (productId, bidData) => {
 };
 
 // 낙찰하기
-exports.closeGame = async (productId, winnerId, loserIds, bidAmount) => {
+exports.closeBid = async (productId, userId) => {
   try {
     const product = await Product.findById(productId);
     if (!product) {
       throw new Error("Product not found");
     }
-
+    if (product.userId.toString() !== userId) {
+      throw new Error("Unauthorized");
+    }
     if (product.winnerId) {
       throw new Error("The auction is already closed.");
+    }
+
+    // Find the highest bid
+    let highestBid = 0;
+    let highestBidderId = null;
+    for (const bid of product.bidHistory) {
+      if (bid.bidAmount > highestBid) {
+        highestBid = bid.bidAmount;
+        highestBidderId = bid.bidderId;
+      }
+    }
+
+    if (highestBidderId) {
+      product.winnerId = highestBidderId; // Set the winnerId
+    } else {
+      throw new Error("No bids available to close the auction");
     }
 
     product.dueDate = new Date(); // Set the close date
@@ -102,40 +132,26 @@ exports.closeGame = async (productId, winnerId, loserIds, bidAmount) => {
     if (!seller) {
       throw new Error("Seller not found");
     }
-
-    seller.account.balance += bidAmount;
+    seller.account.balance += highestBid;
     await seller.save();
 
-    for (let i = 0; i < loserIds.length; i++) {
-      const loser = await User.findById(loserIds[i]);
-      loser.account.balance += bidAmount;
-      await loser.save();
-
-      const newAlarm = new Alarm({
-        userId: loserIds[i],
-        title: "낙찰 실패 ㅜㅜ",
-        content: `회원님께서 입찰에 참여한 ${product.productName} 상품 낙찰에 실패하셨습니다.`,
-      });
-      await newAlarm.save();
-    }
-
     console.log(
-      `Credited ${bidAmount} to seller ${seller.name}, new balance: ${seller.account.balance}`
+      `Credited ${highestBid} to seller ${seller.name}, new balance: ${seller.account.balance}`
     );
 
-    const winnerAlarm = new Alarm({
-      userId: winnerId,
-      title: "아싸~ 낙찰 성공!",
-      content: `회원님께서 입찰에 참여한 ${product.productName} 상품이 ${bidAmount}원으로 회원님께 낙찰되었습니다.`,
-    });
-    await winnerAlarm.save();
+    const newAlarm = {
+      userId: userId,
+      title: "낙찰 성공",
+      content: `회원님께서 입찰에 참여한 ${product.productName} 상품이 ${product.price}원으로 회원님께 낙찰되었습니다. `,
+    };
+
+    const saveAlarm = new Alarm(newAlarm);
 
     product.isClose = 1;
-    product.winnerId = winnerId;
 
     return await product.save();
   } catch (error) {
-    console.error("Error in closeGame service:", error);
+    console.error("Error in closeBid service:", error);
     throw error;
   }
 };
