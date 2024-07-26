@@ -22,9 +22,9 @@
 
 ## Stack
 
-- Programming Language: ![TypeScript](https://img.shields.io/badge/-TypeScript-3178C6?style=flat&logo=TypeScript&logoColor=white)  ![Python](https://img.shields.io/badge/-Python-3776AB?style=flat&logo=Python&logoColor=white)
-- Frontend : ![HTML](https://img.shields.io/badge/-HTML5-E34F26?style=flat&logo=HTML5&logoColor=white) ![CSS](https://img.shields.io/badge/-CSS-1572B6?style=flat&logo=CSS3&logoColor=white) ![React Native](https://img.shields.io/badge/-React%20Native-61DAFB?style=flat&logo=React&logoColor=white)
-- Backend : ![Node.js](https://img.shields.io/badge/-Node.js-339933?style=flat&logo=Node.js&logoColor=white) ![MongoDB](https://img.shields.io/badge/-MongoDB-47A248?style=flat&logo=MongoDB&logoColor=white) ![Nest.js](https://img.shields.io/badge/-Nest.js-E0234E?style=flat&logo=NestJS&logoColor=white) 
+- Programming Language: ![JavaScript](https://img.shields.io/badge/-JavaScript-F7DF1E?style=flat&logo=JavaScript&logoColor=white) ![Python](https://img.shields.io/badge/-Python-3776AB?style=flat&logo=Python&logoColor=white)
+- Frontend : ![HTML](https://img.shields.io/badge/-HTML5-E34F26?style=flat&logo=HTML5&logoColor=white) ![CSS](https://img.shields.io/badge/-CSS-1572B6?style=flat&logo=CSS3&logoColor=white) ![React](https://img.shields.io/badge/-React-61DAFB?style=flat&logo=React&logoColor=white)
+- Backend : ![Node.js](https://img.shields.io/badge/-Node.js-339933?style=flat&logo=Node.js&logoColor=white) ![MongoDB](https://img.shields.io/badge/-MongoDB-47A248?style=flat&logo=MongoDB&logoColor=white) ![Express](https://img.shields.io/badge/-Express-000000?style=flat&logo=Express&logoColor=white) 
 - Infra : ![Docker](https://img.shields.io/badge/-Docker-2496ED?style=flat&logo=Docker&logoColor=white) ![AWS](https://img.shields.io/badge/-AWS-232F3E?style=flat&logo=Amazon%20AWS&logoColor=white)
 
 ## 프로젝트 시작하기
@@ -135,9 +135,9 @@ $ npm run start
 
 | API | Method | URL | Description | Request Header | Request Body | Response | Error |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Users API | POST | /api/users/register | 사용자 회원가입 | - | {"userEmail": "string", "userPassword": "string", "name": "
+| Users API | POST | /api/users/register | 사용자 회원가입 | - | {"userEmail": "string", "userPassword": "string", "name": "string", "phoneNumber": "string"}
 
-string", "phoneNumber": "string"} | {"accessToken": "string", "refreshToken": "string"} | 400 Bad Request, 500 Internal Server Error |
+ | {"accessToken": "string", "refreshToken": "string"} | 400 Bad Request, 500 Internal Server Error |
 | Users API | POST | /api/users/login | 사용자 로그인 | - | {"userEmail": "string", "userPassword": "string"} | {"accessToken": "string", "refreshToken": "string", "resUser": {"id": "string", "phoneNumber": "string", "name": "string", "balance": "number", "favorites": "array"}} | 401 Unauthorized, 403 Forbidden, 500 Internal Server Error |
 | Users API | POST | /api/users/logout | 사용자 로그아웃 | Authorization: Bearer <accessToken> | - | {"message": "Logged out successfully"} | 500 Internal Server Error |
 | Users API | POST | /api/users/refresh-token | 리프레시 토큰으로 새로운 엑세스 토큰 반환 | - | {"refreshToken": "string"} | {"accessToken": "string"} | 401 Unauthorized, 403 Forbidden |
@@ -147,7 +147,7 @@ string", "phoneNumber": "string"} | {"accessToken": "string", "refreshToken": "s
 | Products API | GET | /api/products/:productId | 특정 상품 조회 | - | - | {"productId": "string", "productName": "string", "price": "number", "description": "string", "dueDate": "date", "userId": "string", "category": "string", "productPhotos": ["string"]} | 500 Internal Server Error |
 | Products API | GET | /api/products/user/:userId | 유저가 올린 상품 리스트 조회 | - | - | [{"productId": "string", "productName": "string", "price": "number", "description": "string", "dueDate": "date", "userId": "string", "category": "string", "productPhotos": ["string"]}] | 500 Internal Server Error |
 | Products API | GET | /api/products/likedProductList/:userId | 유저가 좋아요를 누른 상품 리스트 조회 | - | - | [{"productId": "string", "productName": "string", "price": "number", "description": "string", "dueDate": "date", "userId": "string", "category": "string", "productPhotos": ["string"]}] | 500 Internal Server Error |
-| Products API | POST | /api/products | 상품 저장 | - | {"productName": "string", "price": "number", "description": "string", "dueDate": "date", "userId": "string", "category": "string", "productPhotos": ["string"]} | {"message": "Product saved successfully"} | 500 Internal Server Error |
+| Products API | POST | /api/products | 상품 저장 | Authorization: Bearer <accessToken> | {"productName": "string", "price": "number", "description": "string", "dueDate": "date", "userId": "string", "category": "string", "productPhotos": ["string"]} | {"message": "Product saved successfully"} | 500 Internal Server Error |
 | Products API | PUT | /api/products/:productId | 상품 수정 | Authorization: Bearer <accessToken> | {"productName": "string", "price": "number", "description": "string", "dueDate": "date", "userId": "string", "category": "string", "productPhotos": ["string"]} | {"message": "Product updated successfully"} | 500 Internal Server Error |
 | Products API | DELETE | /api/products/:productId | 상품 삭제 | Authorization: Bearer <accessToken> | - | {"message": "Product deleted successfully"} | 500 Internal Server Error |
 | Products API | GET | /api/products/successBid/user/:userId | 유저가 낙찰받은 상품 리스트 조회 | - | - | [{"productId": "string", "productName": "string", "price": "number", "description": "string", "dueDate": "date", "userId": "string", "category": "string", "productPhotos": ["string"]}] | 500 Internal Server Error |
@@ -155,9 +155,15 @@ string", "phoneNumber": "string"} | {"accessToken": "string", "refreshToken": "s
 | Bids API | POST | /api/bid/close/:productId | 낙찰하기 | Authorization: Bearer <accessToken> | {"userId": "string"} | {"message": "Bid closed successfully"} | 500 Internal Server Error |
 | Bids API | PUT | /api/bid/sameScore/:productId | 같은 가격으로 낙찰 | Authorization: Bearer <accessToken> | - | {"message": "Bid updated successfully"} | 500 Internal Server Error |
 | Bids API | GET | /api/bid/game/:productId | 게임 정보 가져오기 | Authorization: Bearer <accessToken> | - | {"game": {...}} | 500 Internal Server Error |
-| Bids API | POST | /api/bid/create/game | 게임 만들기 | Authorization: Bearer <accessToken> | {"productId": "string", "users": [{ "userId": "string", "score": "number", "isComplete": "boolean" }]} | {"message": "Game created successfully"} | 500 Internal Server Error |
+| Bids API | POST | /api/bid/create/game | 게임 만들기 | Authorization: Bearer <accessToken> | {"productId": "string", "users": [{"userId": "string", "score": "number", "isComplete": "boolean"}]} | {"message": "Game created successfully"} | 500 Internal Server Error |
 | Bids API | PUT | /api/bid/update/score | 게임 점수 업데이트 하기 | Authorization: Bearer <accessToken> | {"productId": "string", "userId": "string", "score": "number"} | {"message": "Score updated successfully"} | 500 Internal Server Error |
 | Bids API | POST | /api/bid/game/close | 게임 종료 | Authorization: Bearer <accessToken> | {"productId": "string", "winnerId": "string", "loserIds": ["string"], "bidAmount": "number"} | {"message": "Game closed successfully"} | 500 Internal Server Error |
+| Likes API | POST | /api/likes/:productId | 좋아요 누르기 | Authorization: Bearer <accessToken> | - | {"message": "Like added successfully"} | 500 Internal Server Error |
+| Likes API | DELETE | /api/likes/:productId | 좋아요 취소하기 | Authorization: Bearer <accessToken> | - | {"message": "Like removed successfully"} | 500 Internal Server Error |
+| Likes API | GET | /api/likes | 좋아요 목록 조회 | Authorization: Bearer <accessToken> | - | [{"productId": "string", "productName": "string", "price": "number", "description": "string", "dueDate": "date", "userId": "string", "category": "string", "productPhotos": ["string"]}] | 500 Internal Server Error |
+| Alarms API | POST | /api/alarms | 알람 저장 | - | {"userId": "string", "title": "string", "content": "string"} | {"message": "Alarm saved successfully"} | 500 Internal Server Error |
+| Alarms API | DELETE | /api/alarms/:alarmId | 알람 삭제 | - | - | {"message": "Alarm deleted successfully"} | 500 Internal Server Error |
+| Alarms API | GET | /api/alarms/user/:userId | 알람 목록 조회 | - | - | [{"_id": "string", "userId": "string", "title": "string", "content": "string", "createdAt": "date"}] | 500 Internal Server Error |
 
 ## 마무리
 
