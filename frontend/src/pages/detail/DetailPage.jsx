@@ -38,9 +38,14 @@ const DetailPage = () => {
         setProduct(productData);
 
         // 동점자 또는 판매자가 접속했을 때 바로 game 페이지로 리디렉션
-        const highestBids = productData.bidHistory.filter(
-          (bid) => bid.bidAmount === productData.bidHistory[0].bidAmount,
+        const highestBidAmount = Math.max(
+          ...productData.bidHistory.map((bid) => bid.bidAmount),
         );
+        const highestBids = productData.bidHistory.filter(
+          (bid) => bid.bidAmount === highestBidAmount,
+        );
+        console.log(highestBids);
+        console.log(userInfo.id);
         const tiedBidders = highestBids.map((bid) => bid.bidderId);
 
         if (
