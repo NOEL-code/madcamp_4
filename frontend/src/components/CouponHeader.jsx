@@ -60,7 +60,8 @@ const LogoText = styled.h1`
   font-family: 'HSSummer', sans-serif;
   font-size: 28px;
   text-align: center;
-  margin-top: -5px;
+  margin-top: 1px;
+  margin-left: 1px;
 `;
 
 const Text = styled.h1`

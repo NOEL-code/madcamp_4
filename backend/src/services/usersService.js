@@ -1,35 +1,30 @@
 const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
 const { User } = require("../models/User");
-const {
-  makeAccessToken,
-  makeRefreshToken,
-  verifyRefreshToken,
-} = require("../utils/auth");
+const { makeAccessToken, makeRefreshToken } = require("../utils/auth");
 const TokenModel = require("./tokenService");
 
-exports.registerUser = async ({
+exports.registerUserService = async ({
   userEmail,
   userPassword,
   name,
   phoneNumber,
 }) => {
-  console.log("registerUser service called with:", {
+  console.log("registerUserService called with:", {
     userEmail,
     userPassword,
     name,
     phoneNumber,
   });
-  let user = await User.findOne({ userEmail });
-  if (user) {
-    console.error("registerUser error: User already exists");
+
+  const existingUser = await User.findOne({ userEmail });
+  if (existingUser) {
     throw new Error("User already exists");
   }
 
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(userPassword, salt);
 
-  user = new User({
+  const user = new User({
     userEmail,
     userPassword: hashedPassword,
     name,
@@ -38,15 +33,15 @@ exports.registerUser = async ({
 
   await user.save();
 
-  const accessToken = makeAccessToken(user._id);
-  const refreshToken = makeRefreshToken(user._id);
+  const accessToken = makeAccessToken(user._id); // userId를 객체로 전달
+  const refreshToken = makeRefreshToken(user._id); // userId를 객체로 전달
 
   await TokenModel.updateRefresh({
-    user_id: user.id,
+    user_id: user._id,
     refreshToken,
   });
 
-  console.log("registerUser service successful, tokens:", {
+  console.log("registerUserService successful, tokens:", {
     accessToken,
     refreshToken,
   });
@@ -76,13 +71,13 @@ exports.loginUser = async ({ userEmail, userPassword }) => {
   };
 
   const payload = {
-    id: user.id,
+    id: user._id.toString(),
   };
-  const accessToken = makeAccessToken(payload);
-  const refreshToken = makeRefreshToken(payload);
+  const accessToken = makeAccessToken(user._id); // userId를 객체로 전달
+  const refreshToken = makeRefreshToken(user._id); // userId를 객체로 전달
 
   await TokenModel.updateRefresh({
-    user_id: user.id,
+    user_id: user._id,
     refreshToken,
   });
 
@@ -105,7 +100,7 @@ exports.refreshAccessToken = async (refreshToken) => {
       throw new Error("유효하지 않은 리프레시 토큰");
     }
 
-    const newAccessToken = makeAccessToken({ id: decoded.id });
+    const newAccessToken = makeAccessToken(decoded.id);
     console.log(
       "refreshAccessToken service successful, new accessToken:",
       newAccessToken

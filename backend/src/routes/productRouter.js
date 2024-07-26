@@ -17,7 +17,7 @@ router.get("/:productId", getProductById); // 상품 1개 조회
 router.get("/user/:userId", getUserProducts); // 유저가 올린 상품 리스트 조회
 router.get("/likedProductList/:userId", getLikedProductListByUserId); // 유저가 좋아요를 누른 상품 리스트 조회
 
-router.post("/", authenticateToken, saveProduct); // 상품 저장
+router.post("/", saveProduct); // 상품 저장
 router.put("/:productId", authenticateToken, updateProduct); // 상품 수정
 router.delete("/:productId", authenticateToken, deleteProductById); // 상품 삭제
 

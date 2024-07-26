@@ -17,7 +17,23 @@ exports.createGame = async (gameData) => {
   console.log(gameData);
   try {
     const game = new Game(gameData);
-    return game.save();
+
+    // userIds가 배열인지 확인하고, 배열이 아니라면 배열로 변환합니다.
+    const userIds = Array.isArray(gameData.users)
+      ? gameData.users
+      : [gameData.users];
+
+    for (let i = 0; i < userIds.length; i++) {
+      const newAlarm = new Alarm({
+        userId: userIds[i].userId,
+        title: "맞다이 ㄱㄱ",
+        content: `회원님께서 입찰에 참여한 상품은 맞다이로 낙찰자를 결정하게 되었습니디. 게임에 참여하시고 상품을 쟁취하세요!`,
+      });
+      console.log(newAlarm);
+      await newAlarm.save();
+    }
+
+    return await game.save();
   } catch (error) {
     console.error("Error in createGame", error);
   }
@@ -69,7 +85,7 @@ exports.biddingProduct = async (productId, bidData) => {
 
     product.bidHistory.push(bidDataWithUserName);
 
-    if (bidDataWithUserName.bidAmount > product.price) {
+    if (bidDataWithUserName.bidAmount >= product.price) {
       product.price = bidDataWithUserName.bidAmount;
     } else {
       throw new Error("Bid amount must be higher than the current price");
@@ -84,15 +100,33 @@ exports.biddingProduct = async (productId, bidData) => {
 };
 
 // 낙찰하기
-exports.closeGame = async (productId, winnerId, loserIds, bidAmount) => {
+exports.closeBid = async (productId, userId) => {
   try {
     const product = await Product.findById(productId);
     if (!product) {
       throw new Error("Product not found");
     }
-
+    if (product.userId.toString() !== userId) {
+      throw new Error("Unauthorized");
+    }
     if (product.winnerId) {
       throw new Error("The auction is already closed.");
+    }
+
+    // Find the highest bid
+    let highestBid = 0;
+    let highestBidderId = null;
+    for (const bid of product.bidHistory) {
+      if (bid.bidAmount > highestBid) {
+        highestBid = bid.bidAmount;
+        highestBidderId = bid.bidderId;
+      }
+    }
+
+    if (highestBidderId) {
+      product.winnerId = highestBidderId; // Set the winnerId
+    } else {
+      throw new Error("No bids available to close the auction");
     }
 
     product.dueDate = new Date(); // Set the close date
@@ -102,40 +136,28 @@ exports.closeGame = async (productId, winnerId, loserIds, bidAmount) => {
     if (!seller) {
       throw new Error("Seller not found");
     }
-
-    seller.account.balance += bidAmount;
+    seller.account.balance += highestBid;
     await seller.save();
 
-    for (let i = 0; i < loserIds.length; i++) {
-      const loser = await User.findById(loserIds[i]);
-      loser.account.balance += bidAmount;
-      await loser.save();
-
-      const newAlarm = new Alarm({
-        userId: loserIds[i],
-        title: "낙찰 실패 ㅜㅜ",
-        content: `회원님께서 입찰에 참여한 ${product.productName} 상품 낙찰에 실패하셨습니다.`,
-      });
-      await newAlarm.save();
-    }
-
     console.log(
-      `Credited ${bidAmount} to seller ${seller.name}, new balance: ${seller.account.balance}`
+      `Credited ${highestBid} to seller ${seller.name}, new balance: ${seller.account.balance}`
     );
 
-    const winnerAlarm = new Alarm({
-      userId: winnerId,
-      title: "아싸~ 낙찰 성공!",
-      content: `회원님께서 입찰에 참여한 ${product.productName} 상품이 ${bidAmount}원으로 회원님께 낙찰되었습니다.`,
-    });
-    await winnerAlarm.save();
+    const newAlarm = {
+      userId: userId,
+      title: "낙찰 성공",
+      content: `회원님께서 입찰에 참여한 ${product.productName} 상품이 ${product.price}원으로 회원님께 낙찰되었습니다. `,
+    };
+
+    const saveAlarm = new Alarm(newAlarm);
+
+    await saveAlarm.save();
 
     product.isClose = 1;
-    product.winnerId = winnerId;
 
     return await product.save();
   } catch (error) {
-    console.error("Error in closeGame service:", error);
+    console.error("Error in closeBid service:", error);
     throw error;
   }
 };
@@ -158,6 +180,7 @@ exports.updateSameScoreBid = async (productId) => {
 };
 
 exports.updateScore = async (productId, userId, score) => {
+  console.log(productId, userId, score);
   try {
     // productId로 게임을 찾습니다.
     const game = await Game.findOne({ productId });
@@ -182,7 +205,6 @@ exports.updateScore = async (productId, userId, score) => {
     throw error;
   }
 };
-
 exports.closeGameService = async (productId, winnerId, loserIds, bidAmount) => {
   try {
     // Convert IDs to ObjectId
@@ -195,6 +217,32 @@ exports.closeGameService = async (productId, winnerId, loserIds, bidAmount) => {
     const product = await Product.findById(productObjectId);
     if (!product) {
       throw new Error("Product not found");
+    }
+
+    // Fetch the game associated with the product
+    const game = await Game.findOne({ productId: productObjectId });
+    if (!game) {
+      throw new Error("Game not found");
+    }
+
+    // Find the highest score
+    const highestScore = Math.max(...game.users.map((user) => user.score));
+
+    // Check if there are multiple users with the highest score
+    const usersWithHighestScore = game.users.filter(
+      (user) => user.score === highestScore
+    );
+
+    if (usersWithHighestScore.length > 1) {
+      // If there are multiple users with the highest score, set isComplete to false for all users
+      game.users.forEach((user) => {
+        user.isComplete = false;
+      });
+      await game.save();
+
+      // Update product status
+      product.isClose = 2; // Assuming 2 indicates a game with multiple highest scores
+      return await product.save();
     }
 
     product.dueDate = new Date(); // Set the close date

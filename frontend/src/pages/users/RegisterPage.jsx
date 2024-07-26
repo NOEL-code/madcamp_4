@@ -133,7 +133,7 @@ const Form = styled.form`
   display: flex;
   flex-direction: column;
   padding: 25px 40px;
-  margin-top: 150px;
+  margin-top: 80px;
 `;
 
 const Input = styled.input`

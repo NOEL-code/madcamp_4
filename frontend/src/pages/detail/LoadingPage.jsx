@@ -69,7 +69,6 @@ const Logo = styled.h1`
   color: #a0153e;
   font-family: 'HSSummer', sans-serif;
   font-size: 24px;
-  margin-top: 15px;
 `;
 
 const CloseIcon = styled(IoClose)`
@@ -88,7 +87,7 @@ const Text = styled.h1`
 const Progress = styled.h1`
   font-family: 'Freesentation-8ExtraBold', sans-serif;
   font-size: 24px;
-  margin-top: 300px;
+  margin-top: 250px;
   margin-left: 100px;
   color: #fff;
 `;
