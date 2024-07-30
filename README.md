@@ -47,7 +47,7 @@ $ cd madcamp_4
 ```
 $ cd frontend
 $ npm install
-$ npx react-native run-android
+$ npm run start
 ```
 
 #### backend
