@@ -6,10 +6,10 @@
 
 
 <div style="display: flex; justify-content: space-around;">
-  <img src="https://github.com/user-attachments/assets/221c0a63-7bd9-4caf-8942-3b8fcf525d07" alt="슬라이더" width="15%">
-  <img src="https://github.com/user-attachments/assets/20b28eba-9862-4177-b0d9-38cdab551a7d" alt="실시간 랭킹" width="15%">
-  <img src="https://github.com/user-attachments/assets/762c221e-b1f9-4509-9c52-d80d8d1ba70f" alt="알람 기능" width="15%">
-  <img src="https://github.com/user-attachments/assets/233db2d2-ba48-479b-b2b4-101c7078bc21" alt="기타 기능" width="15%">
+  <img src="https://github.com/user-attachments/assets/221c0a63-7bd9-4caf-8942-3b8fcf525d07" alt="슬라이더" width="20%">
+  <img src="https://github.com/user-attachments/assets/20b28eba-9862-4177-b0d9-38cdab551a7d" alt="실시간 랭킹" width="20%">
+  <img src="https://github.com/user-attachments/assets/762c221e-b1f9-4509-9c52-d80d8d1ba70f" alt="알람 기능" width="20%">
+  <img src="https://github.com/user-attachments/assets/233db2d2-ba48-479b-b2b4-101c7078bc21" alt="기타 기능" width="20%">
 </div>
 총 네가지 탭으로 구성 → HOME / SHOP / ADD / MY
 
