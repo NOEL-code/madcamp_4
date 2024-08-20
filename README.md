@@ -131,8 +131,19 @@ $ npm run start
 ### DETAIL
 
 - 현황 및 상세 정보 확인 가능, 사진 클릭 시 전체비율로 확인 가능
+ <div style="display: flex;">
+  <img src="https://github.com/user-attachments/assets/91881416-33cc-45a7-bf7d-a2d9b53cb48d" alt="슬라이더" width="25%">
+  <img src="https://github.com/user-attachments/assets/7c051895-eb4c-42cc-88cc-c3b4d2558b24" alt="실시간 랭킹" width="25%">
+  <img src="https://github.com/user-attachments/assets/9f393ba7-d079-4a5b-b9e1-4dfef38ce179" alt="실시간 랭킹" width="25%">
+   
+ </div>
 
-![KakaoTalk_20240725_194754423_11.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/f6cb388f-3934-47d6-9928-26d2e10eb0fc/722f3343-1bf0-4801-982d-0d15413eaa1f/KakaoTalk_20240725_194754423_11.png)
+ <div style="display: flex;">
+  <img src="https://github.com/user-attachments/assets/05eb85e0-72d4-4234-a470-903a3ac76389" alt="슬라이더" width="25%">
+  <img src="https://github.com/user-attachments/assets/2be06de9-06d3-44c9-81c8-dd89ed81669f" alt="실시간 랭킹" width="25%">
+  <img src="https://github.com/user-attachments/assets/2d7966ba-ce45-4171-ab6e-5984f5d9306c" alt="실시간 랭킹" width="25%">
+   
+ </div>
 
 - 판매자: 낙찰하기 버튼
 - 그 외: 응찰하기 버튼 
