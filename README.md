@@ -161,17 +161,16 @@ $ npm run start
 <img src="https://github.com/user-attachments/assets/b340440b-516b-4df3-8637-054a98b2dcf3" alt="실시간 랭킹" width="25%">
 
  <div style="display: flex;">
+  <img src="https://github.com/user-attachments/assets/d5be791e-ef8d-461f-9788-35c7f5639c6c" alt="슬라이더" width="25%">
    
   <img src="https://github.com/user-attachments/assets/2be1400b-e562-43c0-a427-b60cc51efda4" alt="슬라이더" width="25%">
   <img src="https://github.com/user-attachments/assets/8d635e2a-ae61-4c60-bac6-0f103dcaa4a9" alt="실시간 랭킹" width="25%">
-  <img src="https://github.com/user-attachments/assets/377fbdcf-62aa-4ea9-9456-884f53a33a40" alt="실시간 랭킹" width="25%">
  </div>
 
   <div style="display: flex;">
     <img src="https://github.com/user-attachments/assets/7e32834e-0321-4bfd-97f7-b1e1742e2f94" alt="실시간 랭킹" width="25%">
     <img src="https://github.com/user-attachments/assets/377fbdcf-62aa-4ea9-9456-884f53a33a40" alt="실시간 랭킹" width="25%">
    
-  <img src="https://github.com/user-attachments/assets/d5be791e-ef8d-461f-9788-35c7f5639c6c" alt="슬라이더" width="25%">
  </div>
 
 ## API 명세서 📄
