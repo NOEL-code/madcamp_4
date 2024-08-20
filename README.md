@@ -167,7 +167,7 @@ $ npm run start
  </div>
 
   <div style="display: flex;">
-  <img src="https://github.com/user-attachments/assets/05eb85e0-72d4-4234-a470-903a3ac76389" alt="슬라이더" width="25%">
+  <img src="https://github.com/user-attachments/assets/d5be791e-ef8d-461f-9788-35c7f5639c6c" alt="슬라이더" width="25%">
   <img src="https://github.com/user-attachments/assets/b340440b-516b-4df3-8637-054a98b2dcf3" alt="실시간 랭킹" width="25%">
  </div>
 
