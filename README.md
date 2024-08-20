@@ -80,9 +80,11 @@ $ npm run start
 - **슬라이더**: 롤렉스를 돌려보세요! 광고 클릭 시 세부페이지로 이동
 
  <div style="display: flex;">
-  <img src="https://github.com/user-attachments/assets/221c0a63-7bd9-4caf-8942-3b8fcf5252d07" alt="슬라이더" width="150px">
+  <img src="https://github.com/user-attachments/assets/e5ec3365-1fbb-4438-adf6-ce37ee06b2a2" alt="슬라이더" width="150px">
   <img src="https://github.com/user-attachments/assets/f6600ceb-f80a-45c7-9e5b-88c96d9d27a7" alt="실시간 랭킹" width="150px">
-  </div>
+  <img src="https://github.com/user-attachments/assets/e5a2a870-329d-4a8d-86b4-e5e8b4d3f656" alt="실시간 랭킹" width="150px">
+ </div>
+  
 - **실시간 랭킹**: 최다 관심순, 높은 응찰가순
 - **알람 기능**: 낙찰 성공/실패 알람, 응찰 현황 알람, 게임 입장 알람
 
