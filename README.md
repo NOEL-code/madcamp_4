@@ -134,14 +134,13 @@ $ npm run start
  <div style="display: flex;">
   <img src="https://github.com/user-attachments/assets/91881416-33cc-45a7-bf7d-a2d9b53cb48d" alt="슬라이더" width="25%">
   <img src="https://github.com/user-attachments/assets/7c051895-eb4c-42cc-88cc-c3b4d2558b24" alt="실시간 랭킹" width="25%">
-  <img src="https://github.com/user-attachments/assets/9f393ba7-d079-4a5b-b9e1-4dfef38ce179" alt="실시간 랭킹" width="25%">
-   
+  <img src="https://github.com/user-attachments/assets/2d7966ba-ce45-4171-ab6e-5984f5d9306c" alt="실시간 랭킹" width="25%">
  </div>
 
  <div style="display: flex;">
   <img src="https://github.com/user-attachments/assets/05eb85e0-72d4-4234-a470-903a3ac76389" alt="슬라이더" width="25%">
   <img src="https://github.com/user-attachments/assets/2be06de9-06d3-44c9-81c8-dd89ed81669f" alt="실시간 랭킹" width="25%">
-  <img src="https://github.com/user-attachments/assets/2d7966ba-ce45-4171-ab6e-5984f5d9306c" alt="실시간 랭킹" width="25%">
+  <img src="https://github.com/user-attachments/assets/9f393ba7-d079-4a5b-b9e1-4dfef38ce179" alt="실시간 랭킹" width="25%">
    
  </div>
 
