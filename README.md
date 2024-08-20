@@ -94,15 +94,17 @@ $ npm run start
 
 ### SHOP
 
-![KakaoTalk_20240725_194754423_07.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/f6cb388f-3934-47d6-9928-26d2e10eb0fc/5d8e9f83-51c8-448e-be0c-28c0dd3a9af2/KakaoTalk_20240725_194754423_07.png)
-
+ <img src="https://github.com/user-attachments/assets/add39eb6-cfbe-4cd5-b335-ff8691ac26b1" alt="실시간 랭킹" width="25%">
 - 검색 / 카테고리 / 인기순 정렬
 
 ---
 
 ### ADD
 
-![KakaoTalk_20240725_194754423_08.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/f6cb388f-3934-47d6-9928-26d2e10eb0fc/31263939-ff89-4c89-b21a-bcc4d214ab37/KakaoTalk_20240725_194754423_08.png)
+ <div style="display: flex;">
+  <img src="https://github.com/user-attachments/assets/84c46c67-c442-4e0a-b177-3cad7e272ada" alt="슬라이더" width="25%">
+  <img src="https://github.com/user-attachments/assets/eb6298ea-75a6-4507-acf0-58d2903e80d4" alt="실시간 랭킹" width="25%">
+ </div>
 
 - 상품 등록 페이지
 
@@ -110,7 +112,6 @@ $ npm run start
 
 ### MY
 
-![KakaoTalk_20240725_194754423_10.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/f6cb388f-3934-47d6-9928-26d2e10eb0fc/5e5d6ead-f3e2-4ae9-96af-dc0814aef09a/KakaoTalk_20240725_194754423_10.png)
 
 - 잔고, 관심상품, 판매내역, 구매내역 확인 가능
 
