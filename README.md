@@ -4,8 +4,6 @@
 
 ---
 
-https://htmltest1.s3.ap-northeast-2.amazonaws.com/KakaoTalk_20240725_201234739.png
-
 ## 프로젝트 소개
 
 > 몰입캠프 우수작 선정 프로젝트
@@ -64,7 +62,10 @@ $ npm run start
 
 ### HOME
 
-![KakaoTalk_20240725_194754423.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/f6cb388f-3934-47d6-9928-26d2e10eb0fc/dfd826cc-7be7-463f-ba90-6114cec67eb4/KakaoTalk_20240725_194754423.png)
+![KakaoTalk_20240725_194754423 (1)](https://github.com/user-attachments/assets/221c0a63-7bd9-4caf-8942-3b8fcf525d07)
+![KakaoTalk_20240725_194754423_07](https://github.com/user-attachments/assets/20b28eba-9862-4177-b0d9-38cdab551a7d)
+![KakaoTalk_20240725_194754423_08](https://github.com/user-attachments/assets/762c221e-b1f9-4509-9c52-d80d8d1ba70f)
+![KakaoTalk_20240725_194754423_10](https://github.com/user-attachments/assets/233db2d2-ba48-479b-b2b4-101c7078bc21)
 
 - **슬라이더**: 롤렉스를 돌려보세요! 광고 클릭 시 세부페이지로 이동
 - **실시간 랭킹**: 최다 관심순, 높은 응찰가순
