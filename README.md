@@ -112,14 +112,17 @@ $ npm run start
 
 ### MY
 
-
+ <img src="https://github.com/user-attachments/assets/8c8b3836-6098-4176-9a0c-ddd4183c270a" alt="슬라이더" width="25%">
 - 잔고, 관심상품, 판매내역, 구매내역 확인 가능
 
 ---
 
 ### LOGIN/REGISTER
 
-![KakaoTalk_20240725_201234739.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/f6cb388f-3934-47d6-9928-26d2e10eb0fc/bb8c1562-f57e-455e-84b9-22fe3086a553/KakaoTalk_20240725_201234739.png)
+ <div style="display: flex;">
+  <img src="https://github.com/user-attachments/assets/911e4d06-d190-4791-b657-489135068977" alt="슬라이더" width="25%">
+  <img src="https://github.com/user-attachments/assets/8ba1b300-6ad4-4854-8e76-6222513422c4" alt="실시간 랭킹" width="25%">
+ </div>
 
 - 로그인 및 회원가입
 
