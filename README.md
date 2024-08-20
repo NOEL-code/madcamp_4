@@ -2,7 +2,16 @@
 
 > 자유롭게 경매로 물건을 거래할 수 있는 플랫폼입니다. 당근마켓과 크림이 하지 못하는 것을 저희는 합니다.
 
----
+
+
+
+<div style="display: flex; justify-content: space-around;">
+  <img src="https://github.com/user-attachments/assets/221c0a63-7bd9-4caf-8942-3b8fcf525d07" alt="슬라이더" width="25%">
+  <img src="https://github.com/user-attachments/assets/20b28eba-9862-4177-b0d9-38cdab551a7d" alt="실시간 랭킹" width="25%">
+  <img src="https://github.com/user-attachments/assets/762c221e-b1f9-4509-9c52-d80d8d1ba70f" alt="알람 기능" width="25%">
+  <img src="https://github.com/user-attachments/assets/233db2d2-ba48-479b-b2b4-101c7078bc21" alt="기타 기능" width="25%">
+</div>
+총 네가지 탭으로 구성 → HOME / SHOP / ADD / MY
 
 ## 프로젝트 소개
 
@@ -62,12 +71,7 @@ $ npm run start
 
 ### HOME
 
-<div style="display: flex; justify-content: space-around;">
-  <img src="https://github.com/user-attachments/assets/221c0a63-7bd9-4caf-8942-3b8fcf525d07" alt="슬라이더" width="25%">
-  <img src="https://github.com/user-attachments/assets/20b28eba-9862-4177-b0d9-38cdab551a7d" alt="실시간 랭킹" width="25%">
-  <img src="https://github.com/user-attachments/assets/762c221e-b1f9-4509-9c52-d80d8d1ba70f" alt="알람 기능" width="25%">
-  <img src="https://github.com/user-attachments/assets/233db2d2-ba48-479b-b2b4-101c7078bc21" alt="기타 기능" width="25%">
-</div>
+
 
 - **슬라이더**: 롤렉스를 돌려보세요! 광고 클릭 시 세부페이지로 이동
 - **실시간 랭킹**: 최다 관심순, 높은 응찰가순
