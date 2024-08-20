@@ -134,10 +134,8 @@ $ npm run start
 ## API 명세서 📄
 
 | API | Method | URL | Description | Request Header | Request Body | Response | Error |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| Users API | POST | /api/users/register | 사용자 회원가입 | - | {"userEmail": "string", "userPassword": "string", "name": "string", "phoneNumber": "string"}
-
- | {"accessToken": "string", "refreshToken": "string"} | 400 Bad Request, 500 Internal Server Error |
+|---|---|---|---|---|---|---|---|
+| Users API | POST | /api/users/register | 사용자 회원가입 | - | {"userEmail": "string", "userPassword": "string", "name": "string", "phoneNumber": "string"} | {"accessToken": "string", "refreshToken": "string"} | 400 Bad Request, 500 Internal Server Error |
 | Users API | POST | /api/users/login | 사용자 로그인 | - | {"userEmail": "string", "userPassword": "string"} | {"accessToken": "string", "refreshToken": "string", "resUser": {"id": "string", "phoneNumber": "string", "name": "string", "balance": "number", "favorites": "array"}} | 401 Unauthorized, 403 Forbidden, 500 Internal Server Error |
 | Users API | POST | /api/users/logout | 사용자 로그아웃 | Authorization: Bearer <accessToken> | - | {"message": "Logged out successfully"} | 500 Internal Server Error |
 | Users API | POST | /api/users/refresh-token | 리프레시 토큰으로 새로운 엑세스 토큰 반환 | - | {"refreshToken": "string"} | {"accessToken": "string"} | 401 Unauthorized, 403 Forbidden |
@@ -146,10 +144,10 @@ $ npm run start
 | Products API | GET | /api/products | 모든 상품 조회 | - | - | [{"productId": "string", "productName": "string", "price": "number", "description": "string", "dueDate": "date", "userId": "string", "category": "string", "productPhotos": ["string"]}] | 500 Internal Server Error |
 | Products API | GET | /api/products/:productId | 특정 상품 조회 | - | - | {"productId": "string", "productName": "string", "price": "number", "description": "string", "dueDate": "date", "userId": "string", "category": "string", "productPhotos": ["string"]} | 500 Internal Server Error |
 | Products API | GET | /api/products/user/:userId | 유저가 올린 상품 리스트 조회 | - | - | [{"productId": "string", "productName": "string", "price": "number", "description": "string", "dueDate": "date", "userId": "string", "category": "string", "productPhotos": ["string"]}] | 500 Internal Server Error |
-| Products API | GET | /api/products/likedProductList/:userId | 유저가 좋아요를 누른 상품 리스트 조회 | - | - | [{"productId": "string", "productName": "string", "price": "number", "description": "string", "dueDate": "date", "userId": "string", "category": "string", "productPhotos": ["string"]}] | 500 Internal Server Error |
+| Products API | GET | /api/products/likedProductList/:userId | 유저가 좋아요를 누른 상품 리스트 조회 | - | - | [{"productId": "string", "productName": "string", "price": "string", "description": "string", "dueDate": "date", "userId": "string", "category": "string", "productPhotos": ["string"]}] | 500 Internal Server Error |
 | Products API | POST | /api/products | 상품 저장 | Authorization: Bearer <accessToken> | {"productName": "string", "price": "number", "description": "string", "dueDate": "date", "userId": "string", "category": "string", "productPhotos": ["string"]} | {"message": "Product saved successfully"} | 500 Internal Server Error |
 | Products API | PUT | /api/products/:productId | 상품 수정 | Authorization: Bearer <accessToken> | {"productName": "string", "price": "number", "description": "string", "dueDate": "date", "userId": "string", "category": "string", "productPhotos": ["string"]} | {"message": "Product updated successfully"} | 500 Internal Server Error |
-| Products API | DELETE | /api/products/:productId | 상품 삭제 | Authorization: Bearer <accessToken> | - | {"message": "Product deleted successfully"} | 500 Internal Server Error |
+| Products API | DELETE | /api/products/:productId | 상품 삭제 | Authorization: | - | {"message": "Product deleted successfully"} | 500 Internal Server Error |
 | Products API | GET | /api/products/successBid/user/:userId | 유저가 낙찰받은 상품 리스트 조회 | - | - | [{"productId": "string", "productName": "string", "price": "number", "description": "string", "dueDate": "date", "userId": "string", "category": "string", "productPhotos": ["string"]}] | 500 Internal Server Error |
 | Bids API | POST | /api/bid/:productId | 입찰하기 | Authorization: Bearer <accessToken> | {"bidderId": "string", "bidAmount": "number"} | {"message": "Bid placed successfully"} | 500 Internal Server Error |
 | Bids API | POST | /api/bid/close/:productId | 낙찰하기 | Authorization: Bearer <accessToken> | {"userId": "string"} | {"message": "Bid closed successfully"} | 500 Internal Server Error |
