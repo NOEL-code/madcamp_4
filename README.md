@@ -71,7 +71,11 @@ $ npm run start
 
 ### HOME
 
-
+<div style="display: flex; justify-content: space-around;">
+  <img src="https://github.com/user-attachments/assets/51cade0b-38cf-48b7-bd01-1d2430a7c07d" alt="Image description 1" width="25%">
+  <img src="https://github.com/user-attachments/assets/ada81e89-75b1-43d2-bbbc-9f5ba70377af" alt="Image description 2" width="25%">
+  <img src="https://github.com/user-attachments/assets/ca69e59e-78de-46cc-adc6-34e8b2232df7" alt="Image description 3" width="25%">
+</div>
 
 - **슬라이더**: 롤렉스를 돌려보세요! 광고 클릭 시 세부페이지로 이동
 - **실시간 랭킹**: 최다 관심순, 높은 응찰가순
